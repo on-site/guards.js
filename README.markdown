@@ -113,5 +113,4 @@ guard() on the form directly and use the boolean result:
 
 # License
 
-Guards is licensed under the MIT license
-http://github.com/on-site/Guards-Javascript-Validation/blob/master/MIT-LICENSE.txt
+Guards is licensed under the [MIT license](http://github.com/on-site/Guards-Javascript-Validation/blob/master/MIT-LICENSE.txt)
