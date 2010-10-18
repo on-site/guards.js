@@ -408,9 +408,9 @@
           });
         });
 
-        module("validEmail guard", { setup: function() {
+        module("email guard", { setup: function() {
           resetGuards();
-          $.guard("#form1-1").using("validEmail");
+          $.guard("#form1-1").using("email");
         } });
 
         test("with nothing entered", function() {
@@ -428,7 +428,7 @@
             expectedErrorCount: 1,
             expectedErrorMessageCount: 1,
             errorMessageLocations: $("#form1-1"),
-            errorMessages: $.guards.defaults.messages.validEmail
+            errorMessages: $.guards.defaults.messages.email
           });
         });
 
@@ -440,7 +440,7 @@
             expectedErrorCount: 1,
             expectedErrorMessageCount: 1,
             errorMessageLocations: $("#form1-1"),
-            errorMessages: $.guards.defaults.messages.validEmail
+            errorMessages: $.guards.defaults.messages.email
           });
         });
 
@@ -452,9 +452,9 @@
           });
         });
 
-        module("validPhoneUS guard", { setup: function() {
+        module("phoneUS guard", { setup: function() {
           resetGuards();
-          $.guard("#form1-1").using("validPhoneUS");
+          $.guard("#form1-1").using("phoneUS");
         } });
 
         test("with nothing entered", function() {
@@ -472,7 +472,7 @@
             expectedErrorCount: 1,
             expectedErrorMessageCount: 1,
             errorMessageLocations: $("#form1-1"),
-            errorMessages: $.guards.defaults.messages.validPhoneUS
+            errorMessages: $.guards.defaults.messages.phoneUS
           });
         });
 
@@ -484,7 +484,7 @@
             expectedErrorCount: 1,
             expectedErrorMessageCount: 1,
             errorMessageLocations: $("#form1-1"),
-            errorMessages: $.guards.defaults.messages.validPhoneUS
+            errorMessages: $.guards.defaults.messages.phoneUS
           });
         });
 
@@ -496,7 +496,7 @@
             expectedErrorCount: 1,
             expectedErrorMessageCount: 1,
             errorMessageLocations: $("#form1-1"),
-            errorMessages: $.guards.defaults.messages.validPhoneUS
+            errorMessages: $.guards.defaults.messages.phoneUS
           });
         });
 

@@ -1,5 +1,18 @@
+/*!
+ * Guards JavaScript jQuery Plugin v0.1
+ * http://github.com/on-site/Guards-Javascript-Validation
+ *
+ * Copyright 2010, On-Site.com, http://www.on-site.com/
+ * Licensed under the MIT license.
+ *
+ * Includes code for email and phone number validation from the jQuery
+ * Validation plugin.  http://docs.jquery.com/Plugins/Validation
+ *
+ * Date: Mon Oct 18 12:15:53 2010 -0700
+ */
+
 /**
- * This plugin is loosely based on the standard Validation jQuery
+ * This plugin is initially inspired by the standard Validation jQuery
  * plugin (http://docs.jquery.com/Plugins/Validation).
  *
  * To guard forms with this plugin, you must specify a set of guards
@@ -44,42 +57,43 @@
             notChecked: ""
         };
         this.defaults = {
-            messages: {
-                oneRequired: "Specify at least one.",
-                required: "This field is required.",
-                undefined: "Please fix this field.",
-                validEmail: "Please enter a valid E-mail address.",
-                validPhoneUS: "Please enter a valid phone number."
-            },
-
-            messageClass: "error-message",
             grouped: false,
             guard: "required",
 
             guards: {
+                email: function() {
+                    return function(value, element) {
+                        return $.guards.isAllValid(value, $.guards.isValidEmail);
+                    };
+                },
                 oneRequired: function() {
                     return function(value, element) {
                         return $.guards.isAnyValid(value, $.guards.isPresent);
+                    };
+                },
+                phoneUS: function() {
+                    return function(value, element) {
+                        return $.guards.isAllValid(value, $.guards.isValidPhoneUS);
                     };
                 },
                 required: function() {
                     return function(value, element) {
                         return $.guards.isAllValid(value, $.guards.isPresent);
                     };
-                },
-                validEmail: function() {
-                    return function(value, element) {
-                        return $.guards.isAllValid(value, $.guards.isValidEmail);
-                    };
-                },
-                validPhoneUS: function() {
-                    return function(value, element) {
-                        return $.guards.isAllValid(value, $.guards.isValidPhoneUS);
-                    };
                 }
             },
 
             invalidClass: "invalid-field",
+            messageClass: "error-message",
+
+            messages: {
+                email: "Please enter a valid E-mail address.",
+                oneRequired: "Specify at least one.",
+                phoneUS: "Please enter a valid phone number.",
+                required: "This field is required.",
+                undefined: "Please fix this field."
+            },
+
             tag: "span"
         };
     };
@@ -173,7 +187,7 @@
      * defaults to "required".  Note that it is simpler to use
      * $.guard(selector) instead of $.guards.add(selector).
      *
-     * Example: $.guards.add(".validPhone").using("validPhoneUS");
+     * Example: $.guards.add(".validPhone").using("phoneUS");
      * Example: $.guards.add(".custom").using(function(value, element) {
      *            return value != "invalid";
      *          }).message("Don't use the keyword 'invalid'.");
