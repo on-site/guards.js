@@ -58,7 +58,7 @@ value(s) passed the guard, or false if they failed.
 Also note that custom guards should specify a message, as the default
 message of $.guards.defaults.messages.undefined is used if none is
 specified.  It should be specified after the call to using() though
-(otherwise unsing() will override it to the undefined default
+(otherwise using() will override it to the undefined default
 message).
 
 Examples:
