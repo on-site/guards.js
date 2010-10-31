@@ -27,6 +27,10 @@ all the existing guards with a short description.
 * **email**: Empty fields are valid, otherwise it must match a regex
   to ensure it looks like a valid email address.
 
+* **int**: This requires an argument specifying a min value, max
+  value, or both min and max.  Empty fields are valid, otherwise a
+  number must be specified that is in range of the min and/or max.
+
 * **oneRequired**: This should be used with grouped = true.  This
   specifies that at least 1 value exists (ie, is not null, undefined,
   or just whitespace).
@@ -42,6 +46,9 @@ all the existing guards with a short description.
 Examples:
 
     $.guard(".email").using("email");
+    $.guard(".5plus").using("int", { min: 5 });
+    $.guard(".noMoreThan10").using("int", { max: 10 });
+    $.guard(".1to10").using("int", { min: 1, max: 10 });
     $.guard(".at-least-one").grouped().using("oneRequired");
     $.guard(".phone-number").using("phoneUS");
     $.guard(".required").using("required");

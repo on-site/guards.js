@@ -555,6 +555,237 @@
             expectedToPass: true
           });
         });
+
+        module("int with min 1 max 4", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("int", { min: 1, max: 4 });
+        } });
+
+        test("with '0' entered", function() {
+          $("#form1-1").val("0");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+        });
+
+        test("with '-2' entered", function() {
+          $("#form1-1").val("-2");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+        });
+
+        test("with '5' entered", function() {
+          $("#form1-1").val("5");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+        });
+
+        test("with 'aaa' entered", function() {
+          $("#form1-1").val("aaa");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+        });
+
+        test("with '2aaa' entered", function() {
+          $("#form1-1").val("2aaa");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+        });
+
+        test("with '1' entered", function() {
+          $("#form1-1").val("1");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '4' entered", function() {
+          $("#form1-1").val("4");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '3' entered", function() {
+          $("#form1-1").val("3");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        module("int with min 1", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("int", { min: 1 });
+        } });
+
+        test("with '0' entered", function() {
+          $("#form1-1").val("0");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number no less than 1."
+          });
+        });
+
+        test("with '-2' entered", function() {
+          $("#form1-1").val("-2");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number no less than 1."
+          });
+        });
+
+        test("with 'aaa' entered", function() {
+          $("#form1-1").val("aaa");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number no less than 1."
+          });
+        });
+
+        test("with '2aaa' entered", function() {
+          $("#form1-1").val("2aaa");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number no less than 1."
+          });
+        });
+
+        test("with '1' entered", function() {
+          $("#form1-1").val("1");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '3' entered", function() {
+          $("#form1-1").val("3");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        module("int with max 4", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("int", { max: 4 });
+        } });
+
+        test("with '5' entered", function() {
+          $("#form1-1").val("5");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number no greater than 4."
+          });
+        });
+
+        test("with 'aaa' entered", function() {
+          $("#form1-1").val("aaa");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number no greater than 4."
+          });
+        });
+
+        test("with '2aaa' entered", function() {
+          $("#form1-1").val("2aaa");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a number no greater than 4."
+          });
+        });
+
+        test("with '0' entered", function() {
+          $("#form1-1").val("0");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '-2' entered", function() {
+          $("#form1-1").val("-2");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '4' entered", function() {
+          $("#form1-1").val("4");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '3' entered", function() {
+          $("#form1-1").val("3");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
       });
     </script>
   </head>

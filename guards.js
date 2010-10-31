@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v0.1
+ * Guards JavaScript jQuery Plugin v0.2
  * http://github.com/on-site/Guards-Javascript-Validation
  *
  * Copyright 2010, On-Site.com, http://www.on-site.com/
@@ -66,6 +66,13 @@
                         return $.guards.isAllValid(value, $.guards.isValidEmail);
                     };
                 },
+                int: function(options) {
+                    return function(value, element) {
+                        return $.guards.isAllValid(value, function(value) {
+                            return $.guards.isValidInt(value, options);
+                        });
+                    };
+                },
                 oneRequired: function() {
                     return function(value, element) {
                         return $.guards.isAnyValid(value, $.guards.isPresent);
@@ -88,6 +95,24 @@
 
             messages: {
                 email: "Please enter a valid E-mail address.",
+                int: function(options) {
+                    var minDefined = !$.guards.isNullOrUndefined(options.min);
+                    var maxDefined = !$.guards.isNullOrUndefined(options.max);
+
+                    if (minDefined && maxDefined) {
+                        return "Please enter a number from " + options.min + " to " + options.max + ".";
+                    }
+
+                    if (minDefined) {
+                        return "Please enter a number no less than " + options.min + ".";
+                    }
+
+                    if (maxDefined) {
+                        return "Please enter a number no greater than " + options.max + ".";
+                    }
+
+                    return $.guards.defaults.messages.undefined;
+                },
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
@@ -155,7 +180,14 @@
      * or a string of just spaces.
      */
     $.Guards.prototype.isBlank = function(value) {
-        return value == null || value == undefined || $.trim(value) == "";
+        return $.guards.isNullOrUndefined(value) || $.trim(value) == "";
+    };
+
+    /**
+     * Return true if the value is null or undefined.
+     */
+    $.Guards.prototype.isNullOrUndefined = function(value) {
+        return value === null || value === undefined;
     };
 
     /**
@@ -163,6 +195,28 @@
      */
     $.Guards.prototype.isPresent = function(value) {
         return !$.guards.isBlank(value);
+    };
+
+    /**
+     * Return whether or not the value is a valid integer.
+     * Appropriate options are min or max (or both).  Blank is valid
+     * as a number.
+     */
+    $.Guards.prototype.isValidInt = function(value, options) {
+        value = $.trim(value);
+
+        if (value == "") {
+            return true;
+        }
+
+        if (!/^(-|\+)?\d+$/.test(value)) {
+            return false;
+        }
+
+        value = parseInt(value, 10);
+        var bigEnough = $.guards.isNullOrUndefined(options.min) || value >= options.min;
+        var smallEnough = $.guards.isNullOrUndefined(options.max) || value <= options.max;
+        return bigEnough && smallEnough;
     };
 
     /**
@@ -280,8 +334,21 @@
      */
     $.Guard.prototype.using = function(guard) {
         if (typeof(guard) == "string") {
-            this._guard = this._guards.defaults.guards[guard]();
-            return this.message(this._guards.defaults.messages[guard]);
+            var args = [];
+
+            if (arguments.length > 1) {
+                args = $.makeArray(arguments).slice(1);
+            }
+
+            var fn = this._guards.defaults.guards[guard];
+            this._guard = fn.apply(this._guards.defaults.guards, args);
+            var message = this._guards.defaults.messages[guard];
+
+            if ($.isFunction(message)) {
+                message = message.apply(this._guards.defaults.messages, args);
+            }
+
+            return this.message(message);
         }
 
         this._guard = guard;
