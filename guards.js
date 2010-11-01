@@ -66,7 +66,7 @@
                         return $.guards.isAllValid(value, $.guards.isValidEmail);
                     };
                 },
-                int: function(options) {
+                "int": function(options) {
                     return function(value, element) {
                         return $.guards.isAllValid(value, function(value) {
                             return $.guards.isValidInt(value, options);
@@ -95,7 +95,7 @@
 
             messages: {
                 email: "Please enter a valid E-mail address.",
-                int: function(options) {
+                "int": function(options) {
                     var minDefined = !$.guards.isNullOrUndefined(options.min);
                     var maxDefined = !$.guards.isNullOrUndefined(options.max);
 
