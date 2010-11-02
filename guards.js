@@ -56,18 +56,12 @@
         this.constants = {
             notChecked: ""
         };
-        var emptyArgGuard = function(aggregator, validator) {
+        var defineGuard = function(aggregator, validator) {
             return function() {
-                return function(value, element) {
-                    return $.guards[aggregator](value, $.guards[validator]);
-                };
-            };
-        };
-        var optionGuard = function(aggregator, validator) {
-            return function(options) {
+                var args = $.makeArray(arguments);
                 return function(value, element) {
                     return $.guards[aggregator](value, function(v) {
-                        return $.guards[validator](v, options);
+                        return $.guards[validator].apply($.guards[validator], $.merge([v], args));
                     });
                 };
             };
@@ -97,12 +91,12 @@
             guard: "required",
 
             guards: {
-                email: emptyArgGuard("isAllValid", "isValidEmail"),
-                "int": optionGuard("isAllValid", "isValidInt"),
-                oneRequired: emptyArgGuard("isAnyValid", "isPresent"),
-                phoneUS: emptyArgGuard("isAllValid", "isValidPhoneUS"),
-                required: emptyArgGuard("isAllValid", "isPresent"),
-                string: optionGuard("isAllValid", "isValidString")
+                email: defineGuard("isAllValid", "isValidEmail"),
+                "int": defineGuard("isAllValid", "isValidInt"),
+                oneRequired: defineGuard("isAnyValid", "isPresent"),
+                phoneUS: defineGuard("isAllValid", "isValidPhoneUS"),
+                required: defineGuard("isAllValid", "isPresent"),
+                string: defineGuard("isAllValid", "isValidString")
             },
 
             invalidClass: "invalid-field",
