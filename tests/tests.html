@@ -786,6 +786,205 @@
             expectedToPass: true
           });
         });
+
+        module("string with min 2 max 5", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("string", { min: 2, max: 5 });
+        } });
+
+        test("with '' entered", function() {
+          $("#form1-1").val("");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a string with length 2 to 5."
+          });
+        });
+
+        test("with '   ' entered", function() {
+          $("#form1-1").val("   ");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a string with length 2 to 5."
+          });
+        });
+
+        test("with 'a' entered", function() {
+          $("#form1-1").val("a");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a string with length 2 to 5."
+          });
+        });
+
+        test("with 'abcdef' entered", function() {
+          $("#form1-1").val("abcdef");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a string with length 2 to 5."
+          });
+        });
+
+        test("with 'ab' entered", function() {
+          $("#form1-1").val("ab");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'abcde' entered", function() {
+          $("#form1-1").val("abcde");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'abc' entered", function() {
+          $("#form1-1").val("abc");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '  abc  ' entered", function() {
+          $("#form1-1").val("  abc  ");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        module("string with min 2", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("string", { min: 2 });
+        } });
+
+        test("with '' entered", function() {
+          $("#form1-1").val("");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a string with length at least 2."
+          });
+        });
+
+        test("with '   ' entered", function() {
+          $("#form1-1").val("   ");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a string with length at least 2."
+          });
+        });
+
+        test("with 'a' entered", function() {
+          $("#form1-1").val("a");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a string with length at least 2."
+          });
+        });
+
+        test("with 'ab' entered", function() {
+          $("#form1-1").val("ab");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'abc' entered", function() {
+          $("#form1-1").val("abc");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        module("string with max 5", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("string", { max: 5 });
+        } });
+
+        test("with 'abcdef' entered", function() {
+          $("#form1-1").val("abcdef");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter a string with length no greater than 5."
+          });
+        });
+
+        test("with '' entered", function() {
+          $("#form1-1").val("");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'a' entered", function() {
+          $("#form1-1").val("a");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'abc' entered", function() {
+          $("#form1-1").val("abc");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '  abc  ' entered", function() {
+          $("#form1-1").val("  abc  ");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'abcde' entered", function() {
+          $("#form1-1").val("abcde");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
       });
     </script>
   </head>

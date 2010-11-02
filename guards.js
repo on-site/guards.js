@@ -87,6 +87,13 @@
                     return function(value, element) {
                         return $.guards.isAllValid(value, $.guards.isPresent);
                     };
+                },
+                string: function(options) {
+                    return function(value, element) {
+                        return $.guards.isAllValid(value, function(value) {
+                            return $.guards.isValidString(value, options);
+                        });
+                    };
                 }
             },
 
@@ -116,6 +123,24 @@
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
+                string: function(options) {
+                    var minDefined = !$.guards.isNullOrUndefined(options.min);
+                    var maxDefined = !$.guards.isNullOrUndefined(options.max);
+
+                    if (minDefined && maxDefined) {
+                        return "Please enter a string with length " + options.min + " to " + options.max + ".";
+                    }
+
+                    if (minDefined) {
+                        return "Please enter a string with length at least " + options.min + ".";
+                    }
+
+                    if (maxDefined) {
+                        return "Please enter a string with length no greater than " + options.max + ".";
+                    }
+
+                    return $.guards.defaults.messages.undefined;
+                },
                 undefined: "Please fix this field."
             },
 
@@ -233,6 +258,16 @@
         value = value.replace(/\s+/g, "");
         return value == "" || value.length > 9 &&
               value.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/);
+    };
+
+    /**
+     * Return whether or not the value is a valid string.  Appropriate
+     * options are min or max (or both).  Whitespace is not
+     * considered.
+     */
+    $.Guards.prototype.isValidString = function(value, options) {
+        value = $.trim(value);
+        return $.guards.isValidInt("" + value.length, options);
     };
 
     /**

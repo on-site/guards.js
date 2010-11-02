@@ -43,6 +43,10 @@ all the existing guards with a short description.
   a value when grouped is true, while required will fail (as it
   requires every field to have a value).
 
+* **string**: This requires an argument specifying a min value, max
+  value, or both min and max.  The length of the string is validated
+  with respect to the given min and/or max.
+
 Examples:
 
     $.guard(".email").using("email");
@@ -52,6 +56,9 @@ Examples:
     $.guard(".at-least-one").grouped().using("oneRequired");
     $.guard(".phone-number").using("phoneUS");
     $.guard(".required").using("required");
+    $.guard(".long-password").using("string", { min: 10 });
+    $.guard(".short-title").using("string", { max: 32 });
+    $.guard(".title").using("string", { min: 1, max: 32 });
 
 ## Defining custom guards with functions
 
