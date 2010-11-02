@@ -56,45 +56,53 @@
         this.constants = {
             notChecked: ""
         };
+        var emptyArgGuard = function(aggregator, validator) {
+            return function() {
+                return function(value, element) {
+                    return $.guards[aggregator](value, $.guards[validator]);
+                };
+            };
+        };
+        var optionGuard = function(aggregator, validator) {
+            return function(options) {
+                return function(value, element) {
+                    return $.guards[aggregator](value, function(v) {
+                        return $.guards[validator](v, options);
+                    });
+                };
+            };
+        };
+        var minMaxMessage = function(formatting) {
+            return function(options) {
+                var minDefined = !$.guards.isNullOrUndefined(options.min);
+                var maxDefined = !$.guards.isNullOrUndefined(options.max);
+
+                if (minDefined && maxDefined) {
+                    return $.guards.format(formatting.minAndMax, options.min, options.max);
+                }
+
+                if (minDefined) {
+                    return $.guards.format(formatting.min, options.min);
+                }
+
+                if (maxDefined) {
+                    return $.guards.format(formatting.max, options.max);
+                }
+
+                return $.guards.defaults.messages.undefined;
+            };
+        };
         this.defaults = {
             grouped: false,
             guard: "required",
 
             guards: {
-                email: function() {
-                    return function(value, element) {
-                        return $.guards.isAllValid(value, $.guards.isValidEmail);
-                    };
-                },
-                "int": function(options) {
-                    return function(value, element) {
-                        return $.guards.isAllValid(value, function(value) {
-                            return $.guards.isValidInt(value, options);
-                        });
-                    };
-                },
-                oneRequired: function() {
-                    return function(value, element) {
-                        return $.guards.isAnyValid(value, $.guards.isPresent);
-                    };
-                },
-                phoneUS: function() {
-                    return function(value, element) {
-                        return $.guards.isAllValid(value, $.guards.isValidPhoneUS);
-                    };
-                },
-                required: function() {
-                    return function(value, element) {
-                        return $.guards.isAllValid(value, $.guards.isPresent);
-                    };
-                },
-                string: function(options) {
-                    return function(value, element) {
-                        return $.guards.isAllValid(value, function(value) {
-                            return $.guards.isValidString(value, options);
-                        });
-                    };
-                }
+                email: emptyArgGuard("isAllValid", "isValidEmail"),
+                "int": optionGuard("isAllValid", "isValidInt"),
+                oneRequired: emptyArgGuard("isAnyValid", "isPresent"),
+                phoneUS: emptyArgGuard("isAllValid", "isValidPhoneUS"),
+                required: emptyArgGuard("isAllValid", "isPresent"),
+                string: optionGuard("isAllValid", "isValidString")
             },
 
             invalidClass: "invalid-field",
@@ -102,50 +110,64 @@
 
             messages: {
                 email: "Please enter a valid E-mail address.",
-                "int": function(options) {
-                    var minDefined = !$.guards.isNullOrUndefined(options.min);
-                    var maxDefined = !$.guards.isNullOrUndefined(options.max);
-
-                    if (minDefined && maxDefined) {
-                        return "Please enter a number from " + options.min + " to " + options.max + ".";
-                    }
-
-                    if (minDefined) {
-                        return "Please enter a number no less than " + options.min + ".";
-                    }
-
-                    if (maxDefined) {
-                        return "Please enter a number no greater than " + options.max + ".";
-                    }
-
-                    return $.guards.defaults.messages.undefined;
-                },
+                "int": minMaxMessage({
+                    minAndMax: "Please enter a number from #{0} to #{1}.",
+                    min: "Please enter a number no less than #{0}.",
+                    max: "Please enter a number no greater than #{0}."
+                }),
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
-                string: function(options) {
-                    var minDefined = !$.guards.isNullOrUndefined(options.min);
-                    var maxDefined = !$.guards.isNullOrUndefined(options.max);
-
-                    if (minDefined && maxDefined) {
-                        return "Please enter a string with length " + options.min + " to " + options.max + ".";
-                    }
-
-                    if (minDefined) {
-                        return "Please enter a string with length at least " + options.min + ".";
-                    }
-
-                    if (maxDefined) {
-                        return "Please enter a string with length no greater than " + options.max + ".";
-                    }
-
-                    return $.guards.defaults.messages.undefined;
-                },
+                string: minMaxMessage({
+                    minAndMax: "Please enter a string with length #{0} to #{1}.",
+                    min: "Please enter a string with length at least #{0}.",
+                    max: "Please enter a string with length no greater than #{0}."
+                }),
                 undefined: "Please fix this field."
             },
 
             tag: "span"
         };
+    };
+
+    /**
+     * Format all arguments into the first argument.  This is a
+     * convenience function similar to the C sprintf function, though
+     * only with simple replacements.  Replacements are formatted like
+     * #{i} where i is a zero based index into the additional
+     * arguments passed in to format beyond the first.
+     *
+     * Additional parameters not used will be ignored.
+     *
+     * Including formatting requests for parameters that don't exist
+     * will throw an exception.
+     *
+     * The first argument must be the string that needs to be
+     * formatted.  Additional arguments are formatted into that
+     * string.
+     *
+     * If any of the arguments to the format string include a string
+     * that matches the #{i} format, the result could be erroneous.
+     *
+     * Example: $.guards.format("#{2} #{0} #{1}", "hello", "world", 3); // "3 hello world"
+     * Example: $.guards.format("#{0} #{1}", "hello", "world", 3);      // "hello world".
+     * Example: $.guards.format("#{2} #{0} #{1}", "hello", "world");    // throws exception
+     */
+    $.Guards.prototype.format = function() {
+        var str = arguments[0];
+
+        if (arguments.length > 1) {
+            for (var i = 1; i < arguments.length; i++) {
+                var regex = "\\#\\{" + (i - 1) + "\\}";
+                str = str.replace(new RegExp(regex, "g"), arguments[i]);
+            }
+        }
+
+        if (/\#\{\d+\}/.test(str)) {
+            throw new Error("Unmatched formatting found!");
+        }
+
+        return str;
     };
 
     /**
