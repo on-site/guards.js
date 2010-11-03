@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Mon Oct 18 12:15:53 2010 -0700
+ * Date: Wed Nov  3 10:49:34 2010 -0700
  */
 
 /**
@@ -86,11 +86,18 @@
                 return $.guards.defaults.messages.undefined;
             };
         };
+        var arrayMessage = function(formatting) {
+            return function(array) {
+                return $.guards.format(formatting, $.map(array, function(x, i) { return $.trim("" + x); }).join(", "));
+            };
+        };
         this.defaults = {
             grouped: false,
             guard: "required",
 
             guards: {
+                allow: defineGuard("isAllValid", "isAllowed"),
+                disallow: defineGuard("isAllValid", "isDisallowed"),
                 email: defineGuard("isAllValid", "isValidEmail"),
                 "int": defineGuard("isAllValid", "isValidInt"),
                 oneRequired: defineGuard("isAnyValid", "isPresent"),
@@ -103,6 +110,8 @@
             messageClass: "error-message",
 
             messages: {
+                allow: arrayMessage("Please enter one of: #{0}."),
+                disallow: arrayMessage("Please don't enter: #{0}."),
                 email: "Please enter a valid E-mail address.",
                 "int": minMaxMessage({
                     minAndMax: "Please enter a number from #{0} to #{1}.",
@@ -165,6 +174,17 @@
     };
 
     /**
+     * Return whether or not the value exists in the given allowed
+     * list.  The allowed parameter must be an array of valid values.
+     * Blank is considered invalid unless it exists in the list.
+     * Whitespace is ignored.
+     */
+    $.Guards.prototype.isAllowed = function(value, allowed) {
+        value = $.trim(value);
+        return $.inArray(value, $.map(allowed, function(x, i) { return $.trim("" + x); })) != -1;
+    };
+
+    /**
      * If the given values is an array, this will return false if the
      * given fn returns false for any value in the array.  If the
      * given values is not an array, the result of calling the given
@@ -222,6 +242,16 @@
      */
     $.Guards.prototype.isBlank = function(value) {
         return $.guards.isNullOrUndefined(value) || $.trim(value) == "";
+    };
+
+    /**
+     * Return whether or not the value doesn't exist in the given
+     * disallowed list.  The disallowed parameter must be an array of
+     * invalid values.  Blank is considered valid unless it exists in
+     * the list.  Whitespace is ignored.
+     */
+    $.Guards.prototype.isDisallowed = function(value, disallowed) {
+        return !$.guards.isAllowed(value, disallowed);
     };
 
     /**

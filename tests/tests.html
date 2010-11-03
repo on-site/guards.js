@@ -985,6 +985,260 @@
             expectedToPass: true
           });
         });
+
+        module("allow with ['good', ' better', ' best ', 1, '2', '03']", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("allow", ["good", " better", " best ", 1, "2", "03"]);
+        } });
+
+        test("with 'bad' entered", function() {
+          $("#form1-1").val("bad");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+        });
+
+        test("with 'Good' entered", function() {
+          $("#form1-1").val("Good");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+        });
+
+        test("with '01' entered", function() {
+          $("#form1-1").val("01");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+        });
+
+        test("with '02' entered", function() {
+          $("#form1-1").val("02");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+        });
+
+        test("with '3' entered", function() {
+          $("#form1-1").val("3");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+        });
+
+        test("with 'good' entered", function() {
+          $("#form1-1").val("good");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'best' entered", function() {
+          $("#form1-1").val("best");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '  best  ' entered", function() {
+          $("#form1-1").val("  best  ");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '1' entered", function() {
+          $("#form1-1").val("1");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '2' entered", function() {
+          $("#form1-1").val("2");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '03' entered", function() {
+          $("#form1-1").val("03");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        module("disallow with ['bad', ' worse', ' worst ', 1, '2', '03']", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("disallow", ["bad", " worse", " worst ", 1, "2", "03"]);
+        } });
+
+        test("with 'bad' entered", function() {
+          $("#form1-1").val("bad");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+        });
+
+        test("with ' bad' entered", function() {
+          $("#form1-1").val(" bad");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+        });
+
+        test("with 'worse' entered", function() {
+          $("#form1-1").val("worse");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+        });
+
+        test("with 'worst' entered", function() {
+          $("#form1-1").val("worst");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+        });
+
+        test("with '  worst  ' entered", function() {
+          $("#form1-1").val("  worst  ");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+        });
+
+        test("with '1' entered", function() {
+          $("#form1-1").val("1");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+        });
+
+        test("with '2' entered", function() {
+          $("#form1-1").val("2");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+        });
+
+        test("with '03' entered", function() {
+          $("#form1-1").val("03");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+        });
+
+        test("with 'good' entered", function() {
+          $("#form1-1").val("good");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'Bad' entered", function() {
+          $("#form1-1").val("Bad");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '01' entered", function() {
+          $("#form1-1").val("01");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '02' entered", function() {
+          $("#form1-1").val("02");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with '3' entered", function() {
+          $("#form1-1").val("3");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
       });
     </script>
   </head>

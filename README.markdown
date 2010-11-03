@@ -24,6 +24,12 @@ string name.  They are located at $.guards.defaults.guards, with an
 associated message at $.guards.defaults.messages.  Below is a list of
 all the existing guards with a short description.
 
+* **allow**: Only values found in the given list are considered valid.
+  Anything else triggers a failure.
+
+* **disallow**: If the value matches one of the given list, the value
+  is considered invalid.
+
 * **email**: Empty fields are valid, otherwise it must match a regex
   to ensure it looks like a valid email address.
 
@@ -49,6 +55,8 @@ all the existing guards with a short description.
 
 Examples:
 
+    $.guard(".scheme").using("allow", ["http", "https", "ftp", "ftps"]);
+    $.guard(".avoid-keywords").using("disallow", ["class", "def", "module"]);
     $.guard(".email").using("email");
     $.guard(".5plus").using("int", { min: 5 });
     $.guard(".noMoreThan10").using("int", { max: 10 });
