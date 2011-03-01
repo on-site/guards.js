@@ -109,6 +109,7 @@
                 email: defineGuard("isAllValid", "isValidEmail"),
                 "float": defineGuard("isAllValid", "isValidFloat"),
                 "int": defineGuard("isAllValid", "isValidInt"),
+                moneyUS: defineGuard("isAllValid", "isValidMoneyUS"),
                 oneRequired: defineGuard("isAnyValid", "isPresent"),
                 phoneUS: defineGuard("isAllValid", "isValidPhoneUS"),
                 required: defineGuard("isAllValid", "isPresent"),
@@ -133,6 +134,12 @@
                     min: "Please enter a number no less than #{0}.",
                     max: "Please enter a number no greater than #{0}.",
                     invalid: "Please enter a number."
+                }),
+                moneyUS: minMaxMessage({
+                    minAndMax: "Please enter a dollar amount from #{0} to #{1}.",
+                    min: "Please enter a dollar amount no less than #{0}.",
+                    max: "Please enter a dollar amount no greater than #{0}.",
+                    invalid: "Please enter a dollar amount."
                 }),
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
@@ -332,6 +339,26 @@
         }
 
         if (!/^(-|\+)?(\d+)?\.?\d+$/.test(value)) {
+            return false;
+        }
+
+        value = parseFloat(value);
+        return $.guards.isInRange(value, options);
+    };
+
+    /**
+     * Validates the given value is a valid US money value.  It
+     * optionally accepts min and max to specify the minimum or
+     * maximum values.  Blank is a valid money.
+     */
+    $.Guards.prototype.isValidMoneyUS = function(value, options) {
+        value = $.trim(value);
+
+        if (value == "") {
+            return true;
+        }
+
+        if (!/^\$?(-|\+)?\$?(\d+)?\.?\d+$/.test(value)) {
             return false;
         }
 

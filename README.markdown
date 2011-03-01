@@ -43,6 +43,12 @@ all the existing guards with a short description.
   must be specified that is in range of the min and/or max if they are
   specified.
 
+* **moneyUS**: Empty fields are valid, otherwise it must match a regex
+    to ensure it looks like a valid US currency value (such as 15.22,
+    $1,233, $.22, -$23, etc).  This accepts an option argument that
+    could specify a min or max value, of which the dollar amount is
+    compared against.
+
 * **oneRequired**: This should be used with grouped = true.  This
   specifies that at least 1 value exists (ie, is not null, undefined,
   or just whitespace).
