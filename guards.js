@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v0.2
+ * Guards JavaScript jQuery Plugin v0.3
  * http://github.com/on-site/Guards-Javascript-Validation
  *
  * Copyright 2010, On-Site.com, http://www.on-site.com/
@@ -68,6 +68,10 @@
         };
         var minMaxMessage = function(formatting) {
             return function(options) {
+                if ($.guards.isNullOrUndefined(options)) {
+                    options = {};
+                }
+
                 var minDefined = !$.guards.isNullOrUndefined(options.min);
                 var maxDefined = !$.guards.isNullOrUndefined(options.max);
 
@@ -81,6 +85,10 @@
 
                 if (maxDefined) {
                     return $.guards.format(formatting.max, options.max);
+                }
+
+                if (formatting.invalid) {
+                    return formatting.invalid;
                 }
 
                 return $.guards.defaults.messages.undefined;
@@ -99,6 +107,7 @@
                 allow: defineGuard("isAllValid", "isAllowed"),
                 disallow: defineGuard("isAllValid", "isDisallowed"),
                 email: defineGuard("isAllValid", "isValidEmail"),
+                "float": defineGuard("isAllValid", "isValidFloat"),
                 "int": defineGuard("isAllValid", "isValidInt"),
                 oneRequired: defineGuard("isAnyValid", "isPresent"),
                 phoneUS: defineGuard("isAllValid", "isValidPhoneUS"),
@@ -113,10 +122,17 @@
                 allow: arrayMessage("Please enter one of: #{0}."),
                 disallow: arrayMessage("Please don't enter: #{0}."),
                 email: "Please enter a valid E-mail address.",
+                "float": minMaxMessage({
+                    minAndMax: "Please enter a number from #{0} to #{1}.",
+                    min: "Please enter a number no less than #{0}.",
+                    max: "Please enter a number no greater than #{0}.",
+                    invalid: "Please enter a number."
+                }),
                 "int": minMaxMessage({
                     minAndMax: "Please enter a number from #{0} to #{1}.",
                     min: "Please enter a number no less than #{0}.",
-                    max: "Please enter a number no greater than #{0}."
+                    max: "Please enter a number no greater than #{0}.",
+                    invalid: "Please enter a number."
                 }),
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
@@ -269,9 +285,24 @@
     };
 
     /**
+     * Return true if the given value is greater than or equal to
+     * options.min (if options.min is defined) and less than or equal
+     * to options.max (if options.max is defined).
+     */
+    $.Guards.prototype.isInRange = function(value, options) {
+        if ($.guards.isNullOrUndefined(options)) {
+            options = {};
+        }
+
+        var bigEnough = $.guards.isNullOrUndefined(options.min) || value >= options.min;
+        var smallEnough = $.guards.isNullOrUndefined(options.max) || value <= options.max;
+        return bigEnough && smallEnough;
+    };
+
+    /**
      * Return whether or not the value is a valid integer.
-     * Appropriate options are min or max (or both).  Blank is valid
-     * as a number.
+     * Appropriate options are min, max, both or neither.  Blank is
+     * valid as a number.
      */
     $.Guards.prototype.isValidInt = function(value, options) {
         value = $.trim(value);
@@ -285,9 +316,27 @@
         }
 
         value = parseInt(value, 10);
-        var bigEnough = $.guards.isNullOrUndefined(options.min) || value >= options.min;
-        var smallEnough = $.guards.isNullOrUndefined(options.max) || value <= options.max;
-        return bigEnough && smallEnough;
+        return $.guards.isInRange(value, options);
+    };
+
+    /**
+     * Return whether or not the value is a valid float.  Appropriate
+     * options are min, max, both or neither.  Blank is valid as a
+     * number.
+     */
+    $.Guards.prototype.isValidFloat = function(value, options) {
+        value = $.trim(value);
+
+        if (value == "") {
+            return true;
+        }
+
+        if (!/^(-|\+)?(\d+)?\.?\d+$/.test(value)) {
+            return false;
+        }
+
+        value = parseFloat(value);
+        return $.guards.isInRange(value, options);
     };
 
     /**
