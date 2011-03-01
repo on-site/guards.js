@@ -66,25 +66,29 @@
                 };
             };
         };
-        var minMaxMessage = function(formatting) {
+        var minMaxMessage = function(formatting, minMaxFormat) {
             return function(options) {
                 if ($.guards.isNullOrUndefined(options)) {
                     options = {};
+                }
+
+                if (!$.isFunction(minMaxFormat)) {
+                    minMaxFormat = function(x) { return x; };
                 }
 
                 var minDefined = !$.guards.isNullOrUndefined(options.min);
                 var maxDefined = !$.guards.isNullOrUndefined(options.max);
 
                 if (minDefined && maxDefined) {
-                    return $.guards.format(formatting.minAndMax, options.min, options.max);
+                    return $.guards.format(formatting.minAndMax, minMaxFormat(options.min), minMaxFormat(options.max));
                 }
 
                 if (minDefined) {
-                    return $.guards.format(formatting.min, options.min);
+                    return $.guards.format(formatting.min, minMaxFormat(options.min));
                 }
 
                 if (maxDefined) {
-                    return $.guards.format(formatting.max, options.max);
+                    return $.guards.format(formatting.max, minMaxFormat(options.max));
                 }
 
                 if (formatting.invalid) {
@@ -140,7 +144,7 @@
                     min: "Please enter a dollar amount no less than #{0}.",
                     max: "Please enter a dollar amount no greater than #{0}.",
                     invalid: "Please enter a dollar amount."
-                }),
+                }, function(x) { return x.toFixed(2); }),
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
@@ -358,11 +362,27 @@
             return true;
         }
 
-        if (!/^\$?(-|\+)?\$?(\d+)?\.?\d+$/.test(value)) {
+        if (!/^\$?(-|\+)?\$?([\d,]+)?\.?\d+$/.test(value)) {
             return false;
         }
 
-        value = parseFloat(value);
+        // Only allow 1 $.
+        var $i = value.indexOf("$");
+        if ($i >= 0 && value.indexOf("$", $i + 1) >= 0) {
+            return false;
+        }
+
+        // Ensure if there are commas they are every 3 digits
+        if (value.indexOf(",") >= 0 && !/^\$?(-|\+)?\$?[1-9]\d{0,2}(,\d{3,3})+(\.\d+)?$/.test(value)) {
+            return false;
+        }
+
+        // Ensure no more than 2 digits after decimal
+        if (value.indexOf(".") >= 0 && /\.\d{3,}$/.test(value)) {
+            return false;
+        }
+
+        value = parseFloat(value.replace(/[\$,]/g, ""));
         return $.guards.isInRange(value, options);
     };
 
