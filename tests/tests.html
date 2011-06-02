@@ -1396,6 +1396,51 @@
         successTest("$12.50");
         successTest("$15.00");
         successTest("13");
+
+        module("Using preconditions", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("required").precondition(function() { return $("#form1-2").val() != "abc"; });
+        } });
+
+        test("with precondition unmet and guard unmet", function() {
+          $("#form1-1").val("");
+          $("#form1-2").val("abc");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with precondition unmet and guard met", function() {
+          $("#form1-1").val("123");
+          $("#form1-2").val("abc");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with precondition met and guard unmet", function() {
+          $("#form1-1").val("");
+          $("#form1-2").val("");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: "This field is required."
+          });
+        });
+
+        test("with precondition met and guard met", function() {
+          $("#form1-1").val("123");
+          $("#form1-2").val("");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
       });
     </script>
   </head>

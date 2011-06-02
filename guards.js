@@ -533,6 +533,30 @@
     };
 
     /**
+     * Specify a precondition for this guard.  The precondition should
+     * be a function that accepts the element and element value as the
+     * parameters, like a custom guard function.  The precondition is
+     * executed before the guard when any given input is about to be
+     * guarded.  If the precondition returns false explicitly, the
+     * guard will not be executed and the field will be considered
+     * valid.  Any other return value means the precondition passed
+     * (even no return).  If the guard is grouped, the parameters will
+     * be the array of values and elements (like for a custom guard
+     * function).
+     *
+     * // Only require this if #other_element is checked.
+     * Example: $.guard(".required").using("required").precondition(function(value, element) {
+     *   return $("#other_element").is(":checked");
+     * });
+     *
+     * @since 0.4
+     */
+    $.Guard.prototype.precondition = function(fn) {
+        this._precondition = fn;
+        return this;
+    };
+
+    /**
      * Specify whether to group element guarding by passing all values
      * and elements at once instead of one at a time.  When grouped,
      * only 1 error message is added, and it is added after the last
@@ -665,10 +689,19 @@
                 elements.push(this);
             });
 
-            result = this._guard(values, elements);
+            if (this._precondition && this._precondition(values, elements) === false) {
+                result = true;
+            } else {
+                result = this._guard(values, elements);
+            }
         } else {
             var value = $elements.inputValue(this._guards);
-            result = this._guard(value, element);
+
+            if (this._precondition && this._precondition(value, element) === false) {
+                result = true;
+            } else {
+                result = this._guard(value, element);
+            }
         }
 
         if (!result && this._grouped) {

@@ -108,6 +108,28 @@ Examples:
         return $.inArray("special", values) != -1;
     }).message("Please specify at least one 'special' value.");
 
+## Preconditions for guards
+
+If you have a guard that should only be run under certain conditions,
+then you need to add a precondition.  The precondition is run before
+the guard, and a return value of false will prevent the guard from
+being run.  Any other return value (or no return value) will cause the
+guard to execute normally.
+
+Examples:
+
+    $.guard(".usually-required").using("required").precondition(function(value, element) {
+        if ($("#run-unless-this").is(":checked")) {
+            return false;
+        }
+    }).message("This is required if #run-unless-this isn't checked.");
+
+    $.guard(".usually-required-special").grouped().using("required").precondition(function(values, elements) {
+        if ($("#run-unless-this").is(":checked")) {
+            return false;
+        }
+    }).message("These fields are required if #run-unless-this isn't checked.");
+
 ## Overriding defaults on individual guards
 
 If you want to change how a specific guard works, you can use the
