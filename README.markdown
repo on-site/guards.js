@@ -16,6 +16,8 @@ defaults.
     $.guards.defaults.guard = "oneRequired";    // Defaults to "required"
     $.guards.defaults.invalidClass = "invalid"; // Defaults to "invalid-field"
     $.guards.defaults.tag = "div";              // Defaults to "span"
+    $.guards.defaults.target = "#allErrors";    // Defaults to a function to
+                                                //   add the error after the element.
 
 ## Defining guards using built-in guards
 
@@ -151,6 +153,9 @@ Examples:
 
     // Surround error messages with a div
     $.guard(".required5").using("required").tag("div");
+
+    // Put errors in a specific element after the field
+    $.guard(".required6").using("required").target(function() { return $(this).nextAll(".error:eq(0)") });
 
 ## Guarding the form
 

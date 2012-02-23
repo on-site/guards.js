@@ -156,7 +156,17 @@
                 undefined: "Please fix this field."
             },
 
-            tag: "span"
+            tag: "span",
+            target: function(errorElement) {
+                var last = $(this).filter(":last");
+
+                if (last.is(":radio,:checkbox")) {
+                    last = $(last[0].nextSibling);
+                }
+
+                errorElement.insertAfter(last);
+                return false;
+            }
         };
     };
 
@@ -481,6 +491,7 @@
         this._tag = this._guards.defaults.tag;
         this._messageClass = this._guards.defaults.messageClass;
         this._invalidClass = this._guards.defaults.invalidClass;
+        this._target = this._guards.defaults.target;
         this.using(this._guards.defaults.guard);
     };
 
@@ -628,16 +639,16 @@
     };
 
     $.Guard.prototype.attachError = function(elements, errorElement) {
-        if (this._target) {
+        if (this._target && $.isFunction(this._target)) {
+            var result = this._target.call(elements, errorElement);
+
+            if (result !== false) {
+                errorElement.appendTo($(result).eq(0));
+            }
+        } else if (this._target) {
             errorElement.appendTo($(this._target).eq(0));
         } else {
-            var last = elements.filter(":last");
-
-            if (last.is(":radio,:checkbox")) {
-                last = $(last[0].nextSibling);
-            }
-
-            errorElement.insertAfter(last);
+            throw new Error("The target must be a function or selector!");
         }
     };
 
@@ -645,11 +656,30 @@
      * Set the target for where error messages should be appended to.
      * By default, the error is placed after the error element, but
      * when a target is specified, the error is appended within.  The
-     * target may be either a selector, element or set of elements,
-     * however, only the first element is used as the target location
-     * for errors.
+     * target may be either a selector, function, element or set of
+     * elements, however, only the first element is used as the target
+     * location for errors.  If a function is specified, it will be
+     * called when there is a new error with the invalid element (or
+     * set of elements if it is a grouped guard) as the "this"
+     * reference.  The returned value should be a single element,
+     * though if an array of elements is returned (or a jQuery
+     * selected set of elements), only the first element will be used
+     * as the target.  Alternatively the function can take a single
+     * argument that specifies the error element to add to the DOM,
+     * and the function is expected to add the element and return
+     * false (indicating that it has taken care of adding the error
+     * element).
+     *
+     * The default target is a function that appends the error after
+     * the last element and returns false.  The default can be changed
+     * via $.guards.defaults.target.
      *
      * Example: $.guard(".required").using("required").target("#my-errors");
+     * Example: $.guard(".required").using("required").target(function() { return $(this).nextAll(".error:eq(0)"); });
+     * Example: $.guard(".required").using("required").target(function(errorElement) {
+     *            errorElement.appendTo($("#myErrors"));
+     *            return false;
+     *          });
      */
     $.Guard.prototype.target = function(target) {
         this._target = target;

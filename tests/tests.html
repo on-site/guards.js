@@ -119,6 +119,15 @@
           ok($("#form2-3").next().is("p"), "Error message is a p for custom guards");
         });
 
+        test("overriding default target works", function() {
+          var other = new $.Guards();
+          other.constants.notChecked = "bad";
+          other.defaults.target = "#form1-customTarget-before";
+          other.add("input[name='group1']").using(function(value, element) { return $.inArray(value, ["bad", "invalid"]) == -1; }).message("My error message.");
+          other.guard($("#form2"));
+          equals($("#form1-customTarget-before").text(), "My error message.", "The error message shows up with a custom default target");
+        });
+
         test("separate Guards can have separate defaults", function() {
           $.guards.defaults.guard = "oneRequired";
           var other = new $.Guards();
@@ -321,6 +330,25 @@
           $("#form1-3").val("value");
           $("#form1").guard();
           equals($("#form1-customTarget ." + errorMsgClass()).size(), $("#form1 input").size() - 1, "Custom target error count");
+        });
+
+        test("with an error target defined via a function", function() {
+          resetGuards();
+          $.guard("input").using("required").target(function() { return $(this).nextAll(".custom-target:eq(1)"); });
+          $("#form1-3").val("value");
+          $("#form1").guard();
+          equals($("#form1-customTarget-2 ." + errorMsgClass()).size(), $("#form1 input").size() - 1, "Custom target error count");
+        });
+
+        test("with an error target defined via a function that inserts the error element itself", function() {
+          resetGuards();
+          $.guard("#form1-4").using("required").target(function(errorElement) {
+            errorElement.appendTo($(".custom-target:eq(1)"));
+            return false;
+          }).message("My error message.");
+          $("#form1").guard();
+          equals($("#form1-customTarget-before-2 ." + errorMsgClass()).size(), 1, "Custom target error count");
+          equals($("#form1-customTarget-before-2").text(), "My error message.", "Error message should not be duplicated.");
         });
 
         test("with a selector that doesn't select anything", function() {
@@ -1453,11 +1481,14 @@
 
     <div id="qunit-fixture">
       <form id="form1">
+        <div id="form1-customTarget-before" class="custom-target"></div>
+        <div id="form1-customTarget-before-2" class="custom-target"></div>
         <input id="form1-1" type="text" name="text[]" />
         <input id="form1-2" type="text" name="text[]" />
         <input id="form1-3" type="text" name="other" />
         <input id="form1-4" type="text" name="another" />
-        <div id="form1-customTarget"></div>
+        <div id="form1-customTarget" class="custom-target"></div>
+        <div id="form1-customTarget-2" class="custom-target"></div>
       </form>
 
       <form id="form2">
