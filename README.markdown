@@ -33,7 +33,11 @@ all the existing guards with a short description.
   is considered invalid.
 
 * **email**: Empty fields are valid, otherwise it must match a regex
-  to ensure it looks like a valid email address.
+  to ensure it looks like a valid email address.  There is an optional
+  argument that allows specifying "allowDisplay: true" which will
+  allow display emails.  Display emails differ from regular emails in
+  that something like "John Doe <jdoe@example.com>" is considered
+  valid.
 
 * **float**: This accepts an optional argument specifying a min value,
   max value, or both min and max.  Empty fields are valid.  A number
@@ -72,6 +76,7 @@ Examples:
     $.guard(".scheme").using("allow", ["http", "https", "ftp", "ftps"]);
     $.guard(".avoid-keywords").using("disallow", ["class", "def", "module"]);
     $.guard(".email").using("email");
+    $.guard(".display-email").using("email", { allowDisplay: true });
     $.guard(".5plus").using("int", { min: 5 });
     $.guard(".noMoreThan10").using("int", { max: 10 });
     $.guard(".1to10").using("int", { min: 1, max: 10 });

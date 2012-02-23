@@ -484,6 +484,46 @@
 
         successTest("aaa@bbb.com");
 
+        module("display email guard", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("email", { allowDisplay: true });
+        } });
+
+        test("with nothing entered", function() {
+          assertGuards({
+            form: "#form1",
+            expectedToPass: true
+          });
+        });
+
+        test("with 'aaa' entered", function() {
+          $("#form1-1").val("aaa");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: $.guards.defaults.messages.email
+          });
+        });
+
+        test("with 'aaa@bbb' entered", function() {
+          $("#form1-1").val("aaa@bbb");
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: $.guards.defaults.messages.email
+          });
+        });
+
+        successTest("aaa@bbb.com");
+        successTest("<aaa@bbb.com>");
+        successTest("John Doe <aaa@bbb.com>");
+
         module("phoneUS guard", { setup: function() {
           resetGuards();
           $.guard("#form1-1").using("phoneUS");
