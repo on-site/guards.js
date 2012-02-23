@@ -36,7 +36,7 @@ all the existing guards with a short description.
   to ensure it looks like a valid email address.  There is an optional
   argument that allows specifying "allowDisplay: true" which will
   allow display emails.  Display emails differ from regular emails in
-  that something like "John Doe <jdoe@example.com>" is considered
+  that something like "John Doe &lt;jdoe@example.com&gt;" is considered
   valid.
 
 * **float**: This accepts an optional argument specifying a min value,
