@@ -1,14 +1,14 @@
 /*!
- * Guards JavaScript jQuery Plugin v0.4
+ * Guards JavaScript jQuery Plugin v0.5
  * http://github.com/on-site/Guards-Javascript-Validation
  *
- * Copyright 2010-2011, On-Site.com, http://www.on-site.com/
+ * Copyright 2010-2012, On-Site.com, http://www.on-site.com/
  * Licensed under the MIT license.
  *
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Thu Jun  2 13:30:25 2011 -0700
+ * Date: Thu Feb 23 15:21:53 2012 -0800
  */
 
 /**
