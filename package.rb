@@ -4,10 +4,24 @@ require "bundler/setup"
 Bundler.require :default
 
 ARGS = $*
+TAG = !!ARGS.delete("--tag")
 
-if ARGS.length != 1
-  puts "usage: package.rb <version>"
+def die(msg)
+  STDERR.puts msg
   exit
+end
+
+die "usage: package.rb [--tag] <version>" if ARGS.length != 1
+
+if TAG
+  %x[git diff --exit-code]
+  die "You have local changes, please commit first." unless $?.exitstatus == 0
+
+  %x[git diff --cached --exit-code]
+  die "You have local changes, please commit first." unless $?.exitstatus == 0
+
+  %x[git log --exit-code HEAD ^origin/master]
+  die "You have local commits, please push first." unless $?.exitstatus == 0
 end
 
 version = ARGS[0]
@@ -40,3 +54,5 @@ File.open "guards-#{version}.min.js", "w" do |f|
   f << header
   f << Uglifier.compile(File.read("guards-#{version}.js"), :copyright => false)
 end
+
+system "git tag -a #{version} -m 'Version #{version}' && git push --tags" if TAG
