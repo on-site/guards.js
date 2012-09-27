@@ -1,16 +1,3 @@
-/*!
- * Guards JavaScript jQuery Plugin v0.5
- * http://github.com/on-site/Guards-Javascript-Validation
- *
- * Copyright 2010-2012, On-Site.com, http://www.on-site.com/
- * Licensed under the MIT license.
- *
- * Includes code for email and phone number validation from the jQuery
- * Validation plugin.  http://docs.jquery.com/Plugins/Validation
- *
- * Date: Thu Feb 23 15:21:53 2012 -0800
- */
-
 /**
  * This plugin is initially inspired by the standard Validation jQuery
  * plugin (http://docs.jquery.com/Plugins/Validation).
@@ -47,6 +34,8 @@
     $.guard = function(selector) {
         return $.guards.add(selector);
     };
+
+    $.guard.version = "{{VERSION}}";
 
     $.Guards = function() {
         this._guards = [];
@@ -169,6 +158,8 @@
             }
         };
     };
+
+    $.Guards.prototype.version = "{{VERSION}}";
 
     /**
      * Format all arguments into the first argument.  This is a
@@ -960,8 +951,18 @@
         // Clear errors when the user expresses intent to fix the
         // errors.
         var clearFn = function() { $(this).clearErrors(); };
-        $(":has-error").live("keyup", clearFn);
         $(":has-error:radio,:has-error:checkbox").live("mouseup", clearFn);
         $("select:has-error").live("mousedown", clearFn);
+
+        // Make sure we don't clear it if there was no error when the
+        // keydown happened, otherwise a submit on enter will have the
+        // error flash and then go away on the keyup.
+        $(":has-error").live("keydown", function() { this.clearable = true });
+        $(":has-error").live("keyup", function() {
+            if (this.clearable) {
+                this.clearable = false;
+                $(this).clearErrors();
+            }
+        });
     });
 })(jQuery);

@@ -64,6 +64,12 @@
           $.guard("input").using("required");
         } });
 
+        test("", function() {
+          ok($.guard.version, "There is a version specified using $.guard.version");
+          ok($.guards.version, "There is a version specified using $.guards.version");
+          equals($.guards.version, $.guard.version, "$.guard.version is the same as $.guards.version");
+        });
+
         test("errors don't stack", function() {
           $.guard("input").using("required");
           $("#form1").guard();
@@ -155,9 +161,32 @@
           $("#form1-2").val("A value");
           $("#form1").guard();
           equals($("#form1 input:has-error").size(), $("#form1 input").size() - 1, "Error count before keyup");
+          $("#form1-1").keydown();
           $("#form1-1").keyup();
           equals($("#form1-1").errors().length, 0, "Keyuped input's error count");
           equals($("#form1 input:has-error").size(), $("#form1 input").size() - 2, "Error count after keyup");
+        });
+
+        test("keyup doesn't remove the field's error when a keydown triggered the guard", function() {
+          $("#form1-2").val("A value");
+          equals($("#form1-1").errors().length, 0, "Keyuped input's error count");
+          $("#form1-1").keydown();
+          $("#form1").guard();
+          equals($("#form1-1").errors().length, 1, "Before keyup input error count");
+          $("#form1-1").keyup();
+          equals($("#form1-1").errors().length, 1, "After keyup input error count");
+          $("#form1-1").keydown();
+          $("#form1-1").keyup();
+          equals($("#form1-1").errors().length, 0, "After second keyup input error count");
+
+          $("#form1-1").keydown();
+          $("#form1").guard();
+          equals($("#form1-1").errors().length, 1, "Before keyup input error count");
+          $("#form1-1").keyup();
+          equals($("#form1-1").errors().length, 1, "After keyup input error count");
+          $("#form1-1").keydown();
+          $("#form1-1").keyup();
+          equals($("#form1-1").errors().length, 0, "After second keyup input error count");
         });
 
         module("radio buttons", { setup: function() {

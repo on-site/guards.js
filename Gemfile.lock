@@ -1,0 +1,22 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    execjs (1.4.0)
+      multi_json (~> 1.0)
+    json (1.7.5)
+    libv8 (3.3.10.4)
+    multi_json (1.3.6)
+    therubyracer (0.10.2)
+      libv8 (~> 3.3.10)
+    uglifier (1.3.0)
+      execjs (>= 0.3.0)
+      multi_json (~> 1.0, >= 1.0.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler
+  json
+  therubyracer
+  uglifier

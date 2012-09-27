@@ -1,4 +1,7 @@
 #!/usr/bin/ruby
+require "rubygems"
+require "bundler/setup"
+Bundler.require :default
 
 ARGS = $*
 
@@ -22,14 +25,18 @@ header = "/*!
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
  * Date: #{date}
- */"
+ */
+"
 
-contents = File.read "guards.js"
-contents[/^\/\*\!.*?\*\//m] = header
+contents = File.read "src/guards.js"
+contents.gsub! "{{VERSION}}", version
 
 File.open "guards.js", "w" do |f|
-  f << contents
+  f << header << "\n" << contents
 end
 
 system "cp guards.js guards-#{version}.js"
-system "java -jar yuicompressor-2.4.2.jar -o guards-#{version}.min.js guards-#{version}.js"
+File.open "guards-#{version}.min.js", "w" do |f|
+  f << header
+  f << Uglifier.compile(File.read("guards-#{version}.js"), :copyright => false)
+end
