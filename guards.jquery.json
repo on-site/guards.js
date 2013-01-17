@@ -1,6 +1,6 @@
 {
   "name": "guards",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "title": "guards.js",
   "author": {
     "name": "Mike Virata-Stone",
@@ -20,5 +20,6 @@
   "keywords": ["validation"],
   "homepage": "https://github.com/on-site/guards.js",
   "docs": "https://github.com/on-site/guards.js",
-  "download": "https://github.com/on-site/guards.js/downloads"
+  "download": "https://github.com/on-site/guards.js#downloads",
+  "bugs": "https://github.com/on-site/guards.js/issues"
 }

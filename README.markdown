@@ -180,6 +180,13 @@ guard() on the form directly and use the boolean result:
     var result = $("#myForm").guard();
     // Use result, which is true if the form is valid, and false otherwise.
 
+# Downloads
+
+* 0.6.3: [production minified](https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.min.js), [development](https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.js)
+
+If you wish to download anything older than 0.6.3, visit the old GitHub
+[downloads page](https://github.com/on-site/guards.js/downloads).
+
 # License
 
 Guards is licensed under the [MIT license](http://github.com/on-site/Guards-Javascript-Validation/blob/master/MIT-LICENSE.txt)
