@@ -1,0 +1,23 @@
+{
+  "name": "guards",
+  "version": "0.6.0",
+  "title": "guards.js",
+  "author": {
+    "name": "Mike Virata-Stone",
+    "email": "mjstone+jqueryplugins@gmail.com",
+    "url": "http://reasonnumber.com/"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/on-site/guards.js/master/MIT-LICENSE.txt"
+    }
+  ],
+  "dependencies": {
+    "jquery": "~1.4"
+  },
+  "keywords": ["validation"],
+  "homepage": "https://github.com/on-site/guards.js",
+  "docs": "https://github.com/on-site/guards.js",
+  "download": "https://github.com/on-site/guards.js/downloads"
+}
