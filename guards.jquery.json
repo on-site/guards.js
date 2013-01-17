@@ -4,7 +4,7 @@
   "title": "guards.js",
   "author": {
     "name": "Mike Virata-Stone",
-    "email": "mjstone+jqueryplugins@gmail.com",
+    "email": "stonemj+jqueryplugins@gmail.com",
     "url": "http://reasonnumber.com/"
   },
   "licenses": [
@@ -16,6 +16,7 @@
   "dependencies": {
     "jquery": "~1.4"
   },
+  "description": "The guards.js jQuery plugin is a simple validation plugin that makes declaratively guarding your forms easy.",
   "keywords": ["validation"],
   "homepage": "https://github.com/on-site/guards.js",
   "docs": "https://github.com/on-site/guards.js",
