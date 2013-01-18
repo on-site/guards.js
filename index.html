@@ -11,6 +11,19 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
+
+    <script>
+      $(function() {
+        $(".example .display").each(function() {
+          var $this = $(this);
+          var $content = $("<code />").text($this.html());
+          $this.parent().prepend($content);
+          $content.wrap("<pre />").wrap('<div class="source" />');
+        });
+      });
+    </script>
   </head>
   <body>
     <div class="wrapper">
@@ -19,35 +32,50 @@
         <p>A jQuery plugin for form validation.</p>
 
         <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/on-site/guards.js/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/on-site/guards.js/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/on-site/guards.js">View On <strong>GitHub</strong></a></li>
-        </ul>
       </header>
+
       <section>
         <h1>Summary</h1>
 
-<p>Some important links for guards.js:</p>
+        <p>Some important links for guards.js:</p>
 
-<ul>
-<li><a href="https://github.com/on-site/guards.js">repository</a></li>
-<li><a href="https://github.com/on-site/guards.js#summary">documentation</a></li>
-<li><a href="https://github.com/on-site/guards.js#downloads">downloads</a></li>
-<li><a href="https://github.com/on-site/guards.js/issues">report bugs</a></li>
-<li><a href="http://plugins.jquery.com/guards/">jQuery plugin</a></li>
-</ul><h1>Demo guards.js</h1>
+        <ul>
+          <li><a href="https://github.com/on-site/guards.js">repository</a></li>
+          <li><a href="https://github.com/on-site/guards.js#summary">documentation</a></li>
+          <li><a href="https://github.com/on-site/guards.js#downloads">downloads</a></li>
+          <li><a href="https://github.com/on-site/guards.js/issues">report bugs</a></li>
+          <li><a href="http://plugins.jquery.com/guards/">jQuery plugin</a></li>
+        </ul><h1>Demo guards.js</h1>
 
-<p>Below is some inline demos of how guards works, along with the snippets that generated them.</p>
+        <p>Below is some inline demos of how guards works, along with the snippets that generated them.</p>
+
+        <div class="example">
+          <div class="display">
+            <script>
+              $(function() {
+                $.guard("form#simple-usage input[name='required']").using("required");
+                $("form#simple-usage").enableGuards();
+              });
+            </script>
+
+            <form id="simple-usage">
+              <p>
+                <input type="text" name="required" />
+              </p>
+
+              <p>
+                <input type="submit" />
+              </p>
+            </form>
+          </div>
+        </div>
       </section>
+
       <footer>
         <p>This project is maintained by <a href="https://github.com/on-site">on-site</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-    
   </body>
 </html>
