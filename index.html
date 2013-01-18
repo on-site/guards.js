@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Guards.js by on-site</title>
-
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -15,22 +14,39 @@
     <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
 
     <script>
+      function stripWhitespaceColumn(text) {
+        var column = "";
+
+        for (var i = 0; i < text.length; i++) {
+          if (text.charAt(i) == "\n") {
+            column = "";
+          } else if (text.charAt(i) == " ") {
+            column += " ";
+          } else {
+            break;
+          }
+        }
+
+        return $.trim(text.replace(new RegExp("^" + column, "gm"), ""));
+      }
+
       $(function() {
         $(".example .display").each(function() {
           var $this = $(this);
-          var $content = $("<code />").text($this.html());
+          var text = stripWhitespaceColumn($this.html());
+          var $content = $("<code />").text(text);
           $this.parent().prepend($content);
           $content.wrap("<pre />").wrap('<div class="source" />');
         });
       });
     </script>
   </head>
+
   <body>
     <div class="wrapper">
       <header>
         <h1>Guards.js</h1>
         <p>A jQuery plugin for form validation.</p>
-
         <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
       </header>
 
@@ -49,23 +65,48 @@
 
         <p>Below is some inline demos of how guards works, along with the snippets that generated them.</p>
 
+        <h2>Example styling</h2>
+
+        <div class="example">
+          <div class="display">
+            <style>
+              .invalid-field { background-color: #ffff66; }
+              .error-message { color: #ff0000; margin-left: 10px; }
+            </style>
+
+            <script>
+              $(function() {
+                $.guard(".required-field").using("required");
+                $("form#example-styling").guard();
+              });
+            </script>
+
+            <form id="example-styling">
+              <p><input type="text" name="example_field_1" class="required-field" /></p>
+              <p><input type="text" name="example_field_2" class="required-field" /></p>
+              <p><input type="submit" /></p>
+            </form>
+          </div>
+        </div>
+
+        <h2>Simple guards</h2>
+
         <div class="example">
           <div class="display">
             <script>
               $(function() {
-                $.guard("form#simple-usage input[name='required']").using("required");
-                $("form#simple-usage").enableGuards();
+                $.guard("input[name='required'], input[name='required_int']").using("required");
+                $.guard("input[name='required_int']").using("int");
+                $.guard("input[name='phone_us']").using("phoneUS");
+                $("form#simple-guards").enableGuards();
               });
             </script>
 
-            <form id="simple-usage">
-              <p>
-                <input type="text" name="required" />
-              </p>
-
-              <p>
-                <input type="submit" />
-              </p>
+            <form id="simple-guards">
+              <p><input type="text" name="required" /> required</p>
+              <p><input type="text" name="required_int" /> required and int</p>
+              <p><input type="text" name="phone_us" /> US phone #</p>
+              <p><input type="submit" /></p>
             </form>
           </div>
         </div>
