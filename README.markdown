@@ -1,7 +1,9 @@
 # Summary
 
-Guards is a javascript validation plugin for jQuery.  It features
-simple validation via chained methods, similar to how jQuery works.
+Guard your forms with class (or any other selectors).  guards.js is a
+javascript validation plugin for jQuery.  It features simple
+validation via chained methods, similar to how jQuery works.  It also
+features an extensible and customizable design.
 
 # Example Usage
 
@@ -189,4 +191,4 @@ If you wish to download anything older than 0.6.3, visit the old GitHub
 
 # License
 
-Guards is licensed under the [MIT license](http://github.com/on-site/Guards-Javascript-Validation/blob/master/MIT-LICENSE.txt)
+Guards is licensed under the [MIT license](https://raw.github.com/on-site/guards.js/master/MIT-LICENSE.txt)
