@@ -737,14 +737,30 @@
             }
         }
 
-        if (!result && this._grouped) {
-            $elements.addSingleError(this);
-        } else if (!result) {
-            $elements.addError(this);
+        if (!result) {
+            this.triggerError($elements);
         }
 
         return result;
     };
+
+    /**
+     * Explicitly trigger the error for this guard on all the elements
+     * provided to this function.  The elements are wrapped with a
+     * jQuery object, so they may be a single element, a list of
+     * elements, a jQuery selected set of elements, or even a valid
+     * jQuery selector.  Note that the elements don't have to be valid
+     * for this guard to be applied.
+     */
+    $.Guard.prototype.triggerError = function(elements) {
+        if (this._grouped) {
+            $(elements).addSingleError(this);
+        } else {
+            $(elements).addError(this);
+        }
+
+        return this;
+    }
 
     $.GuardError = function(guard, element, errorElement, linked) {
         this._guard = guard;
@@ -794,6 +810,16 @@
      */
     $.fn.guard = function() {
         return $.guards.guard(this);
+    };
+
+    /**
+     * Explicitly trigger the given guard's error all the selected
+     * elements.  Note that the selected elements don't have to be
+     * valid for this guard to be applied.  This is equivalent to
+     * calling guard.triggerError($this);
+     */
+    $.fn.triggerError = function(guard) {
+        guard.triggerError(this);
     };
 
     /**
