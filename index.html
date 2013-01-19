@@ -75,8 +75,7 @@
 
             <script>
               $(function() {
-                $.guard(".required-field").using("required");
-                $("form#example-styling").guard();
+                $.guard(".required-field").using("required").triggerError("#example-styling .required-field");
               });
             </script>
 
