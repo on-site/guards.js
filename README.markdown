@@ -31,6 +31,9 @@ all the existing guards with a short description.
 * **allow**: Only values found in the given list are considered valid.
   Anything else triggers a failure.
 
+* **always**: Always fail, no matter what.  This guard must be removed
+  of the elements it guards removed for it to pass.
+
 * **disallow**: If the value matches one of the given list, the value
   is considered invalid.
 
@@ -52,10 +55,14 @@ all the existing guards with a short description.
   specified.
 
 * **moneyUS**: Empty fields are valid, otherwise it must match a regex
-    to ensure it looks like a valid US currency value (such as 15.22,
-    $1,233, $.22, -$23, etc).  This accepts an option argument that
-    could specify a min or max value, of which the dollar amount is
-    compared against.
+  to ensure it looks like a valid US currency value (such as 15.22,
+  $1,233, $.22, -$23, etc).  This accepts an option argument that
+  could specify a min or max value, of which the dollar amount is
+  compared against.
+
+* **never**: This guard never fails.  It is especially useful for
+  errors that are triggered at odd times of the lifecycle (such as
+  only when the page loads).
 
 * **oneRequired**: This should be used with grouped = true.  This
   specifies that at least 1 value exists (ie, is not null, undefined,
@@ -76,6 +83,7 @@ all the existing guards with a short description.
 Examples:
 
     $.guard(".scheme").using("allow", ["http", "https", "ftp", "ftps"]);
+    $.guard(".invalid-element").using("always").message("Please remove the invalid elements!");
     $.guard(".avoid-keywords").using("disallow", ["class", "def", "module"]);
     $.guard(".email").using("email");
     $.guard(".display-email").using("email", { allowDisplay: true });
@@ -85,6 +93,7 @@ Examples:
     $.guard(".number").using("int");
     $.guard(".float").using("float");
     $.guard(".thirdToHalf").using("float", { min: (1.0 / 3.0), max: 0.5 });
+    $.guard(".email").using("never").message("Your current email is invalid!").triggerError(".email:eq(0)");
     $.guard(".at-least-one").grouped().using("oneRequired");
     $.guard(".phone-number").using("phoneUS");
     $.guard(".required").using("required");

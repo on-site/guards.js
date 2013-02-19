@@ -1552,6 +1552,23 @@
             expectedToPass: true
           });
         });
+
+        module("always and never", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1").using("never");
+          $.guard("#form1-2").using("always");
+        } });
+
+        test("errors are as expected", function() {
+          assertGuards({
+            form: "#form1",
+            expectedToPass: false,
+            expectedErrorCount: 1,
+            expectedErrorMessageCount: 1,
+            errorMessageLocations: $("#form1-2"),
+            errorMessages: "There was an error."
+          });
+        });
       });
     </script>
   </head>

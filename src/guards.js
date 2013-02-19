@@ -98,11 +98,13 @@
 
             guards: {
                 allow: defineGuard("isAllValid", "isAllowed"),
+                always: defineGuard("isAllValid", "always"),
                 disallow: defineGuard("isAllValid", "isDisallowed"),
                 email: defineGuard("isAllValid", "isValidEmail"),
                 "float": defineGuard("isAllValid", "isValidFloat"),
                 "int": defineGuard("isAllValid", "isValidInt"),
                 moneyUS: defineGuard("isAllValid", "isValidMoneyUS"),
+                never: defineGuard("isAllValid", "never"),
                 oneRequired: defineGuard("isAnyValid", "isPresent"),
                 phoneUS: defineGuard("isAllValid", "isValidPhoneUS"),
                 required: defineGuard("isAllValid", "isPresent"),
@@ -114,6 +116,7 @@
 
             messages: {
                 allow: arrayMessage("Please enter one of: #{0}."),
+                always: "There was an error.",
                 disallow: arrayMessage("Please don't enter: #{0}."),
                 email: "Please enter a valid E-mail address.",
                 "float": minMaxMessage({
@@ -134,6 +137,7 @@
                     max: "Please enter a dollar amount no greater than #{0}.",
                     invalid: "Please enter a dollar amount."
                 }, function(x) { return x.toFixed(2); }),
+                never: "There was an error.",
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
@@ -199,6 +203,14 @@
         }
 
         return str;
+    };
+
+    /**
+     * This guard test method is intended to always fail, thus it
+     * returns false no matter what.
+     */
+    $.Guards.prototype.always = function(value) {
+        return false;
     };
 
     /**
@@ -423,6 +435,15 @@
     $.Guards.prototype.isValidString = function(value, options) {
         value = $.trim(value);
         return $.guards.isValidInt("" + value.length, options);
+    };
+
+    /**
+     * This guard test method is intended to never fail, thus it
+     * returns true no matter what.  It is intended to be used to set
+     * up a guard that is triggered manually via triggerError().
+     */
+    $.Guards.prototype.never = function(value) {
+        return true;
     };
 
     /**
