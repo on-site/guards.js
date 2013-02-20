@@ -1553,10 +1553,9 @@
           });
         });
 
-        module("always and never", { setup: function() {
+        module("always", { setup: function() {
           resetGuards();
-          $.guard("#form1-1").using("never");
-          $.guard("#form1-2").using("always");
+          $.guard("#form1-1").using("always");
         } });
 
         test("errors are as expected", function() {
@@ -1565,9 +1564,29 @@
             expectedToPass: false,
             expectedErrorCount: 1,
             expectedErrorMessageCount: 1,
-            errorMessageLocations: $("#form1-2"),
-            errorMessages: "There was an error."
+            errorMessageLocations: $("#form1-1"),
+            errorMessages: $.guards.defaults.messages.always
           });
+        });
+
+        var neverGuard1, neverGuard2;
+
+        module("never", { setup: function() {
+          resetGuards();
+          neverGuard1 = $.guard("#form1-1, #form1-2").using("never");
+          neverGuard2 = $.guard("#form1-3, #form1-4").grouped().using("never").message("Grouped never message.").target("#form1-customTarget");
+        } });
+
+        successTest("");
+
+        test("grouped errors are grouped as appropriate, non-grouped are not grouped", function() {
+          neverGuard1.triggerError("#form1-1, #form1-2");
+          neverGuard2.triggerError("#form1-3, #form1-4");
+          equals($("#form1 input").errors().length, 4, "Error count after triggering the never guards");
+          equals($("#form1 .error-message").size(), 3, "Error message count");
+          equals($("#form1 .error-message:eq(0)").text(), $.guards.defaults.messages.never, "First error message");
+          equals($("#form1 .error-message:eq(1)").text(), $.guards.defaults.messages.never, "Second error message");
+          equals($("#form1 .error-message:eq(2)").text(), "Grouped never message.", "Third error message");
         });
       });
     </script>

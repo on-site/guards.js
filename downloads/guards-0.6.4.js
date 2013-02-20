@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v0.6.3
+ * Guards JavaScript jQuery Plugin v0.6.4
  * http://github.com/on-site/Guards-Javascript-Validation
  *
  * Copyright 2010-2013, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Wed Jan 16 23:05:44 2013 -0800
+ * Date: Tue Feb 19 15:30:38 2013 -0800
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "0.6.3";
+    $.guard.version = "0.6.4";
 
     $.Guards = function() {
         this._guards = [];
@@ -111,11 +111,13 @@
 
             guards: {
                 allow: defineGuard("isAllValid", "isAllowed"),
+                always: defineGuard("isAllValid", "always"),
                 disallow: defineGuard("isAllValid", "isDisallowed"),
                 email: defineGuard("isAllValid", "isValidEmail"),
                 "float": defineGuard("isAllValid", "isValidFloat"),
                 "int": defineGuard("isAllValid", "isValidInt"),
                 moneyUS: defineGuard("isAllValid", "isValidMoneyUS"),
+                never: defineGuard("isAllValid", "never"),
                 oneRequired: defineGuard("isAnyValid", "isPresent"),
                 phoneUS: defineGuard("isAllValid", "isValidPhoneUS"),
                 required: defineGuard("isAllValid", "isPresent"),
@@ -127,6 +129,7 @@
 
             messages: {
                 allow: arrayMessage("Please enter one of: #{0}."),
+                always: "There was an error.",
                 disallow: arrayMessage("Please don't enter: #{0}."),
                 email: "Please enter a valid E-mail address.",
                 "float": minMaxMessage({
@@ -147,6 +150,7 @@
                     max: "Please enter a dollar amount no greater than #{0}.",
                     invalid: "Please enter a dollar amount."
                 }, function(x) { return x.toFixed(2); }),
+                never: "There was an error.",
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
@@ -172,7 +176,7 @@
         };
     };
 
-    $.Guards.prototype.version = "0.6.3";
+    $.Guards.prototype.version = "0.6.4";
 
     /**
      * Format all arguments into the first argument.  This is a
@@ -212,6 +216,14 @@
         }
 
         return str;
+    };
+
+    /**
+     * This guard test method is intended to always fail, thus it
+     * returns false no matter what.
+     */
+    $.Guards.prototype.always = function(value) {
+        return false;
     };
 
     /**
@@ -436,6 +448,15 @@
     $.Guards.prototype.isValidString = function(value, options) {
         value = $.trim(value);
         return $.guards.isValidInt("" + value.length, options);
+    };
+
+    /**
+     * This guard test method is intended to never fail, thus it
+     * returns true no matter what.  It is intended to be used to set
+     * up a guard that is triggered manually via triggerError().
+     */
+    $.Guards.prototype.never = function(value) {
+        return true;
     };
 
     /**
@@ -750,14 +771,30 @@
             }
         }
 
-        if (!result && this._grouped) {
-            $elements.addSingleError(this);
-        } else if (!result) {
-            $elements.addError(this);
+        if (!result) {
+            this.triggerError($elements);
         }
 
         return result;
     };
+
+    /**
+     * Explicitly trigger the error for this guard on all the elements
+     * provided to this function.  The elements are wrapped with a
+     * jQuery object, so they may be a single element, a list of
+     * elements, a jQuery selected set of elements, or even a valid
+     * jQuery selector.  Note that the elements don't have to be valid
+     * for this guard to be applied.
+     */
+    $.Guard.prototype.triggerError = function(elements) {
+        if (this._grouped) {
+            $(elements).addSingleError(this);
+        } else {
+            $(elements).addError(this);
+        }
+
+        return this;
+    }
 
     $.GuardError = function(guard, element, errorElement, linked) {
         this._guard = guard;
@@ -807,6 +844,16 @@
      */
     $.fn.guard = function() {
         return $.guards.guard(this);
+    };
+
+    /**
+     * Explicitly trigger the given guard's error all the selected
+     * elements.  Note that the selected elements don't have to be
+     * valid for this guard to be applied.  This is equivalent to
+     * calling guard.triggerError($this);
+     */
+    $.fn.triggerError = function(guard) {
+        guard.triggerError(this);
     };
 
     /**

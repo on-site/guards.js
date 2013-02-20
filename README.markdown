@@ -193,6 +193,7 @@ guard() on the form directly and use the boolean result:
 
 # Downloads
 
+* 0.6.4: [production minified](https://raw.github.com/on-site/guards.js/0.6.4/downloads/guards-0.6.4.min.js), [development](https://raw.github.com/on-site/guards.js/0.6.4/downloads/guards-0.6.4.js)
 * 0.6.3: [production minified](https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.min.js), [development](https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.js)
 
 If you wish to download anything older than 0.6.3, visit the old GitHub
