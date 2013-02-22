@@ -108,6 +108,7 @@
                 oneRequired: defineGuard("isAnyValid", "isPresent"),
                 phoneUS: defineGuard("isAllValid", "isValidPhoneUS"),
                 required: defineGuard("isAllValid", "isPresent"),
+                same: defineGuard("passThrough", "isSame"),
                 string: defineGuard("isAllValid", "isValidString")
             },
 
@@ -141,6 +142,7 @@
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
+                same: "These values must all match.",
                 string: minMaxMessage({
                     minAndMax: "Please enter a string with length #{0} to #{1}.",
                     min: "Please enter a string with length at least #{0}.",
@@ -309,6 +311,27 @@
     };
 
     /**
+     * Return whether all the values in the given array are the same.
+     */
+    $.Guards.prototype.isSame = function(values) {
+        if (values.length < 2) {
+            return true;
+        }
+
+        var value = values[0];
+        var result = true;
+
+        $.each(values, function(i, x) {
+            if (x != value) {
+                result = false;
+                return false;
+            }
+        });
+
+        return result;
+    };
+
+    /**
      * Return true if the given value is greater than or equal to
      * options.min (if options.min is defined) and less than or equal
      * to options.max (if options.max is defined).
@@ -444,6 +467,23 @@
      */
     $.Guards.prototype.never = function(value) {
         return true;
+    };
+
+    /**
+     * This is a utility function to act like isAnyValid or
+     * isAllValid, except instead of aggregating the function results,
+     * it passes the arguments on to the function and returns the
+     * results.  It makes the argument an array always.
+     *
+     * Example: $.guards.passThrough([true, false, true], function(x) { return x[1]; }); // false
+     * Example: $.guards.passThrough(true, function(x) { return x[0]; });                // true
+     */
+    $.Guards.prototype.passThrough = function(values, fn) {
+        if (!$.isArray(values)) {
+            values = [values];
+        }
+
+        return fn(values);
     };
 
     /**

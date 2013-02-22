@@ -91,6 +91,10 @@
           var generateOptions = { testName: options.testName };
 
           generateTest(generateOptions, args, function() {
+            if (options.errorMessageSelector) {
+              options.errorMessageLocations = $(options.errorMessageSelector);
+            }
+
             return $.extend({
               form: "#form1",
               expectedToPass: false,
@@ -1011,6 +1015,33 @@
           equal($("#form1 .error-message:eq(0)").text(), $.guards.defaults.messages.never, "First error message");
           equal($("#form1 .error-message:eq(1)").text(), $.guards.defaults.messages.never, "Second error message");
           equal($("#form1 .error-message:eq(2)").text(), "Grouped never message.", "Third error message");
+        });
+
+        module("same", { setup: function() {
+          resetGuards();
+          $.guard("#form1-1, #form1-2").grouped().using("same");
+          $.guard("#form1-3").grouped().using("same");
+        } });
+
+        successTest("", "", "");
+        successTest("abc 123", "abc 123", "something");
+
+        failureTest("abc 123", "321 cba", {
+          expectedErrorCount: 2,
+          errorMessageSelector: "#form1-2",
+          errorMessages: $.guards.defaults.messages.same
+        });
+
+        failureTest("abc 123", "", {
+          expectedErrorCount: 2,
+          errorMessageSelector: "#form1-2",
+          errorMessages: $.guards.defaults.messages.same
+        });
+
+        failureTest("", "abc 123", {
+          expectedErrorCount: 2,
+          errorMessageSelector: "#form1-2",
+          errorMessages: $.guards.defaults.messages.same
         });
       });
     </script>
