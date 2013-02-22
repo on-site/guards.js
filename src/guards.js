@@ -851,7 +851,10 @@
      */
     $.fn.addSingleError = function(guard) {
         if (this.size() == 0) {
-            console.log("Attempted to add error to nothing.");
+            if (console && console.log) {
+              console.log("Attempted to add error to nothing.");
+            }
+
             return this;
         }
 
