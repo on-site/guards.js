@@ -107,6 +107,12 @@
           $.guard("input").using("required");
         } });
 
+        test("using standard guard that doesn't exist", function() {
+          throws(function() {
+            $.guard("input").using("foobar");
+          }, /There is no standard guard named 'foobar'/, "Non-existant standard guard throws an error");
+        });
+
         test("version is specified", function() {
           ok($.guard.version, "There is a version specified using $.guard.version");
           ok($.guards.version, "There is a version specified using $.guards.version");

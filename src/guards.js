@@ -553,6 +553,11 @@
             }
 
             var fn = this._guards.defaults.guards[guard];
+
+            if ($.guards.isNullOrUndefined(fn)) {
+                throw new Error("There is no standard guard named '" + guard + "'");
+            }
+
             this._guard = fn.apply(this._guards.defaults.guards, args);
             var message = this._guards.defaults.messages[guard];
 
