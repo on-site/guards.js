@@ -34,6 +34,10 @@ all the existing guards with a short description.
 * **always**: Always fail, no matter what.  This guard must be removed
   of the elements it guards removed for it to pass.
 
+* **different**: Every field must have a different value.  This is
+  meaningless as a non-grouped guard, so it should be grouped among a
+  set of inputs that all need unique values.
+
 * **disallow**: If the value matches one of the given list, the value
   is considered invalid.
 
@@ -76,6 +80,10 @@ all the existing guards with a short description.
   a value when grouped is true, while required will fail (as it
   requires every field to have a value).
 
+* **same**: Every field must have the exact same value.  This is
+  meaningless as a non-grouped guard, so it should be grouped among a
+  set of inputs that all need to match (such as confirm password).
+
 * **string**: This requires an argument specifying a min value, max
   value, or both min and max.  The length of the string is validated
   with respect to the given min and/or max.
@@ -84,6 +92,7 @@ Examples:
 
     $.guard(".scheme").using("allow", ["http", "https", "ftp", "ftps"]);
     $.guard(".invalid-element").using("always").message("Please remove the invalid elements!");
+    $.guard(".unique-values").using("different");
     $.guard(".avoid-keywords").using("disallow", ["class", "def", "module"]);
     $.guard(".email").using("email");
     $.guard(".display-email").using("email", { allowDisplay: true });
@@ -97,6 +106,7 @@ Examples:
     $.guard(".at-least-one").grouped().using("oneRequired");
     $.guard(".phone-number").using("phoneUS");
     $.guard(".required").using("required");
+    $.guard(".password").using("same").message("Your password doesn't match!");
     $.guard(".long-password").using("string", { min: 10 });
     $.guard(".short-title").using("string", { max: 32 });
     $.guard(".title").using("string", { min: 1, max: 32 });
