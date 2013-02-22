@@ -1091,6 +1091,38 @@
             errorMessageSelector: "#form1-2",
             errorMessages: $.guards.defaults.messages.same
           });
+
+          module("different", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1, #form1-2").grouped().using("different");
+            $.guard("#form1-3").grouped().using("different");
+          } });
+
+          successTest("abc 123", "321 cba", "something");
+          successTest("abc 123", "ABC 123", "");
+          successTest("abc 123", " abc 123");
+          successTest("", "abc 123");
+          successTest("abc 123", "");
+          successTest("constructor", "");
+          successTest("toString", "");
+
+          failureTest("", "", {
+            expectedErrorCount: 2,
+            errorMessageSelector: "#form1-2",
+            errorMessages: $.guards.defaults.messages.different
+          });
+
+          failureTest("abc 123", "abc 123", {
+            expectedErrorCount: 2,
+            errorMessageSelector: "#form1-2",
+            errorMessages: $.guards.defaults.messages.different
+          });
+
+          failureTest(" abc 123", " abc 123", {
+            expectedErrorCount: 2,
+            errorMessageSelector: "#form1-2",
+            errorMessages: $.guards.defaults.messages.different
+          });
         });
       }
     </script>

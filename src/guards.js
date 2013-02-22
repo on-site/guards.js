@@ -99,6 +99,7 @@
             guards: {
                 allow: defineGuard("isAllValid", "isAllowed"),
                 always: defineGuard("isAllValid", "always"),
+                different: defineGuard("passThrough", "isDifferent"),
                 disallow: defineGuard("isAllValid", "isDisallowed"),
                 email: defineGuard("isAllValid", "isValidEmail"),
                 "float": defineGuard("isAllValid", "isValidFloat"),
@@ -118,6 +119,7 @@
             messages: {
                 allow: arrayMessage("Please enter one of: #{0}."),
                 always: "There was an error.",
+                different: "These values must all be different.",
                 disallow: arrayMessage("Please don't enter: #{0}."),
                 email: "Please enter a valid E-mail address.",
                 "float": minMaxMessage({
@@ -284,6 +286,29 @@
      */
     $.Guards.prototype.isBlank = function(value) {
         return $.guards.isNullOrUndefined(value) || $.trim(value) == "";
+    };
+
+    /**
+     * Return whether all the values in the given array are different.
+     */
+    $.Guards.prototype.isDifferent = function(values) {
+        if (values.length < 2) {
+            return true;
+        }
+
+        var found = {};
+        var result = true;
+
+        $.each(values, function(i, x) {
+            if (found[x] === true) {
+                result = false;
+                return false;
+            }
+
+            found[x] = true;
+        });
+
+        return result;
     };
 
     /**
