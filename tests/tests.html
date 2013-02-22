@@ -2,1056 +2,1102 @@
 <html>
   <head>
     <title>Tests for guards.js</title>
-    <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="../src/guards.js"></script>
     <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.11.0.css" type="text/css" media="screen" />
     <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.11.0.js"></script>
 
     <script>
-      $(function() {
-        $("#qunit-header").html($("title").html());
+      var JQUERY_VERSIONS = ["1.4.2", "1.4.4", "1.5.2", "1.6.4", "1.7.2", "1.8.3", "1.9.1"];
+      var DEFAULT_JQUERY_VERSION = "1.4.2";
+      QUnit.config.jquery = QUnit.urlParams.jquery || DEFAULT_JQUERY_VERSION;
 
-        function resetGuards() {
-          $.guards = new $.Guards();
+      function loadScript(url, callback) {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = url;
+
+        if (callback) {
+          script.onload = callback;
         }
 
-        function errorMsgClass() {
-          return $.guards.defaults.messageClass;
-        }
+        var before = document.getElementsByTagName("script")[0];
+        before.parentNode.insertBefore(script, before);
+      }
 
-        function invalidClass() {
-          return $.guards.defaults.invalidClass;
-        }
+      loadScript("http://ajax.googleapis.com/ajax/libs/jquery/" + QUnit.config.jquery + "/jquery.min.js", function() {
+        loadScript("../src/guards.js", scriptsReady);
+      });
 
-        function errorTag() {
-          return $.guards.defaults.tag;
-        }
-
-        function assertGuards(options) {
-          options.expectedErrorCount = options.expectedErrorCount || 0;
-          options.expectedErrorMessageCount = options.expectedErrorMessageCount || 0;
-          var form = options.form;
-          equal($(form).guard(), options.expectedToPass, "Form guards should fail");
-          equal($(form + " :has-error").size(), options.expectedErrorCount, "Number of fields with errors");
-          equal($(form + " ." + errorMsgClass()).size(), options.expectedErrorMessageCount, "Error message count");
-          if (options.errorMessageLocations) {
-            $.each(options.errorMessageLocations, function(i, x) {
-              var errorMsg = $(form + " ." + errorMsgClass()).eq(i);
-              var expectedMsg = options.errorMessages;
-
-              if ($.isArray(expectedMsg)) {
-                expectedMsg = expectedMsg[i];
-              }
-
-              equal($(x)[0], errorMsg.prev()[0], "An error message should be located after");
-              equal(errorMsg.html(), expectedMsg, "The correct error message should be used");
-            });
-          }
-        }
-
-        function generateTest(options, args, fn) {
-          var testName = options.testName;
-
-          if (!testName) {
-            var valuesMessage = $.map(args, function(val, i) {
-              return "'" + val + "'";
-            }).join(", ");
-
-            testName = "with " + valuesMessage + " entered";
+      function scriptsReady() {
+        $(document).bind("DOMSubtreeModified", function() {
+          if ($("#qunit #jquery-version").size() > 0) {
+            return;
           }
 
-          test(testName, function() {
-            $.each(args, function(i, value) {
-              $("#form1-" + (i + 1)).val(value);
-            });
+          if ($("#qunit #qunit-testrunner-toolbar").size() == 0) {
+            return;
+          }
 
-            assertGuards(fn());
+          var $jQueryVersion = $('<label for="jquery-version">jQuery Version: </label><select id="jquery-version" name="jquery"></select>');
+
+          $.each(JQUERY_VERSIONS, function(i, version) {
+            $jQueryVersion.append('<option value="' + version + '">' + version + '</option>');
           });
-        }
 
-        function successTest() {
-          var args = $.makeArray(arguments);
-          var generateOptions = {};
+          $jQueryVersion.val(QUnit.config.jquery);
 
-          if (args.length > 0 && typeof(args[args.length - 1]) != "string") {
-            generateOptions = args.pop();
-          }
+          $jQueryVersion.change(function() {
+            var jqueryValue = $(this).val();
 
-          generateTest(generateOptions, args, function() {
-            return {
-              form: "#form1",
-              expectedToPass: true
-            };
-          });
-        }
-
-        function failureTest() {
-          var args = $.makeArray(arguments);
-          var options = args.pop();
-          var generateOptions = { testName: options.testName };
-
-          generateTest(generateOptions, args, function() {
-            if (options.errorMessageSelector) {
-              options.errorMessageLocations = $(options.errorMessageSelector);
+            if (jqueryValue == DEFAULT_JQUERY_VERSION) {
+              jqueryValue = undefined;
             }
 
-            return $.extend({
+            window.location = QUnit.url({ jquery: jqueryValue });
+          });
+
+          $("#qunit-testrunner-toolbar").prepend($jQueryVersion);
+        });
+
+        $(function() {
+          function resetGuards() {
+            $.guards = new $.Guards();
+          }
+
+          function errorMsgClass() {
+            return $.guards.defaults.messageClass;
+          }
+
+          function invalidClass() {
+            return $.guards.defaults.invalidClass;
+          }
+
+          function errorTag() {
+            return $.guards.defaults.tag;
+          }
+
+          function assertGuards(options) {
+            options.expectedErrorCount = options.expectedErrorCount || 0;
+            options.expectedErrorMessageCount = options.expectedErrorMessageCount || 0;
+            var form = options.form;
+            equal($(form).guard(), options.expectedToPass, "Form guards should fail");
+            equal($(form + " :has-error").size(), options.expectedErrorCount, "Number of fields with errors");
+            equal($(form + " ." + errorMsgClass()).size(), options.expectedErrorMessageCount, "Error message count");
+            if (options.errorMessageLocations) {
+              $.each(options.errorMessageLocations, function(i, x) {
+                var errorMsg = $(form + " ." + errorMsgClass()).eq(i);
+                var expectedMsg = options.errorMessages;
+
+                if ($.isArray(expectedMsg)) {
+                  expectedMsg = expectedMsg[i];
+                }
+
+                equal($(x)[0], errorMsg.prev()[0], "An error message should be located after");
+                equal(errorMsg.html(), expectedMsg, "The correct error message should be used");
+              });
+            }
+          }
+
+          function generateTest(options, args, fn) {
+            var testName = options.testName;
+
+            if (!testName) {
+              var valuesMessage = $.map(args, function(val, i) {
+                return "'" + val + "'";
+              }).join(", ");
+
+              testName = "with " + valuesMessage + " entered";
+            }
+
+            test(testName, function() {
+              $.each(args, function(i, value) {
+                $("#form1-" + (i + 1)).val(value);
+              });
+
+              assertGuards(fn());
+            });
+          }
+
+          function successTest() {
+            var args = $.makeArray(arguments);
+            var generateOptions = {};
+
+            if (args.length > 0 && typeof(args[args.length - 1]) != "string") {
+              generateOptions = args.pop();
+            }
+
+            generateTest(generateOptions, args, function() {
+              return {
+                form: "#form1",
+                expectedToPass: true
+              };
+            });
+          }
+
+          function failureTest() {
+            var args = $.makeArray(arguments);
+            var options = args.pop();
+            var generateOptions = { testName: options.testName };
+
+            generateTest(generateOptions, args, function() {
+              if (options.errorMessageSelector) {
+                options.errorMessageLocations = $(options.errorMessageSelector);
+              }
+
+              return $.extend({
+                form: "#form1",
+                expectedToPass: false,
+                expectedErrorCount: 1,
+                expectedErrorMessageCount: 1,
+                errorMessageLocations: $("#form1-1"),
+                errorMessages: "An error has occurred."
+              }, options);
+            });
+          }
+
+          module("general guards", { setup: function() {
+            resetGuards();
+            $.guard("input").using("required");
+          } });
+
+          test("using standard guard that doesn't exist", function() {
+            throws(function() {
+              $.guard("input").using("foobar");
+            }, /There is no standard guard named 'foobar'/, "Non-existant standard guard throws an error");
+          });
+
+          test("version is specified", function() {
+            ok($.guard.version, "There is a version specified using $.guard.version");
+            ok($.guards.version, "There is a version specified using $.guards.version");
+            equal($.guards.version, $.guard.version, "$.guard.version is the same as $.guards.version");
+          });
+
+          test("errors don't stack", function() {
+            $.guard("input").using("required");
+            $("#form1").guard();
+            equal($("#form1 ." + errorMsgClass()).size(), $("#form1 input").size(), "Error msg count");
+          });
+
+          test("errors stack if the option is enabled", function() {
+            $.guard("input").using("required");
+            $.guards.options.stackErrors = true;
+            $("#form1").guard();
+            equal($("#form1 ." + errorMsgClass()).size(), $("#form1 input").size() * 2, "Error msg count");
+            equal($("#form1-1").errors().length, 2, "Error count on a single element");
+          });
+
+          test("clearing a stacked error won't remove the other error", function() {
+            $.guard("input").using("required");
+            $.guards.options.stackErrors = true;
+            $("#form1").guard();
+            $("#form1-1").errors()[0].clear();
+            equal($("#form1 ." + errorMsgClass()).size(), $("#form1 input").size() * 2 - 1, "Error msg count");
+            equal($("#form1 :has-error").size(), $("#form1 input").size(), "Field error count");
+            equal($("#form1-1").errors().length, 1, "Error count on a single element");
+            ok($("#form1-1").hasClass(invalidClass()), "Single element has error class still");
+          });
+
+          test("clearing a stacked error with a different class won't remove the other error", function() {
+            $.guard("input").using("required").invalidClass("my-invalid");
+            $.guards.options.stackErrors = true;
+            $("#form1").guard();
+            $("#form1-1").errors()[0].clear();
+            equal($("#form1 ." + errorMsgClass()).size(), $("#form1 input").size() * 2 - 1, "Error msg count");
+            equal($("#form1 :has-error").size(), $("#form1 input").size(), "Field error count");
+            equal($("#form1-1").errors().length, 1, "Error count on a single element");
+            ok(!$("#form1-1").hasClass(invalidClass()), "Single element doesn't have the default invalid error anymore");
+            ok($("#form1-1").hasClass("my-invalid"), "Single element has the custom invalid error class");
+          });
+
+          test("separate Guards instances with separate defaults both work at the same time", function() {
+            var other = new $.Guards();
+            other.constants.notChecked = "bad";
+            other.defaults.messageClass = "my-message";
+            other.defaults.invalidClass = "my-invalid";
+            other.defaults.tag = "p";
+            other.add("input").using(function(value, element) { return $.inArray(value, ["bad", "invalid"]) == -1; });
+            $("#form2").guard();
+            ok($("#form2-3").hasClass(invalidClass()), "Invalid class exists for $.guards");
+            ok($("#form2-3").next().hasClass(errorMsgClass()), "Error message class exists for $.guards");
+            ok($("#form2-3").next().is("span"), "Error message is a span for $.guards");
+            $("#form2 input").clearErrors();
+            other.guard($("#form2"));
+            ok($("#form2-3").hasClass("my-invalid"), "Invalid class exists for custom guards");
+            ok($("#form2-3").next().hasClass("my-message"), "Error message class exists for custom guards");
+            ok($("#form2-3").next().is("p"), "Error message is a p for custom guards");
+          });
+
+          test("overriding default target works", function() {
+            var other = new $.Guards();
+            other.constants.notChecked = "bad";
+            other.defaults.target = "#form1-customTarget-before";
+            other.add("input[name='group1']").using(function(value, element) { return $.inArray(value, ["bad", "invalid"]) == -1; }).message("My error message.");
+            other.guard($("#form2"));
+            equal($("#form1-customTarget-before").text(), "My error message.", "The error message shows up with a custom default target");
+          });
+
+          test("separate Guards can have separate defaults", function() {
+            $.guards.defaults.guard = "oneRequired";
+            var other = new $.Guards();
+            equal($.guards.defaults.guard, "oneRequired", "Default guard");
+            equal(other.defaults.guard, "required", "Other default guard");
+          });
+
+          test("only affects the form being guarded", function() {
+            $("#form1").guard();
+            equal($("#form1 input:has-error").size(), $("#form1 input").size(), "Form 1 error count");
+            equal($("#form2 input:has-error").size(), 0, "Form 2 error count");
+          });
+
+          test("focuses the first visible errored element", function() {
+            var received = false;
+            $("#form1-1").hide();
+            $("#form1-2").val("A value");
+            $("#form1-3").focus(function() { received = true; });
+            $("#form1").guard();
+            equal(received, true, "The third field is focused");
+            equal($("#form1 input:has-error").size(), $("#form1 input").size() - 1, "Error count");
+          });
+
+          test("removes the field's error when a keyup is detected", function() {
+            $("#form1-2").val("A value");
+            $("#form1").guard();
+            equal($("#form1 input:has-error").size(), $("#form1 input").size() - 1, "Error count before keyup");
+            $("#form1-1").keydown();
+            $("#form1-1").keyup();
+            equal($("#form1-1").errors().length, 0, "Keyuped input's error count");
+            equal($("#form1 input:has-error").size(), $("#form1 input").size() - 2, "Error count after keyup");
+          });
+
+          test("keyup doesn't remove the field's error when a keydown triggered the guard", function() {
+            $("#form1-2").val("A value");
+            equal($("#form1-1").errors().length, 0, "Keyuped input's error count");
+            $("#form1-1").keydown();
+            $("#form1").guard();
+            equal($("#form1-1").errors().length, 1, "Before keyup input error count");
+            $("#form1-1").keyup();
+            equal($("#form1-1").errors().length, 1, "After keyup input error count");
+            $("#form1-1").keydown();
+            $("#form1-1").keyup();
+            equal($("#form1-1").errors().length, 0, "After second keyup input error count");
+
+            $("#form1-1").keydown();
+            $("#form1").guard();
+            equal($("#form1-1").errors().length, 1, "Before keyup input error count");
+            $("#form1-1").keyup();
+            equal($("#form1-1").errors().length, 1, "After keyup input error count");
+            $("#form1-1").keydown();
+            $("#form1-1").keyup();
+            equal($("#form1-1").errors().length, 0, "After second keyup input error count");
+          });
+
+          test("errors can be manually triggered from an element", function() {
+            var guard = $.guard("input").using("required");
+            equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
+            $("#form1-1, #form1-2").triggerError(guard);
+            equal($("#form1 input").errors().length, 2, "There are 2 errors after triggering a manual error");
+          });
+
+          test("errors can be manually triggered from a guard", function() {
+            var guard = $.guard("input").using("required");
+            equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
+            guard.triggerError("#form1-1, #form1-2");
+            equal($("#form1 input").errors().length, 2, "There are 2 errors after triggering a manual error");
+          });
+
+          module("radio buttons", { setup: function() {
+            resetGuards();
+            $.guard("input").using("required");
+          } });
+
+          test("another form's radio state with same name doesn't affect the results", function() {
+            $("#form4-2,#form4-5").attr("checked", "checked");
+            assertGuards({
+              form: "#form2",
+              expectedToPass: false,
+              expectedErrorCount: 5,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("#form2-3,#form2-5"),
+              errorMessages: $.guards.defaults.messages.required
+            });
+          });
+
+          test("with all groups invalid", function() {
+            assertGuards({
+              form: "#form2",
+              expectedToPass: false,
+              expectedErrorCount: 5,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("#form2-3,#form2-5"),
+              errorMessages: $.guards.defaults.messages.required
+            });
+          });
+
+          test("with the first group invalid", function() {
+            $("#form2-4").attr("checked", "checked");
+            assertGuards({
+              form: "#form2",
+              expectedToPass: false,
+              expectedErrorCount: 3,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("#form2-3"),
+              errorMessages: $.guards.defaults.messages.required
+            });
+          });
+
+          test("with none invalid", function() {
+            $("#form2-1,#form2-4").attr("checked", "checked");
+            assertGuards({
+              form: "#form2",
+              expectedToPass: true
+            });
+          });
+
+          test("have the errors placed after the nextSibling (where there is expected to be text)", function() {
+            $("#form2").guard();
+            equal($("#form2-3")[0].nextSibling.nextSibling, $("#form2-3").next("." + errorMsgClass())[0], "Error location");
+          });
+
+          module("chekboxes", { setup: function() {
+            resetGuards();
+            $.guard("input").using("required");
+          } });
+
+          test("with all boxes invalid", function() {
+            assertGuards({
+              form: "#form3",
+              expectedToPass: false,
+              expectedErrorCount: 3,
+              expectedErrorMessageCount: 3,
+              errorMessageLocations: $("#form3 input"),
+              errorMessages: $.guards.defaults.messages.required
+            });
+          });
+
+          test("with the second box invalid", function() {
+            $("#form3-2").attr("checked", "checked");
+            assertGuards({
+              form: "#form3",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("#form3 input[id!='form3-2']"),
+              errorMessages: $.guards.defaults.messages.required
+            });
+          });
+
+          test("with none invalid", function() {
+            $("#form3 input").attr("checked", "checked");
+            assertGuards({
+              form: "#form3",
+              expectedToPass: true
+            });
+          });
+
+          test("have the errors placed after the nextSibling (where there is expected to be text)", function() {
+            $("#form3").guard();
+            equal($("#form3-1")[0].nextSibling.nextSibling, $("#form3-1").next("." + errorMsgClass())[0], "Error location");
+          });
+
+          module("forms with mixed radio buttons/checkboxes and other inputs", { setup: function() {
+            resetGuards();
+            $.guard("input").using("required").grouped();
+          } });
+
+          test("radio buttons have the errors placed after the last element when it isn't a radio button", function() {
+            $("#form4").guard();
+            equal($("#form4-7")[0].nextSibling, $("#form4 ." + errorMsgClass())[0], "Error location");
+          });
+
+          test("radio buttons have the errors placed after the nextSibling when the last element is a radio button", function() {
+            $("#form5").guard();
+            equal($("#form5-6")[0].nextSibling.nextSibling, $("#form5 ." + errorMsgClass())[0], "Error location");
+          });
+
+          test("checkboxes have the errors placed after the last element when it isn't a checkbox", function() {
+            $("#form6").guard();
+            equal($("#form6-5")[0].nextSibling, $("#form6 ." + errorMsgClass())[0], "Error location");
+          });
+
+          test("checkboxes have the errors placed after the nextSibling when the last element is a checkbox", function() {
+            $("#form7").guard();
+            equal($("#form7-4")[0].nextSibling.nextSibling, $("#form7 ." + errorMsgClass())[0], "Error location");
+          });
+
+          module("custom guard");
+
+          function customGuard(value, element) {
+            return $.inArray(value, ["bad", "invalid"]) == -1;
+          }
+
+          test("with custom function and no error message defined", function() {
+            resetGuards();
+            $.guard("input").using(customGuard);
+            $("#form1-3").val("bad");
+            assertGuards({
               form: "#form1",
               expectedToPass: false,
               expectedErrorCount: 1,
               expectedErrorMessageCount: 1,
-              errorMessageLocations: $("#form1-1"),
-              errorMessages: "An error has occurred."
-            }, options);
+              errorMessageLocations: $("#form1-3"),
+              errorMessages: $.guards.defaults.messages.undefined
+            });
           });
-        }
 
-        module("general guards", { setup: function() {
-          resetGuards();
-          $.guard("input").using("required");
-        } });
-
-        test("using standard guard that doesn't exist", function() {
-          throws(function() {
-            $.guard("input").using("foobar");
-          }, /There is no standard guard named 'foobar'/, "Non-existant standard guard throws an error");
-        });
-
-        test("version is specified", function() {
-          ok($.guard.version, "There is a version specified using $.guard.version");
-          ok($.guards.version, "There is a version specified using $.guards.version");
-          equal($.guards.version, $.guard.version, "$.guard.version is the same as $.guards.version");
-        });
-
-        test("errors don't stack", function() {
-          $.guard("input").using("required");
-          $("#form1").guard();
-          equal($("#form1 ." + errorMsgClass()).size(), $("#form1 input").size(), "Error msg count");
-        });
-
-        test("errors stack if the option is enabled", function() {
-          $.guard("input").using("required");
-          $.guards.options.stackErrors = true;
-          $("#form1").guard();
-          equal($("#form1 ." + errorMsgClass()).size(), $("#form1 input").size() * 2, "Error msg count");
-          equal($("#form1-1").errors().length, 2, "Error count on a single element");
-        });
-
-        test("clearing a stacked error won't remove the other error", function() {
-          $.guard("input").using("required");
-          $.guards.options.stackErrors = true;
-          $("#form1").guard();
-          $("#form1-1").errors()[0].clear();
-          equal($("#form1 ." + errorMsgClass()).size(), $("#form1 input").size() * 2 - 1, "Error msg count");
-          equal($("#form1 :has-error").size(), $("#form1 input").size(), "Field error count");
-          equal($("#form1-1").errors().length, 1, "Error count on a single element");
-          ok($("#form1-1").hasClass(invalidClass()), "Single element has error class still");
-        });
-
-        test("clearing a stacked error with a different class won't remove the other error", function() {
-          $.guard("input").using("required").invalidClass("my-invalid");
-          $.guards.options.stackErrors = true;
-          $("#form1").guard();
-          $("#form1-1").errors()[0].clear();
-          equal($("#form1 ." + errorMsgClass()).size(), $("#form1 input").size() * 2 - 1, "Error msg count");
-          equal($("#form1 :has-error").size(), $("#form1 input").size(), "Field error count");
-          equal($("#form1-1").errors().length, 1, "Error count on a single element");
-          ok(!$("#form1-1").hasClass(invalidClass()), "Single element doesn't have the default invalid error anymore");
-          ok($("#form1-1").hasClass("my-invalid"), "Single element has the custom invalid error class");
-        });
-
-        test("separate Guards instances with separate defaults both work at the same time", function() {
-          var other = new $.Guards();
-          other.constants.notChecked = "bad";
-          other.defaults.messageClass = "my-message";
-          other.defaults.invalidClass = "my-invalid";
-          other.defaults.tag = "p";
-          other.add("input").using(function(value, element) { return $.inArray(value, ["bad", "invalid"]) == -1; });
-          $("#form2").guard();
-          ok($("#form2-3").hasClass(invalidClass()), "Invalid class exists for $.guards");
-          ok($("#form2-3").next().hasClass(errorMsgClass()), "Error message class exists for $.guards");
-          ok($("#form2-3").next().is("span"), "Error message is a span for $.guards");
-          $("#form2 input").clearErrors();
-          other.guard($("#form2"));
-          ok($("#form2-3").hasClass("my-invalid"), "Invalid class exists for custom guards");
-          ok($("#form2-3").next().hasClass("my-message"), "Error message class exists for custom guards");
-          ok($("#form2-3").next().is("p"), "Error message is a p for custom guards");
-        });
-
-        test("overriding default target works", function() {
-          var other = new $.Guards();
-          other.constants.notChecked = "bad";
-          other.defaults.target = "#form1-customTarget-before";
-          other.add("input[name='group1']").using(function(value, element) { return $.inArray(value, ["bad", "invalid"]) == -1; }).message("My error message.");
-          other.guard($("#form2"));
-          equal($("#form1-customTarget-before").text(), "My error message.", "The error message shows up with a custom default target");
-        });
-
-        test("separate Guards can have separate defaults", function() {
-          $.guards.defaults.guard = "oneRequired";
-          var other = new $.Guards();
-          equal($.guards.defaults.guard, "oneRequired", "Default guard");
-          equal(other.defaults.guard, "required", "Other default guard");
-        });
-
-        test("only affects the form being guarded", function() {
-          $("#form1").guard();
-          equal($("#form1 input:has-error").size(), $("#form1 input").size(), "Form 1 error count");
-          equal($("#form2 input:has-error").size(), 0, "Form 2 error count");
-        });
-
-        test("focuses the first visible errored element", function() {
-          var received = false;
-          $("#form1-1").hide();
-          $("#form1-2").val("A value");
-          $("#form1-3").focus(function() { received = true; });
-          $("#form1").guard();
-          equal(received, true, "The third field is focused");
-          equal($("#form1 input:has-error").size(), $("#form1 input").size() - 1, "Error count");
-        });
-
-        test("removes the field's error when a keyup is detected", function() {
-          $("#form1-2").val("A value");
-          $("#form1").guard();
-          equal($("#form1 input:has-error").size(), $("#form1 input").size() - 1, "Error count before keyup");
-          $("#form1-1").keydown();
-          $("#form1-1").keyup();
-          equal($("#form1-1").errors().length, 0, "Keyuped input's error count");
-          equal($("#form1 input:has-error").size(), $("#form1 input").size() - 2, "Error count after keyup");
-        });
-
-        test("keyup doesn't remove the field's error when a keydown triggered the guard", function() {
-          $("#form1-2").val("A value");
-          equal($("#form1-1").errors().length, 0, "Keyuped input's error count");
-          $("#form1-1").keydown();
-          $("#form1").guard();
-          equal($("#form1-1").errors().length, 1, "Before keyup input error count");
-          $("#form1-1").keyup();
-          equal($("#form1-1").errors().length, 1, "After keyup input error count");
-          $("#form1-1").keydown();
-          $("#form1-1").keyup();
-          equal($("#form1-1").errors().length, 0, "After second keyup input error count");
-
-          $("#form1-1").keydown();
-          $("#form1").guard();
-          equal($("#form1-1").errors().length, 1, "Before keyup input error count");
-          $("#form1-1").keyup();
-          equal($("#form1-1").errors().length, 1, "After keyup input error count");
-          $("#form1-1").keydown();
-          $("#form1-1").keyup();
-          equal($("#form1-1").errors().length, 0, "After second keyup input error count");
-        });
-
-        test("errors can be manually triggered from an element", function() {
-          var guard = $.guard("input").using("required");
-          equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
-          $("#form1-1, #form1-2").triggerError(guard);
-          equal($("#form1 input").errors().length, 2, "There are 2 errors after triggering a manual error");
-        });
-
-        test("errors can be manually triggered from a guard", function() {
-          var guard = $.guard("input").using("required");
-          equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
-          guard.triggerError("#form1-1, #form1-2");
-          equal($("#form1 input").errors().length, 2, "There are 2 errors after triggering a manual error");
-        });
-
-        module("radio buttons", { setup: function() {
-          resetGuards();
-          $.guard("input").using("required");
-        } });
-
-        test("another form's radio state with same name doesn't affect the results", function() {
-          $("#form4-2,#form4-5").attr("checked", "checked");
-          assertGuards({
-            form: "#form2",
-            expectedToPass: false,
-            expectedErrorCount: 5,
-            expectedErrorMessageCount: 2,
-            errorMessageLocations: $("#form2-3,#form2-5"),
-            errorMessages: $.guards.defaults.messages.required
+          test("with custom function and an error message defined", function() {
+            resetGuards();
+            $.guard("input").using(customGuard).message("Custom error!");
+            $("#form1-3").val("bad");
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: 1,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("#form1-3"),
+              errorMessages: "Custom error!"
+            });
           });
-        });
 
-        test("with all groups invalid", function() {
-          assertGuards({
-            form: "#form2",
-            expectedToPass: false,
-            expectedErrorCount: 5,
-            expectedErrorMessageCount: 2,
-            errorMessageLocations: $("#form2-3,#form2-5"),
-            errorMessages: $.guards.defaults.messages.required
+          test("with custom function and an error tag defined", function() {
+            resetGuards();
+            $.guard("input").using(customGuard).tag("p").message("Custom error!");
+            $.guard("input").using("required");
+            $("#form1-3,#form1-2").val("bad");
+            $("#form1").guard();
+            equal($("." + errorMsgClass()).size(), $("#form1 input").size(), "Total error count");
+            equal($("p." + errorMsgClass()).size(), 2, "Error count with the custom tag");
+            equal($(errorTag() + "." + errorMsgClass()).size(), 2, "Error count with the default tag");
           });
-        });
 
-        test("with the first group invalid", function() {
-          $("#form2-4").attr("checked", "checked");
-          assertGuards({
-            form: "#form2",
-            expectedToPass: false,
-            expectedErrorCount: 3,
-            expectedErrorMessageCount: 1,
-            errorMessageLocations: $("#form2-3"),
-            errorMessages: $.guards.defaults.messages.required
+          test("with an error target defined", function() {
+            resetGuards();
+            $.guard("input").using("required").target("#form1-customTarget");
+            $("#form1-3").val("value");
+            $("#form1").guard();
+            equal($("#form1-customTarget ." + errorMsgClass()).size(), $("#form1 input").size() - 1, "Custom target error count");
           });
-        });
 
-        test("with none invalid", function() {
-          $("#form2-1,#form2-4").attr("checked", "checked");
-          assertGuards({
-            form: "#form2",
-            expectedToPass: true
+          test("with an error target defined via a function", function() {
+            resetGuards();
+            $.guard("input").using("required").target(function() { return $(this).nextAll(".custom-target:eq(1)"); });
+            $("#form1-3").val("value");
+            $("#form1").guard();
+            equal($("#form1-customTarget-2 ." + errorMsgClass()).size(), $("#form1 input").size() - 1, "Custom target error count");
           });
-        });
 
-        test("have the errors placed after the nextSibling (where there is expected to be text)", function() {
-          $("#form2").guard();
-          equal($("#form2-3")[0].nextSibling.nextSibling, $("#form2-3").next("." + errorMsgClass())[0], "Error location");
-        });
-
-        module("chekboxes", { setup: function() {
-          resetGuards();
-          $.guard("input").using("required");
-        } });
-
-        test("with all boxes invalid", function() {
-          assertGuards({
-            form: "#form3",
-            expectedToPass: false,
-            expectedErrorCount: 3,
-            expectedErrorMessageCount: 3,
-            errorMessageLocations: $("#form3 input"),
-            errorMessages: $.guards.defaults.messages.required
+          test("with an error target defined via a function that inserts the error element itself", function() {
+            resetGuards();
+            $.guard("#form1-4").using("required").target(function(errorElement) {
+              errorElement.appendTo($(".custom-target:eq(1)"));
+              return false;
+            }).message("My error message.");
+            $("#form1").guard();
+            equal($("#form1-customTarget-before-2 ." + errorMsgClass()).size(), 1, "Custom target error count");
+            equal($("#form1-customTarget-before-2").text(), "My error message.", "Error message should not be duplicated.");
           });
-        });
 
-        test("with the second box invalid", function() {
-          $("#form3-2").attr("checked", "checked");
-          assertGuards({
-            form: "#form3",
-            expectedToPass: false,
+          test("with a selector that doesn't select anything", function() {
+            resetGuards();
+            $.guard(".nothing").using("required");
+            $("#form1").guard();
+            equal($("input:has-error").size(), 0, "Error count");
+          });
+
+          test("with a custom invalid field class", function() {
+            resetGuards();
+            $.guard("#form1-1").using("required").invalidClass("my-error");
+            $("#form1").guard();
+            ok($("#form1-1").hasClass("my-error"), "Error field has custom input class");
+            ok(!$("#form1-1").hasClass(invalidClass()), "Error field doesn't have default input class");
+          });
+
+          module("oneRequired guard", { setup: function() {
+            resetGuards();
+            $.guard("input").using("oneRequired").grouped();
+          } });
+
+          test("with nothing entered", function() {
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: $("#form1 input").size(),
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("#form1 input:last"),
+              errorMessages: $.guards.defaults.messages.oneRequired
+            });
+          });
+
+          test("with one input entered", function() {
+            $("#form1-3").val("A value");
+            assertGuards({
+              form: "#form1",
+              expectedToPass: true
+            });
+          });
+
+          test("with each input entered", function() {
+            $("#form1 input").val("A value");
+            assertGuards({
+              form: "#form1",
+              expectedToPass: true
+            });
+          });
+
+          module("required guard", { setup: function() {
+            resetGuards();
+            $.guard("input").using("required");
+          } });
+
+          test("with nothing entered", function() {
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: $("#form1 input").size(),
+              expectedErrorMessageCount: $("#form1 input").size(),
+              errorMessageLocations: $("#form1 input"),
+              errorMessages: $.guards.defaults.messages.required
+            });
+          });
+
+          test("with one input entered", function() {
+            $("#form1-3").val("A value");
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: $("#form1 input").size() - 1,
+              expectedErrorMessageCount: $("#form1 input").size() - 1,
+              errorMessageLocations: $("#form1 input[id!='form1-3']"),
+              errorMessages: $.guards.defaults.messages.required
+            });
+          });
+
+          test("with 3 inputs entered", function() {
+            $("#form1-1,#form1-3,#form1-4").val("A value");
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: 1,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("#form1-2"),
+              errorMessages: $.guards.defaults.messages.required
+            });
+          });
+
+          test("with each input entered", function() {
+            $("#form1 input").val("A value");
+            assertGuards({
+              form: "#form1",
+              expectedToPass: true
+            });
+          });
+
+          module("email guard", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("email");
+          } });
+
+          successTest("");
+
+          failureTest("aaa", {
+            errorMessages: $.guards.defaults.messages.email
+          });
+
+          failureTest("aaa@bbb", {
+            errorMessages: $.guards.defaults.messages.email
+          });
+
+          successTest("aaa@bbb.com");
+
+          module("display email guard", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("email", { allowDisplay: true });
+          } });
+
+          successTest("");
+
+          failureTest("aaa", {
+            errorMessages: $.guards.defaults.messages.email
+          });
+
+          failureTest("aaa@bbb", {
+            errorMessages: $.guards.defaults.messages.email
+          });
+
+          successTest("aaa@bbb.com");
+          successTest("<aaa@bbb.com>");
+          successTest("John Doe <aaa@bbb.com>");
+
+          module("phoneUS guard", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("phoneUS");
+          } });
+
+          successTest("");
+
+          failureTest("aaa", {
+            errorMessages: $.guards.defaults.messages.phoneUS
+          });
+
+          failureTest("123", {
+            errorMessages: $.guards.defaults.messages.phoneUS
+          });
+
+          failureTest("555-2345", {
+            errorMessages: $.guards.defaults.messages.phoneUS
+          });
+
+          successTest("408 555-2345");
+          successTest("408-555-2345");
+          successTest("(408) 555-2345");
+          successTest("4085552345");
+          successTest("14085552345");
+          successTest("1-408-555-2345");
+          successTest("1 (408) 555-2345");
+
+          module("int with min 1 max 4", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("int", { min: 1, max: 4 });
+          } });
+
+          failureTest("0", {
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+
+          failureTest("-2", {
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+
+          failureTest("5", {
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+
+          failureTest("aaa", {
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+
+          failureTest("2aaa", {
+            errorMessages: "Please enter a number from 1 to 4."
+          });
+
+          successTest("1");
+          successTest("4");
+          successTest("3");
+
+          module("int with min 1", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("int", { min: 1 });
+          } });
+
+          failureTest("0", {
+            errorMessages: "Please enter a number no less than 1."
+          });
+
+          failureTest("-2", {
+            errorMessages: "Please enter a number no less than 1."
+          });
+
+          failureTest("aaa", {
+            errorMessages: "Please enter a number no less than 1."
+          });
+
+          failureTest("2aaa", {
+            errorMessages: "Please enter a number no less than 1."
+          });
+
+          successTest("1");
+          successTest("3");
+
+          module("int with max 4", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("int", { max: 4 });
+          } });
+
+          failureTest("5", {
+            errorMessages: "Please enter a number no greater than 4."
+          });
+
+          failureTest("aaa", {
+            errorMessages: "Please enter a number no greater than 4."
+          });
+
+          failureTest("2aaa", {
+            errorMessages: "Please enter a number no greater than 4."
+          });
+
+          successTest("0");
+          successTest("-2");
+          successTest("4");
+          successTest("3");
+
+          module("int with no min or max", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("int");
+          } });
+
+          failureTest("aaa", {
+            errorMessages: "Please enter a number."
+          });
+
+          failureTest("2aaa", {
+            errorMessages: "Please enter a number."
+          });
+
+          successTest("-2");
+          successTest("3");
+
+          module("string with min 2 max 5", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("string", { min: 2, max: 5 });
+          } });
+
+          failureTest("", {
+            errorMessages: "Please enter a string with length 2 to 5."
+          });
+
+          failureTest("   ", {
+            errorMessages: "Please enter a string with length 2 to 5."
+          });
+
+          failureTest("a", {
+            errorMessages: "Please enter a string with length 2 to 5."
+          });
+
+          failureTest("abcdef", {
+            errorMessages: "Please enter a string with length 2 to 5."
+          });
+
+          successTest("ab");
+          successTest("abcde");
+          successTest("abc");
+          successTest("  abc  ");
+
+          module("string with min 2", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("string", { min: 2 });
+          } });
+
+          failureTest("", {
+            errorMessages: "Please enter a string with length at least 2."
+          });
+
+          failureTest("   ", {
+            errorMessages: "Please enter a string with length at least 2."
+          });
+
+          failureTest("a", {
+            errorMessages: "Please enter a string with length at least 2."
+          });
+
+          successTest("ab");
+          successTest("abc");
+
+          module("string with max 5", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("string", { max: 5 });
+          } });
+
+          failureTest("abcdef", {
+            errorMessages: "Please enter a string with length no greater than 5."
+          });
+
+          successTest("");
+          successTest("a");
+          successTest("abc");
+          successTest("  abc  ");
+          successTest("abcde");
+
+          module("allow with ['good', ' better', ' best ', 1, '2', '03']", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("allow", ["good", " better", " best ", 1, "2", "03"]);
+          } });
+
+          failureTest("bad", {
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+
+          failureTest("Good", {
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+
+          failureTest("01", {
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+
+          failureTest("02", {
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+
+          failureTest("3", {
+            errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
+          });
+
+          successTest("good");
+          successTest("best");
+          successTest("  best  ");
+          successTest("1");
+          successTest("2");
+          successTest("03");
+
+          module("disallow with ['bad', ' worse', ' worst ', 1, '2', '03']", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("disallow", ["bad", " worse", " worst ", 1, "2", "03"]);
+          } });
+
+          failureTest("bad", {
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+
+          failureTest(" bad", {
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+
+          failureTest("worse", {
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+
+          failureTest("worst", {
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+
+          failureTest("  worst  ", {
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+
+          failureTest("1", {
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+
+          failureTest("2", {
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+
+          failureTest("03", {
+            errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
+          });
+
+          successTest("good");
+          successTest("");
+          successTest("Bad");
+          successTest("01");
+          successTest("02");
+          successTest("3");
+
+          module("float with min 1.2 max 4", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("float", { min: 1.2, max: 4 });
+          } });
+
+          failureTest("0", {
+            errorMessages: "Please enter a number from 1.2 to 4."
+          });
+
+          failureTest("1", {
+            errorMessages: "Please enter a number from 1.2 to 4."
+          });
+
+          failureTest("-2", {
+            errorMessages: "Please enter a number from 1.2 to 4."
+          });
+
+          failureTest("5", {
+            errorMessages: "Please enter a number from 1.2 to 4."
+          });
+
+          failureTest("aaa", {
+            errorMessages: "Please enter a number from 1.2 to 4."
+          });
+
+          failureTest("2aaa", {
+            errorMessages: "Please enter a number from 1.2 to 4."
+          });
+
+          successTest("1.2");
+          successTest("4");
+          successTest("3");
+
+          module("float with no min or max", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("float");
+          } });
+
+          failureTest("aaa", {
+            errorMessages: "Please enter a number."
+          });
+
+          failureTest("2aaa", {
+            errorMessages: "Please enter a number."
+          });
+
+          failureTest("-2.", {
+            errorMessages: "Please enter a number."
+          });
+
+          failureTest("--1", {
+            errorMessages: "Please enter a number."
+          });
+
+          failureTest("0+.2", {
+            errorMessages: "Please enter a number."
+          });
+
+          successTest("1.2");
+          successTest(".23");
+          successTest("-1");
+          successTest("-11.23");
+
+          module("moneyUS with no min or max", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("moneyUS");
+          } });
+
+          failureTest("aaa", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("2aaa", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("-2.", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("--1", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("0+.2", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("1,12,34", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("1211,234", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("$-$112", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("112.340", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          failureTest("112.3401", {
+            errorMessages: "Please enter a dollar amount."
+          });
+
+          successTest("");
+          successTest("1,232.20");
+          successTest("$10,231,232");
+          successTest("1.20");
+          successTest(".23");
+          successTest("-1");
+          successTest("-11.23");
+          successTest("$1.23");
+          successTest("$3");
+          successTest("$.23");
+          successTest("-$.23");
+          successTest("$-1.23");
+
+          module("moneyUS with min and max", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("moneyUS", { min: 12.50, max: 15 });
+          } });
+
+          failureTest("$12.49", {
+            errorMessages: "Please enter a dollar amount from 12.50 to 15.00."
+          });
+
+          failureTest("$15.01", {
+            errorMessages: "Please enter a dollar amount from 12.50 to 15.00."
+          });
+
+          successTest("");
+          successTest("$12.50");
+          successTest("$15.00");
+          successTest("13");
+
+          module("Using preconditions", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("required").precondition(function() { return $("#form1-2").val() != "abc"; });
+          } });
+
+          successTest("", "abc", { testName: "with precondition unmet and guard unmet" });
+          successTest("123", "abc", { testName: "with precondition unmet and guard met" });
+
+          failureTest("", "", {
+            testName: "with precondition met and guard unmet",
+            errorMessages: "This field is required."
+          });
+
+          successTest("123", "", { testName: "with precondition met and guard met" });
+
+          module("always", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("always");
+          } });
+
+          failureTest("", {
+            testName: "errors are as expected",
+            errorMessages: $.guards.defaults.messages.always
+          });
+
+          var neverGuard1, neverGuard2;
+
+          module("never", { setup: function() {
+            resetGuards();
+            neverGuard1 = $.guard("#form1-1, #form1-2").using("never");
+            neverGuard2 = $.guard("#form1-3, #form1-4").grouped().using("never").message("Grouped never message.").target("#form1-customTarget");
+          } });
+
+          successTest("");
+
+          test("grouped errors are grouped as appropriate, non-grouped are not grouped", function() {
+            neverGuard1.triggerError("#form1-1, #form1-2");
+            neverGuard2.triggerError("#form1-3, #form1-4");
+            equal($("#form1 input").errors().length, 4, "Error count after triggering the never guards");
+            equal($("#form1 .error-message").size(), 3, "Error message count");
+            equal($("#form1 .error-message:eq(0)").text(), $.guards.defaults.messages.never, "First error message");
+            equal($("#form1 .error-message:eq(1)").text(), $.guards.defaults.messages.never, "Second error message");
+            equal($("#form1 .error-message:eq(2)").text(), "Grouped never message.", "Third error message");
+          });
+
+          module("same", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1, #form1-2").grouped().using("same");
+            $.guard("#form1-3").grouped().using("same");
+          } });
+
+          successTest("", "", "");
+          successTest("abc 123", "abc 123", "something");
+
+          failureTest("abc 123", "321 cba", {
             expectedErrorCount: 2,
-            expectedErrorMessageCount: 2,
-            errorMessageLocations: $("#form3 input[id!='form3-2']"),
-            errorMessages: $.guards.defaults.messages.required
+            errorMessageSelector: "#form1-2",
+            errorMessages: $.guards.defaults.messages.same
+          });
+
+          failureTest("abc 123", "", {
+            expectedErrorCount: 2,
+            errorMessageSelector: "#form1-2",
+            errorMessages: $.guards.defaults.messages.same
+          });
+
+          failureTest("", "abc 123", {
+            expectedErrorCount: 2,
+            errorMessageSelector: "#form1-2",
+            errorMessages: $.guards.defaults.messages.same
           });
         });
-
-        test("with none invalid", function() {
-          $("#form3 input").attr("checked", "checked");
-          assertGuards({
-            form: "#form3",
-            expectedToPass: true
-          });
-        });
-
-        test("have the errors placed after the nextSibling (where there is expected to be text)", function() {
-          $("#form3").guard();
-          equal($("#form3-1")[0].nextSibling.nextSibling, $("#form3-1").next("." + errorMsgClass())[0], "Error location");
-        });
-
-        module("forms with mixed radio buttons/checkboxes and other inputs", { setup: function() {
-          resetGuards();
-          $.guard("input").using("required").grouped();
-        } });
-
-        test("radio buttons have the errors placed after the last element when it isn't a radio button", function() {
-          $("#form4").guard();
-          equal($("#form4-7")[0].nextSibling, $("#form4 ." + errorMsgClass())[0], "Error location");
-        });
-
-        test("radio buttons have the errors placed after the nextSibling when the last element is a radio button", function() {
-          $("#form5").guard();
-          equal($("#form5-6")[0].nextSibling.nextSibling, $("#form5 ." + errorMsgClass())[0], "Error location");
-        });
-
-        test("checkboxes have the errors placed after the last element when it isn't a checkbox", function() {
-          $("#form6").guard();
-          equal($("#form6-5")[0].nextSibling, $("#form6 ." + errorMsgClass())[0], "Error location");
-        });
-
-        test("checkboxes have the errors placed after the nextSibling when the last element is a checkbox", function() {
-          $("#form7").guard();
-          equal($("#form7-4")[0].nextSibling.nextSibling, $("#form7 ." + errorMsgClass())[0], "Error location");
-        });
-
-        module("custom guard");
-
-        function customGuard(value, element) {
-          return $.inArray(value, ["bad", "invalid"]) == -1;
-        }
-
-        test("with custom function and no error message defined", function() {
-          resetGuards();
-          $.guard("input").using(customGuard);
-          $("#form1-3").val("bad");
-          assertGuards({
-            form: "#form1",
-            expectedToPass: false,
-            expectedErrorCount: 1,
-            expectedErrorMessageCount: 1,
-            errorMessageLocations: $("#form1-3"),
-            errorMessages: $.guards.defaults.messages.undefined
-          });
-        });
-
-        test("with custom function and an error message defined", function() {
-          resetGuards();
-          $.guard("input").using(customGuard).message("Custom error!");
-          $("#form1-3").val("bad");
-          assertGuards({
-            form: "#form1",
-            expectedToPass: false,
-            expectedErrorCount: 1,
-            expectedErrorMessageCount: 1,
-            errorMessageLocations: $("#form1-3"),
-            errorMessages: "Custom error!"
-          });
-        });
-
-        test("with custom function and an error tag defined", function() {
-          resetGuards();
-          $.guard("input").using(customGuard).tag("p").message("Custom error!");
-          $.guard("input").using("required");
-          $("#form1-3,#form1-2").val("bad");
-          $("#form1").guard();
-          equal($("." + errorMsgClass()).size(), $("#form1 input").size(), "Total error count");
-          equal($("p." + errorMsgClass()).size(), 2, "Error count with the custom tag");
-          equal($(errorTag() + "." + errorMsgClass()).size(), 2, "Error count with the default tag");
-        });
-
-        test("with an error target defined", function() {
-          resetGuards();
-          $.guard("input").using("required").target("#form1-customTarget");
-          $("#form1-3").val("value");
-          $("#form1").guard();
-          equal($("#form1-customTarget ." + errorMsgClass()).size(), $("#form1 input").size() - 1, "Custom target error count");
-        });
-
-        test("with an error target defined via a function", function() {
-          resetGuards();
-          $.guard("input").using("required").target(function() { return $(this).nextAll(".custom-target:eq(1)"); });
-          $("#form1-3").val("value");
-          $("#form1").guard();
-          equal($("#form1-customTarget-2 ." + errorMsgClass()).size(), $("#form1 input").size() - 1, "Custom target error count");
-        });
-
-        test("with an error target defined via a function that inserts the error element itself", function() {
-          resetGuards();
-          $.guard("#form1-4").using("required").target(function(errorElement) {
-            errorElement.appendTo($(".custom-target:eq(1)"));
-            return false;
-          }).message("My error message.");
-          $("#form1").guard();
-          equal($("#form1-customTarget-before-2 ." + errorMsgClass()).size(), 1, "Custom target error count");
-          equal($("#form1-customTarget-before-2").text(), "My error message.", "Error message should not be duplicated.");
-        });
-
-        test("with a selector that doesn't select anything", function() {
-          resetGuards();
-          $.guard(".nothing").using("required");
-          $("#form1").guard();
-          equal($("input:has-error").size(), 0, "Error count");
-        });
-
-        test("with a custom invalid field class", function() {
-          resetGuards();
-          $.guard("#form1-1").using("required").invalidClass("my-error");
-          $("#form1").guard();
-          ok($("#form1-1").hasClass("my-error"), "Error field has custom input class");
-          ok(!$("#form1-1").hasClass(invalidClass()), "Error field doesn't have default input class");
-        });
-
-        module("oneRequired guard", { setup: function() {
-          resetGuards();
-          $.guard("input").using("oneRequired").grouped();
-        } });
-
-        test("with nothing entered", function() {
-          assertGuards({
-            form: "#form1",
-            expectedToPass: false,
-            expectedErrorCount: $("#form1 input").size(),
-            expectedErrorMessageCount: 1,
-            errorMessageLocations: $("#form1 input:last"),
-            errorMessages: $.guards.defaults.messages.oneRequired
-          });
-        });
-
-        test("with one input entered", function() {
-          $("#form1-3").val("A value");
-          assertGuards({
-            form: "#form1",
-            expectedToPass: true
-          });
-        });
-
-        test("with each input entered", function() {
-          $("#form1 input").val("A value");
-          assertGuards({
-            form: "#form1",
-            expectedToPass: true
-          });
-        });
-
-        module("required guard", { setup: function() {
-          resetGuards();
-          $.guard("input").using("required");
-        } });
-
-        test("with nothing entered", function() {
-          assertGuards({
-            form: "#form1",
-            expectedToPass: false,
-            expectedErrorCount: $("#form1 input").size(),
-            expectedErrorMessageCount: $("#form1 input").size(),
-            errorMessageLocations: $("#form1 input"),
-            errorMessages: $.guards.defaults.messages.required
-          });
-        });
-
-        test("with one input entered", function() {
-          $("#form1-3").val("A value");
-          assertGuards({
-            form: "#form1",
-            expectedToPass: false,
-            expectedErrorCount: $("#form1 input").size() - 1,
-            expectedErrorMessageCount: $("#form1 input").size() - 1,
-            errorMessageLocations: $("#form1 input[id!='form1-3']"),
-            errorMessages: $.guards.defaults.messages.required
-          });
-        });
-
-        test("with 3 inputs entered", function() {
-          $("#form1-1,#form1-3,#form1-4").val("A value");
-          assertGuards({
-            form: "#form1",
-            expectedToPass: false,
-            expectedErrorCount: 1,
-            expectedErrorMessageCount: 1,
-            errorMessageLocations: $("#form1-2"),
-            errorMessages: $.guards.defaults.messages.required
-          });
-        });
-
-        test("with each input entered", function() {
-          $("#form1 input").val("A value");
-          assertGuards({
-            form: "#form1",
-            expectedToPass: true
-          });
-        });
-
-        module("email guard", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("email");
-        } });
-
-        successTest("");
-
-        failureTest("aaa", {
-          errorMessages: $.guards.defaults.messages.email
-        });
-
-        failureTest("aaa@bbb", {
-          errorMessages: $.guards.defaults.messages.email
-        });
-
-        successTest("aaa@bbb.com");
-
-        module("display email guard", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("email", { allowDisplay: true });
-        } });
-
-        successTest("");
-
-        failureTest("aaa", {
-          errorMessages: $.guards.defaults.messages.email
-        });
-
-        failureTest("aaa@bbb", {
-          errorMessages: $.guards.defaults.messages.email
-        });
-
-        successTest("aaa@bbb.com");
-        successTest("<aaa@bbb.com>");
-        successTest("John Doe <aaa@bbb.com>");
-
-        module("phoneUS guard", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("phoneUS");
-        } });
-
-        successTest("");
-
-        failureTest("aaa", {
-          errorMessages: $.guards.defaults.messages.phoneUS
-        });
-
-        failureTest("123", {
-          errorMessages: $.guards.defaults.messages.phoneUS
-        });
-
-        failureTest("555-2345", {
-          errorMessages: $.guards.defaults.messages.phoneUS
-        });
-
-        successTest("408 555-2345");
-        successTest("408-555-2345");
-        successTest("(408) 555-2345");
-        successTest("4085552345");
-        successTest("14085552345");
-        successTest("1-408-555-2345");
-        successTest("1 (408) 555-2345");
-
-        module("int with min 1 max 4", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("int", { min: 1, max: 4 });
-        } });
-
-        failureTest("0", {
-          errorMessages: "Please enter a number from 1 to 4."
-        });
-
-        failureTest("-2", {
-          errorMessages: "Please enter a number from 1 to 4."
-        });
-
-        failureTest("5", {
-          errorMessages: "Please enter a number from 1 to 4."
-        });
-
-        failureTest("aaa", {
-          errorMessages: "Please enter a number from 1 to 4."
-        });
-
-        failureTest("2aaa", {
-          errorMessages: "Please enter a number from 1 to 4."
-        });
-
-        successTest("1");
-        successTest("4");
-        successTest("3");
-
-        module("int with min 1", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("int", { min: 1 });
-        } });
-
-        failureTest("0", {
-          errorMessages: "Please enter a number no less than 1."
-        });
-
-        failureTest("-2", {
-          errorMessages: "Please enter a number no less than 1."
-        });
-
-        failureTest("aaa", {
-          errorMessages: "Please enter a number no less than 1."
-        });
-
-        failureTest("2aaa", {
-          errorMessages: "Please enter a number no less than 1."
-        });
-
-        successTest("1");
-        successTest("3");
-
-        module("int with max 4", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("int", { max: 4 });
-        } });
-
-        failureTest("5", {
-          errorMessages: "Please enter a number no greater than 4."
-        });
-
-        failureTest("aaa", {
-          errorMessages: "Please enter a number no greater than 4."
-        });
-
-        failureTest("2aaa", {
-          errorMessages: "Please enter a number no greater than 4."
-        });
-
-        successTest("0");
-        successTest("-2");
-        successTest("4");
-        successTest("3");
-
-        module("int with no min or max", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("int");
-        } });
-
-        failureTest("aaa", {
-          errorMessages: "Please enter a number."
-        });
-
-        failureTest("2aaa", {
-          errorMessages: "Please enter a number."
-        });
-
-        successTest("-2");
-        successTest("3");
-
-        module("string with min 2 max 5", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("string", { min: 2, max: 5 });
-        } });
-
-        failureTest("", {
-          errorMessages: "Please enter a string with length 2 to 5."
-        });
-
-        failureTest("   ", {
-          errorMessages: "Please enter a string with length 2 to 5."
-        });
-
-        failureTest("a", {
-          errorMessages: "Please enter a string with length 2 to 5."
-        });
-
-        failureTest("abcdef", {
-          errorMessages: "Please enter a string with length 2 to 5."
-        });
-
-        successTest("ab");
-        successTest("abcde");
-        successTest("abc");
-        successTest("  abc  ");
-
-        module("string with min 2", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("string", { min: 2 });
-        } });
-
-        failureTest("", {
-          errorMessages: "Please enter a string with length at least 2."
-        });
-
-        failureTest("   ", {
-          errorMessages: "Please enter a string with length at least 2."
-        });
-
-        failureTest("a", {
-          errorMessages: "Please enter a string with length at least 2."
-        });
-
-        successTest("ab");
-        successTest("abc");
-
-        module("string with max 5", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("string", { max: 5 });
-        } });
-
-        failureTest("abcdef", {
-          errorMessages: "Please enter a string with length no greater than 5."
-        });
-
-        successTest("");
-        successTest("a");
-        successTest("abc");
-        successTest("  abc  ");
-        successTest("abcde");
-
-        module("allow with ['good', ' better', ' best ', 1, '2', '03']", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("allow", ["good", " better", " best ", 1, "2", "03"]);
-        } });
-
-        failureTest("bad", {
-          errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
-        });
-
-        failureTest("Good", {
-          errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
-        });
-
-        failureTest("01", {
-          errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
-        });
-
-        failureTest("02", {
-          errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
-        });
-
-        failureTest("3", {
-          errorMessages: "Please enter one of: good, better, best, 1, 2, 03."
-        });
-
-        successTest("good");
-        successTest("best");
-        successTest("  best  ");
-        successTest("1");
-        successTest("2");
-        successTest("03");
-
-        module("disallow with ['bad', ' worse', ' worst ', 1, '2', '03']", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("disallow", ["bad", " worse", " worst ", 1, "2", "03"]);
-        } });
-
-        failureTest("bad", {
-          errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
-        });
-
-        failureTest(" bad", {
-          errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
-        });
-
-        failureTest("worse", {
-          errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
-        });
-
-        failureTest("worst", {
-          errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
-        });
-
-        failureTest("  worst  ", {
-          errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
-        });
-
-        failureTest("1", {
-          errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
-        });
-
-        failureTest("2", {
-          errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
-        });
-
-        failureTest("03", {
-          errorMessages: "Please don't enter: bad, worse, worst, 1, 2, 03."
-        });
-
-        successTest("good");
-        successTest("");
-        successTest("Bad");
-        successTest("01");
-        successTest("02");
-        successTest("3");
-
-        module("float with min 1.2 max 4", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("float", { min: 1.2, max: 4 });
-        } });
-
-        failureTest("0", {
-          errorMessages: "Please enter a number from 1.2 to 4."
-        });
-
-        failureTest("1", {
-          errorMessages: "Please enter a number from 1.2 to 4."
-        });
-
-        failureTest("-2", {
-          errorMessages: "Please enter a number from 1.2 to 4."
-        });
-
-        failureTest("5", {
-          errorMessages: "Please enter a number from 1.2 to 4."
-        });
-
-        failureTest("aaa", {
-          errorMessages: "Please enter a number from 1.2 to 4."
-        });
-
-        failureTest("2aaa", {
-          errorMessages: "Please enter a number from 1.2 to 4."
-        });
-
-        successTest("1.2");
-        successTest("4");
-        successTest("3");
-
-        module("float with no min or max", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("float");
-        } });
-
-        failureTest("aaa", {
-          errorMessages: "Please enter a number."
-        });
-
-        failureTest("2aaa", {
-          errorMessages: "Please enter a number."
-        });
-
-        failureTest("-2.", {
-          errorMessages: "Please enter a number."
-        });
-
-        failureTest("--1", {
-          errorMessages: "Please enter a number."
-        });
-
-        failureTest("0+.2", {
-          errorMessages: "Please enter a number."
-        });
-
-        successTest("1.2");
-        successTest(".23");
-        successTest("-1");
-        successTest("-11.23");
-
-        module("moneyUS with no min or max", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("moneyUS");
-        } });
-
-        failureTest("aaa", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("2aaa", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("-2.", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("--1", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("0+.2", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("1,12,34", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("1211,234", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("$-$112", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("112.340", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        failureTest("112.3401", {
-          errorMessages: "Please enter a dollar amount."
-        });
-
-        successTest("");
-        successTest("1,232.20");
-        successTest("$10,231,232");
-        successTest("1.20");
-        successTest(".23");
-        successTest("-1");
-        successTest("-11.23");
-        successTest("$1.23");
-        successTest("$3");
-        successTest("$.23");
-        successTest("-$.23");
-        successTest("$-1.23");
-
-        module("moneyUS with min and max", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("moneyUS", { min: 12.50, max: 15 });
-        } });
-
-        failureTest("$12.49", {
-          errorMessages: "Please enter a dollar amount from 12.50 to 15.00."
-        });
-
-        failureTest("$15.01", {
-          errorMessages: "Please enter a dollar amount from 12.50 to 15.00."
-        });
-
-        successTest("");
-        successTest("$12.50");
-        successTest("$15.00");
-        successTest("13");
-
-        module("Using preconditions", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("required").precondition(function() { return $("#form1-2").val() != "abc"; });
-        } });
-
-        successTest("", "abc", { testName: "with precondition unmet and guard unmet" });
-        successTest("123", "abc", { testName: "with precondition unmet and guard met" });
-
-        failureTest("", "", {
-          testName: "with precondition met and guard unmet",
-          errorMessages: "This field is required."
-        });
-
-        successTest("123", "", { testName: "with precondition met and guard met" });
-
-        module("always", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1").using("always");
-        } });
-
-        failureTest("", {
-          testName: "errors are as expected",
-          errorMessages: $.guards.defaults.messages.always
-        });
-
-        var neverGuard1, neverGuard2;
-
-        module("never", { setup: function() {
-          resetGuards();
-          neverGuard1 = $.guard("#form1-1, #form1-2").using("never");
-          neverGuard2 = $.guard("#form1-3, #form1-4").grouped().using("never").message("Grouped never message.").target("#form1-customTarget");
-        } });
-
-        successTest("");
-
-        test("grouped errors are grouped as appropriate, non-grouped are not grouped", function() {
-          neverGuard1.triggerError("#form1-1, #form1-2");
-          neverGuard2.triggerError("#form1-3, #form1-4");
-          equal($("#form1 input").errors().length, 4, "Error count after triggering the never guards");
-          equal($("#form1 .error-message").size(), 3, "Error message count");
-          equal($("#form1 .error-message:eq(0)").text(), $.guards.defaults.messages.never, "First error message");
-          equal($("#form1 .error-message:eq(1)").text(), $.guards.defaults.messages.never, "Second error message");
-          equal($("#form1 .error-message:eq(2)").text(), "Grouped never message.", "Third error message");
-        });
-
-        module("same", { setup: function() {
-          resetGuards();
-          $.guard("#form1-1, #form1-2").grouped().using("same");
-          $.guard("#form1-3").grouped().using("same");
-        } });
-
-        successTest("", "", "");
-        successTest("abc 123", "abc 123", "something");
-
-        failureTest("abc 123", "321 cba", {
-          expectedErrorCount: 2,
-          errorMessageSelector: "#form1-2",
-          errorMessages: $.guards.defaults.messages.same
-        });
-
-        failureTest("abc 123", "", {
-          expectedErrorCount: 2,
-          errorMessageSelector: "#form1-2",
-          errorMessages: $.guards.defaults.messages.same
-        });
-
-        failureTest("", "abc 123", {
-          expectedErrorCount: 2,
-          errorMessageSelector: "#form1-2",
-          errorMessages: $.guards.defaults.messages.same
-        });
-      });
+      }
     </script>
   </head>
 
   <body>
-    <h1 id="qunit-header"></h1>
-    <h2 id="qunit-banner"></h2>
-    <h2 id="qunit-userAgent"></h2>
-    <ol id="qunit-tests"></ol>
+    <div id="qunit"></div>
 
     <div id="qunit-fixture">
       <form id="form1">
