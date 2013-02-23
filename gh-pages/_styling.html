@@ -1,1 +1,20 @@
-TODO
+<div class="example">
+  <div class="display">
+    <style>
+      .invalid-field { background-color: #ffff66; }
+      .error-message { color: #ff0000; margin-left: 10px; }
+    </style>
+
+    <script>
+      $(function() {
+        $.guard(".required-field").using("required").triggerError("#example-styling .required-field");
+      });
+    </script>
+
+    <form id="example-styling">
+      <p><input type="text" name="example_field_1" class="required-field" /></p>
+      <p><input type="text" name="example_field_2" class="required-field" /></p>
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
