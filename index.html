@@ -93,12 +93,10 @@
         <div class="example">
           <div class="display">
             <script>
-              $(function() {
-                $.guard("input[name='required'], input[name='required_int']").using("required");
-                $.guard("input[name='required_int']").using("int");
-                $.guard("input[name='phone_us']").using("phoneUS");
-                $("form#simple-guards").enableGuards();
-              });
+              $.guard("input[name='required'], input[name='required_int']").using("required");
+              $.guard("input[name='required_int']").using("int");
+              $.guard("input[name='phone_us']").using("phoneUS");
+              $.enableGuards("form#simple-guards");
             </script>
 
             <form id="simple-guards">
