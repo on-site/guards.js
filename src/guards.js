@@ -169,6 +169,26 @@
 
     $.Guards.prototype.version = "{{VERSION}}";
 
+    // Really old jQuery doesn't have isArray, so use this alias
+    // instead.
+    $.Guards.prototype.isArray = $.isArray;
+
+    if (!$.Guards.prototype.isArray) {
+        var ARRAY_CONSTRUCTOR = [].constructor;
+        var JQUERY_CONSTRUCTOR = jQuery;
+
+        $.Guards.prototype.isArray = function(obj) {
+            // Simplistic, but good enough for guards.
+            return obj.constructor == ARRAY_CONSTRUCTOR || obj.constructor == JQUERY_CONSTRUCTOR;
+        };
+    }
+
+    $.Guards.prototype.log = function(message) {
+        if (console && console.log) {
+            console.log(message);
+        }
+    };
+
     /**
      * Format all arguments into the first argument.  This is a
      * convenience function similar to the C sprintf function, though
@@ -238,7 +258,7 @@
      * Example: $.guards.isAllValid(true, function(x) { return x; });                // true
      */
     $.Guards.prototype.isAllValid = function(values, fn) {
-        if ($.isArray(values)) {
+        if (this.isArray(values)) {
             var result = true;
 
             $.each(values, function(i, x) {
@@ -264,7 +284,7 @@
      * Example: $.guards.isAllValid(false, function(x) { return x; });                // false
      */
     $.Guards.prototype.isAnyValid = function(values, fn) {
-        if ($.isArray(values)) {
+        if (this.isArray(values)) {
             var result = false;
 
             $.each(values, function(i, x) {
@@ -504,7 +524,7 @@
      * Example: $.guards.passThrough(true, function(x) { return x[0]; });                // true
      */
     $.Guards.prototype.passThrough = function(values, fn) {
-        if (!$.isArray(values)) {
+        if (!this.isArray(values)) {
             values = [values];
         }
 
@@ -921,10 +941,7 @@
      */
     $.fn.addSingleError = function(guard) {
         if (this.size() == 0) {
-            if (console && console.log) {
-              console.log("Attempted to add error to nothing.");
-            }
-
+            $.guards.log("Attempted to add error to nothing.");
             return this;
         }
 
@@ -1070,15 +1087,31 @@
     $(function() {
         // Clear errors when the user expresses intent to fix the
         // errors.
-        var clearFn = function() { $(this).clearErrors(); };
-        $(":has-error:radio,:has-error:checkbox").live("mouseup", clearFn);
-        $("select:has-error").live("mousedown", clearFn);
+        var clearFor = function(selector, event, callback) {
+            if (!callback) {
+                callback = function() { $(this).clearErrors(); };
+            }
+
+            if ($.fn.on) {
+                $(document).on(event, selector, callback);
+            } else if ($.fn.delegate) {
+                $(document).delegate(selector, event, callback);
+            } else if ($.fn.live) {
+                $(selector).live(event, callback);
+            } else {
+                $.guards.log("Could not bind live handlers for clearing errors.");
+            }
+        };
+
+        clearFor(":has-error", "change");
+        clearFor(":has-error:radio,:has-error:checkbox", "mouseup");
+        clearFor("select:has-error", "mousedown");
 
         // Make sure we don't clear it if there was no error when the
         // keydown happened, otherwise a submit on enter will have the
         // error flash and then go away on the keyup.
-        $(":has-error").live("keydown", function() { this.clearable = true });
-        $(":has-error").live("keyup", function() {
+        clearFor(":has-error", "keydown", function() { this.clearable = true; });
+        clearFor(":has-error", "keyup", function() {
             if (this.clearable) {
                 this.clearable = false;
                 $(this).clearErrors();

@@ -6,7 +6,7 @@
     <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.11.0.js"></script>
 
     <script>
-      var JQUERY_VERSIONS = ["1.4.2", "1.4.4", "1.5.2", "1.6.4", "1.7.2", "1.8.3", "1.9.1"];
+      var JQUERY_VERSIONS = ["1.2.6", "1.3.2", "1.4.2", "1.4.4", "1.5.2", "1.6.4", "1.7.2", "1.8.3", "1.9.1"];
       var DEFAULT_JQUERY_VERSION = "1.4.2";
       QUnit.config.jquery = QUnit.urlParams.jquery || DEFAULT_JQUERY_VERSION;
 
@@ -23,11 +23,38 @@
         before.parentNode.insertBefore(script, before);
       }
 
-      loadScript("http://ajax.googleapis.com/ajax/libs/jquery/" + QUnit.config.jquery + "/jquery.min.js", function() {
+      loadScript("http://ajax.googleapis.com/ajax/libs/jquery/" + QUnit.config.jquery + "/jquery.js", function() {
         loadScript("../src/guards.js", scriptsReady);
       });
 
       function scriptsReady() {
+        QUnit.config.urlConfig.push({
+          id: "nonstop",
+          label: "Non-stop",
+          tooltip: "Continue until a failure or the last jQuery version in the list."
+        });
+
+        if (QUnit.urlParams.nonstop) {
+          QUnit.done(function(details) {
+            if (details.failed > 0) {
+              return;
+            }
+
+            var nextJqueryIndex = JQUERY_VERSIONS.indexOf(QUnit.config.jquery) + 1;
+
+            // This shouldn't really happen unless the url is manually changed
+            if (nextJqueryIndex <= 0) {
+              return;
+            }
+
+            if (nextJqueryIndex >= JQUERY_VERSIONS.length) {
+              return;
+            }
+
+            window.location = QUnit.url({ jquery: JQUERY_VERSIONS[nextJqueryIndex] });
+          });
+        }
+
         $(document).bind("DOMSubtreeModified", function() {
           if ($("#qunit #jquery-version").size() > 0) {
             return;
@@ -87,7 +114,7 @@
                 var errorMsg = $(form + " ." + errorMsgClass()).eq(i);
                 var expectedMsg = options.errorMessages;
 
-                if ($.isArray(expectedMsg)) {
+                if ($.guards.isArray(expectedMsg)) {
                   expectedMsg = expectedMsg[i];
                 }
 
