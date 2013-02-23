@@ -1,0 +1,47 @@
+<h1>Demo guards.js</h1>
+
+<p>Below is some inline demos of how guards works, along with the snippets that generated them.</p>
+<hr />
+<h2>Example styling</h2>
+
+<div class="example">
+  <div class="display">
+    <style>
+      .invalid-field { background-color: #ffff66; }
+      .error-message { color: #ff0000; margin-left: 10px; }
+    </style>
+
+    <script>
+      $(function() {
+        $.guard(".required-field").using("required").triggerError("#example-styling .required-field");
+      });
+    </script>
+
+    <form id="example-styling">
+      <p><input type="text" name="example_field_1" class="required-field" /></p>
+      <p><input type="text" name="example_field_2" class="required-field" /></p>
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<hr />
+<h2>Simple guards</h2>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("input[name='required'], input[name='required_int']").using("required");
+      $.guard("input[name='required_int']").using("int");
+      $.guard("input[name='phone_us']").using("phoneUS");
+      $.enableGuards("form#simple-guards");
+    </script>
+
+    <form id="simple-guards">
+      <p><input type="text" name="required" /><br /><small>required</small></p>
+      <p><input type="text" name="required_int" /><br /><small>required and integer</small></p>
+      <p><input type="text" name="phone_us" /><br /><small>US phone #</small></p>
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
