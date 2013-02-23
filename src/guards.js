@@ -574,17 +574,29 @@
      * field with an error.
      */
     $.Guards.prototype.guard = function(form) {
+        var fields = form.guardableFields().clearErrors();
+        var result = this.applyGuards(function(guard) { return fields; });
+        fields.filter(":visible:has-error").eq(0).focus();
+        return result;
+    };
+
+    /**
+     * Apply all the guards to the fields returned from the given
+     * callback.  The callback will receive the guard, and is expected
+     * to return the fields to guard against.  If it returns false,
+     * that guard is skipped and does not affect the return value.
+     */
+    $.Guards.prototype.applyGuards = function(callback) {
         var result = true;
-        var fields = form.guardableFields();
-        fields.clearErrors();
 
         $.each(this._guards, function(index, guard) {
-            if (!$.guards.test(guard, fields)) {
+            var fields = callback(guard);
+
+            if (fields !== false && !$.guards.test(guard, fields)) {
                 result = false;
             }
         });
 
-        fields.filter(":visible:has-error").eq(0).focus();
         return result;
     };
 
@@ -694,6 +706,13 @@
     $.Guard.prototype.precondition = function(fn) {
         this._precondition = fn;
         return this;
+    };
+
+    /**
+     * Return whether or not this guard is grouped.
+     */
+    $.Guard.prototype.isGrouped = function() {
+        return this._grouped;
     };
 
     /**
@@ -816,6 +835,14 @@
     };
 
     /**
+     * Determine if this guard applies to the given element (or
+     * elements).
+     */
+    $.Guard.prototype.appliesTo = function(element) {
+        return $(element).filter(this._selector).size() > 0;
+    };
+
+    /**
      * Using this guard, test the given element.  If this guard is
      * grouped, the element is expected to actually be all field
      * elements.  Returns false but doesn't apply the guard if there
@@ -924,11 +951,11 @@
     };
 
     /**
-     * find any applicable fields for this selected item.  Applicable
+     * Find any applicable fields for this selected item.  Applicable
      * fields are any inputs, textareas or selects.
      */
     $.fn.guardableFields = function() {
-        return this.find("input,textarea,select");
+        return this.find(":guardable");
     };
 
     /**
@@ -1102,9 +1129,41 @@
         });
     };
 
+    /**
+     * Live guard the form(s) in the given selector.  This will bind
+     * live on change events that will guard the elements when they
+     * change.  It will also guard the form when it is submitted.
+     */
+    $.liveGuard = function(selector) {
+        $.enableGuards(selector);
+
+        $.guards.on(selector, "change", function(e) {
+            var $element = $(e.srcElement);
+
+            if (!$element.is(":guardable")) {
+                return;
+            }
+
+            $.guards.applyGuards(function(guard) {
+                if (guard.isGrouped()) {
+                    if (guard.appliesTo($element)) {
+                        return $element.parents("form:first").find(":guardable");
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return $element;
+                }
+            });
+        });
+    };
+
     $.extend($.expr[":"], {
         "has-error": function(x) {
             return new Boolean(x.errors && x.errors.length > 0).valueOf();
+        },
+        "guardable": function(x) {
+            return x.tagName.toLowerCase() == "input" || x.tagName.toLowerCase() == "textarea" || x.tagName.toLowerCase() == "select";
         }
     });
 

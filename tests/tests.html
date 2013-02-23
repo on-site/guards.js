@@ -181,6 +181,37 @@
             });
           }
 
+          module("guardable fields", { setup: function() {
+            resetGuards();
+          } });
+
+          test("without options", function() {
+            var results = $("#form1, #form2 input").guardableFields();
+            equal(results.size(), 4, "Result size");
+            equal(results[0], $("#form1-1")[0], "First element");
+            equal(results[1], $("#form1-2")[0], "Second element");
+            equal(results[2], $("#form1-3")[0], "Third element");
+            equal(results[3], $("#form1-4")[0], "Fourth element");
+          });
+
+          test("selector without tag", function() {
+            var results = $("#form1 :guardable");
+            equal(results.size(), 4, "Result size");
+            equal(results[0], $("#form1-1")[0], "First element");
+            equal(results[1], $("#form1-2")[0], "Second element");
+            equal(results[2], $("#form1-3")[0], "Third element");
+            equal(results[3], $("#form1-4")[0], "Fourth element");
+          });
+
+          test("selector with tag", function() {
+            var results = $("#form1 input:guardable");
+            equal(results.size(), 4, "Result size");
+            equal(results[0], $("#form1-1")[0], "First element");
+            equal(results[1], $("#form1-2")[0], "Second element");
+            equal(results[2], $("#form1-3")[0], "Third element");
+            equal(results[3], $("#form1-4")[0], "Fourth element");
+          });
+
           module("general guards", { setup: function() {
             resetGuards();
             $.guard("input").using("required");
