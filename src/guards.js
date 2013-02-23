@@ -183,9 +183,24 @@
         };
     }
 
+    // Alias for console.log, but check that such a thing exists.
     $.Guards.prototype.log = function(message) {
         if (console && console.log) {
             console.log(message);
+        }
+    };
+
+    // Utility method to trigger live events, but works against any
+    // jQuery version that supports live events.
+    $.Guards.prototype.on = function(selector, event, callback) {
+        if ($.fn.on) {
+            $(document).on(event, selector, callback);
+        } else if ($.fn.delegate) {
+            $(document).delegate(selector, event, callback);
+        } else if ($.fn.live) {
+            $(selector).live(event, callback);
+        } else {
+            this.log("Could not bind live handlers, probably because jQuery is too old.");
         }
     };
 
@@ -1076,6 +1091,17 @@
         });
     };
 
+    /**
+     * Enable guards for any form that matches the given selector.
+     * This uses live events to catch submit on forms matching the
+     * selector.
+     */
+    $.enableGuards = function(selector) {
+        $.guards.on(selector, "submit", function() {
+            return $(this).guard();
+        });
+    };
+
     $.extend($.expr[":"], {
         "has-error": function(x) {
             return new Boolean(x.errors && x.errors.length > 0).valueOf();
@@ -1087,31 +1113,16 @@
     $(function() {
         // Clear errors when the user expresses intent to fix the
         // errors.
-        var clearFor = function(selector, event, callback) {
-            if (!callback) {
-                callback = function() { $(this).clearErrors(); };
-            }
-
-            if ($.fn.on) {
-                $(document).on(event, selector, callback);
-            } else if ($.fn.delegate) {
-                $(document).delegate(selector, event, callback);
-            } else if ($.fn.live) {
-                $(selector).live(event, callback);
-            } else {
-                $.guards.log("Could not bind live handlers for clearing errors.");
-            }
-        };
-
-        clearFor(":has-error", "change");
-        clearFor(":has-error:radio,:has-error:checkbox", "mouseup");
-        clearFor("select:has-error", "mousedown");
+        var clearFn = function() { $(this).clearErrors(); };
+        $.guards.on(":has-error", "change", clearFn);
+        $.guards.on(":has-error:radio,:has-error:checkbox", "mouseup", clearFn);
+        $.guards.on("select:has-error", "mousedown", clearFn);
 
         // Make sure we don't clear it if there was no error when the
         // keydown happened, otherwise a submit on enter will have the
         // error flash and then go away on the keyup.
-        clearFor(":has-error", "keydown", function() { this.clearable = true; });
-        clearFor(":has-error", "keyup", function() {
+        $.guards.on(":has-error", "keydown", function() { this.clearable = true; });
+        $.guards.on(":has-error", "keyup", function() {
             if (this.clearable) {
                 this.clearable = false;
                 $(this).clearErrors();
