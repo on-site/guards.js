@@ -195,11 +195,23 @@ Which is equivalent to:
 
     $("#myForm").submit(function() { return $(this).guard(); });
 
+Or you can use delegated events so there is no need for the form to
+exist yet (so the guards need not be in an onready callback):
+
+    $.enableGuards("#myForm");
+
 Or, if you want to invoke the guards manually, you can just call
 guard() on the form directly and use the boolean result:
 
     var result = $("#myForm").guard();
     // Use result, which is true if the form is valid, and false otherwise.
+
+Finally, you can guard the form with liveGuard (which need not be in
+an onready callback, like the second enableGuards version).  This will
+trigger guards for individual elements as they change using delegated
+events on field changes:
+
+    $.liveGuard("#myForm");
 
 # Downloads
 
