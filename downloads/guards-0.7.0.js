@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v0.6.5
+ * Guards JavaScript jQuery Plugin v0.7.0
  * http://github.com/on-site/Guards-Javascript-Validation
  *
  * Copyright 2010-2013, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Tue Feb 19 16:34:48 2013 -0800
+ * Date: Fri Feb 22 22:35:49 2013 -0800
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "0.6.5";
+    $.guard.version = "0.7.0";
 
     $.Guards = function() {
         this._guards = [];
@@ -112,6 +112,7 @@
             guards: {
                 allow: defineGuard("isAllValid", "isAllowed"),
                 always: defineGuard("isAllValid", "always"),
+                different: defineGuard("passThrough", "isDifferent"),
                 disallow: defineGuard("isAllValid", "isDisallowed"),
                 email: defineGuard("isAllValid", "isValidEmail"),
                 "float": defineGuard("isAllValid", "isValidFloat"),
@@ -121,6 +122,7 @@
                 oneRequired: defineGuard("isAnyValid", "isPresent"),
                 phoneUS: defineGuard("isAllValid", "isValidPhoneUS"),
                 required: defineGuard("isAllValid", "isPresent"),
+                same: defineGuard("passThrough", "isSame"),
                 string: defineGuard("isAllValid", "isValidString")
             },
 
@@ -130,6 +132,7 @@
             messages: {
                 allow: arrayMessage("Please enter one of: #{0}."),
                 always: "There was an error.",
+                different: "These values must all be different.",
                 disallow: arrayMessage("Please don't enter: #{0}."),
                 email: "Please enter a valid E-mail address.",
                 "float": minMaxMessage({
@@ -154,6 +157,7 @@
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
+                same: "These values must all match.",
                 string: minMaxMessage({
                     minAndMax: "Please enter a string with length #{0} to #{1}.",
                     min: "Please enter a string with length at least #{0}.",
@@ -176,7 +180,42 @@
         };
     };
 
-    $.Guards.prototype.version = "0.6.5";
+    $.Guards.prototype.version = "0.7.0";
+
+    // Really old jQuery doesn't have isArray, so use this alias
+    // instead.
+    $.Guards.prototype.isArray = $.isArray;
+
+    if (!$.Guards.prototype.isArray) {
+        var ARRAY_CONSTRUCTOR = [].constructor;
+        var JQUERY_CONSTRUCTOR = jQuery;
+
+        $.Guards.prototype.isArray = function(obj) {
+            // Simplistic, but good enough for guards.
+            return obj.constructor == ARRAY_CONSTRUCTOR || obj.constructor == JQUERY_CONSTRUCTOR;
+        };
+    }
+
+    // Alias for console.log, but check that such a thing exists.
+    $.Guards.prototype.log = function(message) {
+        if (console && console.log) {
+            console.log(message);
+        }
+    };
+
+    // Utility method to trigger live events, but works against any
+    // jQuery version that supports live events.
+    $.Guards.prototype.on = function(selector, event, callback) {
+        if ($.fn.on) {
+            $(document).on(event, selector, callback);
+        } else if ($.fn.delegate) {
+            $(document).delegate(selector, event, callback);
+        } else if ($.fn.live) {
+            $(selector).live(event, callback);
+        } else {
+            this.log("Could not bind live handlers, probably because jQuery is too old.");
+        }
+    };
 
     /**
      * Format all arguments into the first argument.  This is a
@@ -247,7 +286,7 @@
      * Example: $.guards.isAllValid(true, function(x) { return x; });                // true
      */
     $.Guards.prototype.isAllValid = function(values, fn) {
-        if ($.isArray(values)) {
+        if (this.isArray(values)) {
             var result = true;
 
             $.each(values, function(i, x) {
@@ -273,7 +312,7 @@
      * Example: $.guards.isAllValid(false, function(x) { return x; });                // false
      */
     $.Guards.prototype.isAnyValid = function(values, fn) {
-        if ($.isArray(values)) {
+        if (this.isArray(values)) {
             var result = false;
 
             $.each(values, function(i, x) {
@@ -298,6 +337,29 @@
     };
 
     /**
+     * Return whether all the values in the given array are different.
+     */
+    $.Guards.prototype.isDifferent = function(values) {
+        if (values.length < 2) {
+            return true;
+        }
+
+        var found = {};
+        var result = true;
+
+        $.each(values, function(i, x) {
+            if (found[x] === true) {
+                result = false;
+                return false;
+            }
+
+            found[x] = true;
+        });
+
+        return result;
+    };
+
+    /**
      * Return whether or not the value doesn't exist in the given
      * disallowed list.  The disallowed parameter must be an array of
      * invalid values.  Blank is considered valid unless it exists in
@@ -319,6 +381,27 @@
      */
     $.Guards.prototype.isPresent = function(value) {
         return !$.guards.isBlank(value);
+    };
+
+    /**
+     * Return whether all the values in the given array are the same.
+     */
+    $.Guards.prototype.isSame = function(values) {
+        if (values.length < 2) {
+            return true;
+        }
+
+        var value = values[0];
+        var result = true;
+
+        $.each(values, function(i, x) {
+            if (x != value) {
+                result = false;
+                return false;
+            }
+        });
+
+        return result;
     };
 
     /**
@@ -460,6 +543,23 @@
     };
 
     /**
+     * This is a utility function to act like isAnyValid or
+     * isAllValid, except instead of aggregating the function results,
+     * it passes the arguments on to the function and returns the
+     * results.  It makes the argument an array always.
+     *
+     * Example: $.guards.passThrough([true, false, true], function(x) { return x[1]; }); // false
+     * Example: $.guards.passThrough(true, function(x) { return x[0]; });                // true
+     */
+    $.Guards.prototype.passThrough = function(values, fn) {
+        if (!this.isArray(values)) {
+            values = [values];
+        }
+
+        return fn(values);
+    };
+
+    /**
      * Guard all elements with the specified jQuery selector.  Using
      * is implicitly called with $.guards.defaults.guard, which
      * defaults to "required".  Note that it is simpler to use
@@ -487,17 +587,29 @@
      * field with an error.
      */
     $.Guards.prototype.guard = function(form) {
+        var fields = form.guardableFields().clearErrors();
+        var result = this.applyGuards(function(guard) { return fields; });
+        fields.filter(":visible:has-error").eq(0).focus();
+        return result;
+    };
+
+    /**
+     * Apply all the guards to the fields returned from the given
+     * callback.  The callback will receive the guard, and is expected
+     * to return the fields to guard against.  If it returns false,
+     * that guard is skipped and does not affect the return value.
+     */
+    $.Guards.prototype.applyGuards = function(callback) {
         var result = true;
-        var fields = form.guardableFields();
-        fields.clearErrors();
 
         $.each(this._guards, function(index, guard) {
-            if (!$.guards.test(guard, fields)) {
+            var fields = callback(guard);
+
+            if (fields !== false && !$.guards.test(guard, fields)) {
                 result = false;
             }
         });
 
-        fields.filter(":visible:has-error").eq(0).focus();
         return result;
     };
 
@@ -566,6 +678,11 @@
             }
 
             var fn = this._guards.defaults.guards[guard];
+
+            if ($.guards.isNullOrUndefined(fn)) {
+                throw new Error("There is no standard guard named '" + guard + "'");
+            }
+
             this._guard = fn.apply(this._guards.defaults.guards, args);
             var message = this._guards.defaults.messages[guard];
 
@@ -602,6 +719,13 @@
     $.Guard.prototype.precondition = function(fn) {
         this._precondition = fn;
         return this;
+    };
+
+    /**
+     * Return whether or not this guard is grouped.
+     */
+    $.Guard.prototype.isGrouped = function() {
+        return this._grouped;
     };
 
     /**
@@ -724,6 +848,14 @@
     };
 
     /**
+     * Determine if this guard applies to the given element (or
+     * elements).
+     */
+    $.Guard.prototype.appliesTo = function(element) {
+        return $(element).filter(this._selector).size() > 0;
+    };
+
+    /**
      * Using this guard, test the given element.  If this guard is
      * grouped, the element is expected to actually be all field
      * elements.  Returns false but doesn't apply the guard if there
@@ -832,11 +964,11 @@
     };
 
     /**
-     * find any applicable fields for this selected item.  Applicable
+     * Find any applicable fields for this selected item.  Applicable
      * fields are any inputs, textareas or selects.
      */
     $.fn.guardableFields = function() {
-        return this.find("input,textarea,select");
+        return this.find(":guardable");
     };
 
     /**
@@ -864,7 +996,7 @@
      */
     $.fn.addSingleError = function(guard) {
         if (this.size() == 0) {
-            console.log("Attempted to add error to nothing.");
+            $.guards.log("Attempted to add error to nothing.");
             return this;
         }
 
@@ -999,9 +1131,52 @@
         });
     };
 
+    /**
+     * Enable guards for any form that matches the given selector.
+     * This uses live events to catch submit on forms matching the
+     * selector.
+     */
+    $.enableGuards = function(selector) {
+        $.guards.on(selector, "submit", function() {
+            return $(this).guard();
+        });
+    };
+
+    /**
+     * Live guard the form(s) in the given selector.  This will bind
+     * live on change events that will guard the elements when they
+     * change.  It will also guard the form when it is submitted.
+     */
+    $.liveGuard = function(selector) {
+        $.enableGuards(selector);
+
+        $.guards.on(selector, "change", function(e) {
+            var $element = $(e.srcElement);
+
+            if (!$element.is(":guardable")) {
+                return;
+            }
+
+            $.guards.applyGuards(function(guard) {
+                if (guard.isGrouped()) {
+                    if (guard.appliesTo($element)) {
+                        return $element.parents("form:first").find(":guardable");
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return $element;
+                }
+            });
+        });
+    };
+
     $.extend($.expr[":"], {
         "has-error": function(x) {
             return new Boolean(x.errors && x.errors.length > 0).valueOf();
+        },
+        "guardable": function(x) {
+            return x.tagName.toLowerCase() == "input" || x.tagName.toLowerCase() == "textarea" || x.tagName.toLowerCase() == "select";
         }
     });
 
@@ -1011,14 +1186,15 @@
         // Clear errors when the user expresses intent to fix the
         // errors.
         var clearFn = function() { $(this).clearErrors(); };
-        $(":has-error:radio,:has-error:checkbox").live("mouseup", clearFn);
-        $("select:has-error").live("mousedown", clearFn);
+        $.guards.on(":has-error", "change", clearFn);
+        $.guards.on(":has-error:radio,:has-error:checkbox", "mouseup", clearFn);
+        $.guards.on("select:has-error", "mousedown", clearFn);
 
         // Make sure we don't clear it if there was no error when the
         // keydown happened, otherwise a submit on enter will have the
         // error flash and then go away on the keyup.
-        $(":has-error").live("keydown", function() { this.clearable = true });
-        $(":has-error").live("keyup", function() {
+        $.guards.on(":has-error", "keydown", function() { this.clearable = true; });
+        $.guards.on(":has-error", "keyup", function() {
             if (this.clearable) {
                 this.clearable = false;
                 $(this).clearErrors();

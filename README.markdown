@@ -215,6 +215,7 @@ events on field changes:
 
 # Downloads
 
+* 0.7.0: [production minified](https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.min.js), [development](https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.js)
 * 0.6.5: [production minified](https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.min.js), [development](https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.js)
 * 0.6.3: [production minified](https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.min.js), [development](https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.js)
 
