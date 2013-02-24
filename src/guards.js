@@ -1131,13 +1131,14 @@
 
     /**
      * Live guard the form(s) in the given selector.  This will bind
-     * live on change events that will guard the elements when they
-     * change.  It will also guard the form when it is submitted.
+     * live on change and blur events that will guard the elements
+     * when they change.  It will also guard the form when it is
+     * submitted.
      */
     $.liveGuard = function(selector) {
         $.enableGuards(selector);
 
-        $.guards.on(selector, "change", function(e) {
+        $.guards.on(selector, "change blur", function(e) {
             var $element = $(e.srcElement);
 
             if (!$element.is(":guardable")) {
