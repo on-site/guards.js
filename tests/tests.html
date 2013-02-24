@@ -124,6 +124,10 @@
             }
           }
 
+          function regexOk(regex, string) {
+            ok(regex.test(string), "\"" + string + "\" matches " + regex);
+          }
+
           function generateTest(options, args, fn) {
             var testName = options.testName;
 
@@ -479,6 +483,15 @@
           test("checkboxes have the errors placed after the nextSibling when the last element is a checkbox", function() {
             $("#form7").guard();
             equal($("#form7-4")[0].nextSibling.nextSibling, $("#form7 ." + errorMsgClass())[0], "Error location");
+          });
+
+          module("styling guards");
+
+          test("no arguments", function() {
+            var $style = $($.guards.styleHtml());
+            ok($style.is("style"), "Creates a style element");
+            regexOk(/\.invalid-field\s*\{\s*background-color:\s*#ffff66;\s*\}/, $style.html());
+            regexOk(/\.error-message\s*\{\s*color:\s*#ff0000;\s*margin-left:\s*10px;\s*\}/, $style.html());
           });
 
           module("custom guard");

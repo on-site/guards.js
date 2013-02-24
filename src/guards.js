@@ -244,6 +244,20 @@
         return str;
     };
 
+    $.Guards.prototype.styleHtml = function() {
+        var result = "";
+        result += "<style>\n";
+        result += "  .invalid-field {\n";
+        result += "    background-color: #ffff66;\n";
+        result += "  }\n";
+        result += "  .error-message {\n";
+        result += "    color: #ff0000;\n";
+        result += "    margin-left: 10px;\n";
+        result += "  }\n";
+        result += "</style>";
+        return result;
+    };
+
     /**
      * This guard test method is intended to always fail, thus it
      * returns false no matter what.
