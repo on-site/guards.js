@@ -28,8 +28,14 @@ def define_pages
   end
 
   page do
-    step "Playground"
+    step "Guards and jQuery"
+    file "jquery.html"
   end
+
+  # Add playground when it is ready
+  #page do
+  #  step "Playground"
+  #end
 end
 
 class Page
