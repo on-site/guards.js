@@ -11,31 +11,36 @@ def define_pages
   end
 
   page do
+    pending!
     step "Customization"
   end
 
   page do
+    pending!
     step "Grouped Guards"
     file "grouped.html"
   end
 
   page do
+    pending!
     step "Preconditions"
   end
 
   page do
+    pending!
     step "Styling"
   end
 
   page do
+    pending!
     step "Guards and jQuery"
     file "jquery.html"
   end
 
-  # Add playground when it is ready
-  #page do
-  #  step "Playground"
-  #end
+  page do
+    pending!
+    step "Playground"
+  end
 end
 
 class Page
@@ -69,6 +74,14 @@ class Page
 
   def get_file
     @file || "#{get_step.downcase}.html"
+  end
+
+  def pending!
+    @pending = true
+  end
+
+  def pending?
+    @pending
   end
 
   def output_file
@@ -149,12 +162,10 @@ end
 PAGES = []
 
 def page(&block)
-  next_index = PAGES.length
-
-  PAGES << Page.new.tap do |p|
-    p.index next_index
-    p.instance_eval &block
-  end
+  p = Page.new
+  p.index PAGES.length
+  p.instance_eval &block
+  PAGES << p unless p.pending?
 end
 
 def check_usage
