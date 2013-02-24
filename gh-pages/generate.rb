@@ -15,6 +15,11 @@ def define_pages
   end
 
   page do
+    step "Grouped Guards"
+    file "grouped.html"
+  end
+
+  page do
     step "Preconditions"
   end
 

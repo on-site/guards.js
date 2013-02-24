@@ -1,1 +1,95 @@
-TODO
+<h2>Numerical guards</h2>
+
+<p>
+  Some guards can take options which affect how the guard behaves.
+  The "int", "float", and "moneyUS" guards can have min, max or min
+  and max options which determine the acceptable range of those
+  inputs.  Note that these numeric guards (along with most guards)
+  will pass if no input is provided.  You must use the required guard
+  along with them if you want no input to cause an error.  There is no
+  problem using multiple guards against a single field.  Try out the
+  numeric guards below:
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form1 .input1").using("int", { min: 5 });
+      $.guard("#form1 .input2").using("int", { max: 15 });
+      $.guard("#form1 .input3").using("int", { min: -5, max: 42 });
+      $.guard("#form2 .input1").using("float", { min: -5.3 });
+      $.guard("#form2 .input2").using("float", { max: 42.42 });
+      $.guard("#form2 .input3").using("float", { min: 0, max: 0.999 });
+      $.liveGuard("#form1, #form2");
+    </script>
+
+    <form id="form1">
+      <h3>int</h3>
+
+      <p>
+        <input type="text" class="input1" name="input1" value="3" /><br />
+        <small>minimum 5</small>
+      </p>
+
+      <p>
+        <input type="text" class="input2" name="input2" value="42" /><br />
+        <small>maximum 15</small>
+      </p>
+
+      <p>
+        <input type="text" class="input3" name="input3" value="-10" /><br />
+        <small>minimum -5, maximum 42</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+
+    <form id="form2">
+      <h3>float</h3>
+
+      <p>
+        <input type="text" class="input1" name="input4" value="-5.4" /><br />
+        <small>minimum -5.3</small>
+      </p>
+
+      <p>
+        <input type="text" class="input2" name="input5" value="100.1" /><br />
+        <small>maximum 42.42</small>
+      </p>
+
+      <p>
+        <input type="text" class="input3" name="input6" value="2.1" /><br />
+        <small>minimum 0, maximum 0.999</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+
+    <form id="form3">
+      <h3>moneyUS</h3>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<h2>Strings</h2>
+
+<p>
+  The "string" guard can be used to validate the length of the user's
+  provided input.  This checks the length against the provided min
+  and/or max options.  This behaves different from most other guards
+  besides "required" in that empty input can trigger an error.
+  Whitespace at the beginning or end of the input is ignored with
+  respect to the validated length.  Try out the guard below:
+</p>
+
+<h2>Allow and disallow</h2>
+
+<p>
+  If you need to block all input except a few specific values, the
+  "allow" guard is for you!  You can list a bunch of inputs, and the
+  guard will fail unless the input matches one of the values.  If you
+  need the opposite, and want to block specific inputs, then use the
+  "disallow" guard.  Try it out below:
+</p>
