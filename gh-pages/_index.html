@@ -1,18 +1,177 @@
-<h2>Simple guards</h2>
+<h2>Getting started</h2>
+
+<p>
+  Guards is a plugin for <a href="http://jquery.com/">jQuery</a> that
+  provides a simple, chainable, declarative API for guarding your
+  forms against invalid user input.  To get started, include the
+  guards.js file after jQuery, and start declaring your guards.  Note
+  that you do <em>not</em> need to include this in a document.onready
+  callback.  All guarding happens
+  via <a href="http://api.jquery.com/on/#direct-and-delegated-events">delegated
+  events</a>, which means the elements need not yet be defined.  They
+  can be defined later on, or even be added to the DOM after some user
+  input.
+</p>
+
+<p>
+  Let's get started with an example.  Go ahead and try to submit the
+  form without any input.  The inputs are guarded with the default
+  guard, which is the "required" guard, which ensures something has
+  been provided.
+</p>
 
 <div class="example">
   <div class="display">
     <script>
-      $.guard("input[name='required'], input[name='required_int']").using("required");
-      $.guard("input[name='required_int']").using("int");
-      $.guard("input[name='phone_us']").using("phoneUS");
-      $.enableGuards("form#simple-guards");
+      $.guard("form#form1 input[type='text']");
+      $.enableGuards("form#form1");
     </script>
 
-    <form id="simple-guards">
-      <p><input type="text" name="required" /><br /><small>required</small></p>
-      <p><input type="text" name="required_int" /><br /><small>required and integer</small></p>
-      <p><input type="text" name="phone_us" /><br /><small>US phone #</small></p>
+    <form id="form1">
+      <p><input type="text" name="field1" /></p>
+      <p><input type="text" name="field2" /></p>
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<p>
+  Now let's break down what is happening.  The first line in the
+  script guards anything that matches
+  the <code>"form#form1&nbsp;input[type='text']"</code> selector
+  (which happens to be both text fields in the form).  The second line
+  enables guards for the form, which hooks up events that prevent the
+  form from submitting if any of the guards fail to pass.
+</p>
+
+<p>
+  All guards automatically have delegated events hooked up (regardless
+  of if <code>enableGuards</code> is called for that form) which will
+  clear errors when the user starts to change that field.
+</p>
+
+<h2>Some built in guards</h2>
+
+<p>
+  Customizing how guards work is pretty easy, but before we get into
+  deep customization, let's look at some of the built in guards.  To
+  specify a built in guard, simply call the <code>using</code> method
+  with the name of the built in guard you would like to use.  Try out
+  the following form with some of the built in guards.
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard(".required").using("required");
+      $.guard(".email").using("email");
+      $.guard(".phone").using("phoneUS");
+      $.guard(".integer").using("int");
+      $.guard(".money").using("moneyUS");
+      $.enableGuards("form#form2");
+    </script>
+
+    <form id="form2">
+      <p>
+        <label for="name">Name:</label><br />
+        <input type="text" id="name" class="required" name="name" />
+      </p>
+
+      <p>
+        <label for="email">Email Address:</label><br />
+        <input type="text" id="email" class="required email" name="email" /><br />
+        <small>example: john@email.com</small>
+      </p>
+
+      <p>
+        <label for="phone">Phone Number:</label><br />
+        <input type="text" id="phone" class="required phone" name="phone" /><br />
+        <small>example: (555) 555-1234</small>
+      </p>
+
+      <p>
+        <label for="count">Count of Widgets:</label><br />
+        <input type="text" id="count" class="required integer" name="count" />
+      </p>
+
+      <p>
+        <label for="cost">Cost:</label><br />
+        <input type="text" id="cost" class="required money" name="cost" />
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<h2>Other ways of guarding the form</h2>
+
+<p>
+  The <code>enableGuards</code> function shown above is not the only
+  way to guard forms.  There are two other ways of guarding forms.
+  There is the <code>enableGuards</code> method on the jQuery object,
+  which will guard forms that have been selected via a jQuery
+  selector.  This differs from the other function in that it will not
+  affect forms that are created at a later point.  This means it must
+  be called after the document is ready, or at least after the form
+  has been declared.
+</p>
+
+<p>
+  The other method is <code>liveGuard</code>, which takes a selector
+  and "live guards" any forms that match the selector.  This uses
+  delegated events like the first <code>enableGuards</code>, so it can
+  be done outside document.onready callbacks.  A live guard is a guard
+  that will trigger errors as soon as the user changes a field.  The
+  field will still trigger errors on submit, but user changes make it
+  easy for the user to realize mistakes as they happen.  Note that for
+  text fields, the change won't trigger the error until the focus
+  leaves the field.
+</p>
+
+<p>
+  Try out the alternative methods below:
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form3 input[name='name'], #form3 input[name='email']").using("required");
+      $.guard("#form3 input[name='email']").using("email");
+      $(function() { $("#form3").enableGuards(); });
+
+      $.guard("#form4 input[name='name'], #form4 input[name='phone']").using("required");
+      $.guard("#form4 input[name='phone']").using("phoneUS");
+      $.liveGuard("#form4");
+    </script>
+
+    <form id="form3">
+      <p>
+        <label for="name">Name:</label><br />
+        <input type="text" id="name" name="name" />
+      </p>
+
+      <p>
+        <label for="email">Email Address:</label><br />
+        <input type="text" id="email" name="email" /><br />
+        <small>example: john@email.com</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+
+    <form id="form4">
+      <p>
+        <label for="name">Name:</label><br />
+        <input type="text" id="name" name="name" />
+      </p>
+
+      <p>
+        <label for="phone">Phone Number:</label><br />
+        <input type="text" id="phone" name="phone" /><br />
+        <small>example: (555) 555-1234</small>
+      </p>
+
       <p><input type="submit" /></p>
     </form>
   </div>
