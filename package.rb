@@ -47,7 +47,7 @@ def update_downloads!
 
   header = "/*!
  * Guards JavaScript jQuery Plugin v#{version}
- * http://github.com/on-site/Guards-Javascript-Validation
+ * https://github.com/on-site/guards.js
  *
  * Copyright 2010-#{year}, On-Site.com, http://www.on-site.com/
  * Licensed under the MIT license.
