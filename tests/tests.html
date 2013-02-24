@@ -124,8 +124,19 @@
             }
           }
 
-          function regexOk(regex, string) {
-            ok(regex.test(string), "\"" + string + "\" matches " + regex);
+          function regexOk(regex, string, message) {
+            message = message || ("\"" + string + "\" matches " + regex);
+            ok(regex.test(string), message);
+          }
+
+          // Thanks to http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
+          RegExp.escape = function(value) {
+            return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+          };
+
+          function okStyle(selector, attr, value, html) {
+            var message = "style:\n" + html + "\nshould have '" + selector + "' with style '" + attr + ": " + value + "'";
+            regexOk(new RegExp(RegExp.escape(selector) + "\\s*\\{[^}]*" + RegExp.escape(attr) + ":\\s*" + RegExp.escape(value) + ";[^}]*\\}"), html, message);
           }
 
           function generateTest(options, args, fn) {
@@ -490,8 +501,9 @@
           test("no arguments", function() {
             var $style = $($.guards.styleHtml());
             ok($style.is("style"), "Creates a style element");
-            regexOk(/\.invalid-field\s*\{\s*background-color:\s*#ffff66;\s*\}/, $style.html());
-            regexOk(/\.error-message\s*\{\s*color:\s*#ff0000;\s*margin-left:\s*10px;\s*\}/, $style.html());
+            okStyle(".invalid-field", "background-color", "#ffff66", $style.html());
+            okStyle(".error-message", "color", "#ff0000", $style.html());
+            okStyle(".error-message", "margin-left", "10px", $style.html());
           });
 
           module("custom guard");
