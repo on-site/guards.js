@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>guards.js by On-Site.com</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/additional-styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
+    <script src="javascripts/show-source.js"></script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>guards.js</h1>
+        <p>Guard your forms with class (or any other selectors).</p>
+        <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
+      </header>
+
+      <section>
+        
+<div class="wizard">
+  <ol>
+    <li><a href="index.html">Introduction</a></li>
+    <li class="current"><a href="options.html">Options</a></li>
+  </ol>
+</div>
+
+
+        <p>
+          <a href="index.html">previous</a>
+          
+        </p>
+
+        <h1>Options</h1>
+        <h2>Numerical guards</h2>
+
+<p>
+  Some guards can take options which affect how the guard behaves.
+  The "int", "float", and "moneyUS" guards can have min, max or min
+  and max options which determine the acceptable range of those
+  inputs.  Note that these numeric guards (along with most guards)
+  will pass if no input is provided.  You must use the required guard
+  along with them if you want no input to cause an error.  There is no
+  problem using multiple guards against a single field.  Try out the
+  numeric guards in the forms below:
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form1 input[name='input1']").using("int", { min: 5 });
+      $.guard("#form1 input[name='input2']").using("int", { max: 15 });
+      $.guard("#form1 input[name='input3']").using("int", { min: -5, max: 42 });
+      $.liveGuard("#form1");
+    </script>
+
+    <form id="form1">
+      <h3>int</h3>
+
+      <p>
+        <input type="text" name="input1" value="3" /><br />
+        <small>minimum 5</small>
+      </p>
+
+      <p>
+        <input type="text" name="input2" value="42" /><br />
+        <small>maximum 15</small>
+      </p>
+
+      <p>
+        <input type="text" name="input3" value="-10" /><br />
+        <small>minimum -5, maximum 42</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form2 input[name='input1']").using("float", { min: -5.3 });
+      $.guard("#form2 input[name='input2']").using("float", { max: 42.42 });
+      $.guard("#form2 input[name='input3']").using("float", { min: 0, max: 0.999 });
+      $.liveGuard("#form2");
+    </script>
+
+    <form id="form2">
+      <h3>float</h3>
+
+      <p>
+        <input type="text" name="input1" value="-5.4" /><br />
+        <small>minimum -5.3</small>
+      </p>
+
+      <p>
+        <input type="text" name="input2" value="100.1" /><br />
+        <small>maximum 42.42</small>
+      </p>
+
+      <p>
+        <input type="text" name="input3" value="2.1" /><br />
+        <small>minimum 0, maximum 0.999</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form3 input[name='input1']").using("moneyUS", { min: -0.42 });
+      $.guard("#form3 input[name='input2']").using("moneyUS", { max: 50.50 });
+      $.guard("#form3 input[name='input3']").using("moneyUS", { min: 15, max: 50 });
+      $.liveGuard("#form3");
+    </script>
+
+    <form id="form3">
+      <h3>moneyUS</h3>
+
+      <p>
+        <input type="text" name="input1" value="-$10.50" /><br />
+        <small>minimum -$0.42</small>
+      </p>
+
+      <p>
+        <input type="text" name="input2" value="$75" /><br />
+        <small>maximum $50.50</small>
+      </p>
+
+      <p>
+        <input type="text" name="input3" value="$1" /><br />
+        <small>minimum $15, maximum $50</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<h2>Strings</h2>
+
+<p>
+  The "string" guard can be used to validate the length of the user's
+  provided input.  This checks the length against the provided min
+  and/or max options.  This behaves different from most other guards
+  besides "required" in that empty input can trigger an error.
+  Whitespace at the beginning or end of the input is ignored with
+  respect to the validated length.  Try out the guard below:
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form4 input[name='input1']").using("string", { min: 2 });
+      $.guard("#form4 input[name='input2']").using("string", { max: 5 });
+      $.guard("#form4 input[name='input3']").using("string", { min: 2, max: 4 });
+      $.liveGuard("#form4");
+    </script>
+
+    <form id="form4">
+      <h3>string</h3>
+
+      <p>
+        <input type="text" name="input1" value="" /><br />
+        <small>minimum length 2</small>
+      </p>
+
+      <p>
+        <input type="text" name="input2" value="Hello World!" /><br />
+        <small>maximum length 5</small>
+      </p>
+
+      <p>
+        <input type="text" name="input3" value="Goodnight Moon!" /><br />
+        <small>minimum length 2, maximum length 4</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<h2>Allow and disallow</h2>
+
+<p>
+  If you need to block all input except a few specific values, the
+  "allow" guard is for you!  You can list a bunch of inputs, and the
+  guard will fail unless the input matches one of the values.  If you
+  need the opposite, and want to block specific inputs, then use the
+  "disallow" guard.  Try it out below:
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form5 input[name='input1']").using("allow", ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
+      $.guard("#form5 input[name='input2']").using("disallow", ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
+      $.liveGuard("#form5");
+    </script>
+
+    <form id="form5">
+      <h3>allow</h3>
+
+      <p>
+        <input type="text" name="input1" value="car" /><br />
+        <small>a color</small>
+      </p>
+
+      <h3>disallow</h3>
+
+      <p>
+        <input type="text" name="input2" value="orange" /><br />
+        <small>not a color</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+
+        <p>
+          <a href="index.html">previous</a>
+          
+        </p>
+      </section>
+    </div>
+
+    <footer>
+      <div class="footer-links">
+        <p>
+          <a href="https://github.com/on-site/guards.js">repository</a>
+          <a href="https://github.com/on-site/guards.js#summary">documentation</a>
+          <a href="https://github.com/on-site/guards.js#downloads">downloads</a>
+          <a href="https://github.com/on-site/guards.js/issues">report bugs</a>
+          <a href="http://plugins.jquery.com/guards/">jQuery plugin</a>
+        </p>
+      </div>
+
+      <div>
+        <p>This project is maintained by <a href="https://github.com/on-site">On-Site.com</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </div>
+    </footer>
+
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>
