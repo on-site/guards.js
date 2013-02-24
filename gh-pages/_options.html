@@ -8,7 +8,7 @@
   will pass if no input is provided.  You must use the required guard
   along with them if you want no input to cause an error.  There is no
   problem using multiple guards against a single field.  Try out the
-  numeric guards below:
+  numeric guards in the forms below:
 </p>
 
 <div class="example">
@@ -17,10 +17,7 @@
       $.guard("#form1 .input1").using("int", { min: 5 });
       $.guard("#form1 .input2").using("int", { max: 15 });
       $.guard("#form1 .input3").using("int", { min: -5, max: 42 });
-      $.guard("#form2 .input1").using("float", { min: -5.3 });
-      $.guard("#form2 .input2").using("float", { max: 42.42 });
-      $.guard("#form2 .input3").using("float", { min: 0, max: 0.999 });
-      $.liveGuard("#form1, #form2");
+      $.liveGuard("#form1");
     </script>
 
     <form id="form1">
@@ -43,6 +40,17 @@
 
       <p><input type="submit" /></p>
     </form>
+  </div>
+</div>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form2 .input1").using("float", { min: -5.3 });
+      $.guard("#form2 .input2").using("float", { max: 42.42 });
+      $.guard("#form2 .input3").using("float", { min: 0, max: 0.999 });
+      $.liveGuard("#form2");
+    </script>
 
     <form id="form2">
       <h3>float</h3>
@@ -64,6 +72,14 @@
 
       <p><input type="submit" /></p>
     </form>
+  </div>
+</div>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.liveGuard("#form3");
+    </script>
 
     <form id="form3">
       <h3>moneyUS</h3>
