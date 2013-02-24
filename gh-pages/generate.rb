@@ -28,6 +28,10 @@ def define_pages
 end
 
 class Page
+  def index(value)
+    @index = value
+  end
+
   def step(value)
     @step = value
   end
@@ -38,6 +42,10 @@ class Page
 
   def file(value)
     @file = value
+  end
+
+  def get_index
+    @index
   end
 
   def get_step
@@ -56,33 +64,60 @@ class Page
     File.join Page.output_dir, get_file
   end
 
-  def generate(index)
+  def generate
     result = Page.template.clone
-    result.gsub! "{{content}}", content
-
-    if index > 0
-      prev_html = %{<a href="#{PAGES[index - 1].get_file}">previous</a>}
-    end
-
-    if index < PAGES.length - 1
-      next_html = %{<a href="#{PAGES[index + 1].get_file}">next</a>}
-    end
-
-    result.gsub! "{{title}}", %{<h1>#{get_title}</h1>}
-    result.gsub! "{{prev}}", prev_html.to_s
-    result.gsub! "{{next}}", next_html.to_s
+    result.gsub! "{{title}}", title_html
+    result.gsub! "{{content}}", content_html
+    result.gsub! "{{wizard}}", wizard_html
+    result.gsub! "{{prev}}", prev_html
+    result.gsub! "{{next}}", next_html
 
     File.open output_file, "w" do |f|
       f << result
     end
   end
 
-  def content
-    @content ||= File.read(Page.input_file("_#{get_file}"))
+  def title_html
+    @title_html ||= %{<h1>#{get_title}</h1>}
   end
 
-  def to_li
-    %{<li><a href="#{get_file}">#{get_step}</a></li>}
+  def content_html
+    @content_html ||= File.read(Page.input_file("_#{get_file}"))
+  end
+
+  def wizard_html
+    @wizard_html ||= "\n".tap do |wizard|
+      wizard << %{<div class="wizard">\n}
+      wizard << %{  <ol>\n}
+
+      PAGES.each do |page|
+        wizard << "    #{page.to_li(page == self)}\n"
+      end
+
+      wizard << %{  </ol>\n}
+      wizard << %{</div>\n}
+    end
+  end
+
+  def prev_html
+    @prev_html ||= if get_index > 0
+                     %{<a href="#{PAGES[get_index - 1].get_file}">previous</a>}
+                   else
+                     ""
+                   end
+  end
+
+  def next_html
+    @next_html ||= if get_index < PAGES.length - 1
+                     %{<a href="#{PAGES[get_index + 1].get_file}">next</a>}
+                   else
+                     ""
+                   end
+  end
+
+  def to_li(current = false)
+    css_class = %{ class="current"} if current
+    %{<li#{css_class}><a href="#{get_file}">#{get_step}</a></li>}
   end
 
   class << self
@@ -95,16 +130,7 @@ class Page
     end
 
     def template
-      @template ||= File.read(input_file("_template.html")).gsub("{{wizard}}", wizard)
-    end
-
-    def wizard
-      @wizard ||= %{
-      <p class="wizard">
-        <ol>
-          #{PAGES.map(&:to_li).join "\n    "}
-        </ol>
-      </p>}
+      @template ||= File.read(input_file("_template.html"))
     end
   end
 end
@@ -112,7 +138,10 @@ end
 PAGES = []
 
 def page(&block)
+  next_index = PAGES.length
+
   PAGES << Page.new.tap do |p|
+    p.index next_index
     p.instance_eval &block
   end
 end
@@ -125,9 +154,7 @@ def check_usage
 end
 
 def generate
-  PAGES.each_with_index do |p, i|
-    p.generate i
-  end
+  PAGES.each &:generate
 end
 
 define_pages
