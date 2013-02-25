@@ -19,3 +19,7 @@ footer div.footer-links a {
 .wizard li.current {
     font-weight: bold;
 }
+
+code, pre {
+    font-family: monospace;
+}

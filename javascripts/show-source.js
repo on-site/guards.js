@@ -20,6 +20,8 @@ $(function() {
         var text = stripWhitespaceColumn($this.html());
         var $content = $("<code />").text(text);
         $this.parent().prepend($content);
-        $content.wrap("<pre />").wrap('<div class="source" />');
+        $content.wrap('<pre class="prettyprint" />').wrap('<div class="source" />');
     });
+
+    prettyPrint();
 });
