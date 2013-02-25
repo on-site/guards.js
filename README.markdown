@@ -1,4 +1,8 @@
-<a class="button primary" href="http://on-site.github.com/guards.js/">Live Demo</a>
+# Live Demo
+
+If you are new to guards.js, please try the [live demo](http://on-site.github.com/guards.js/).
+It provides live code examples, along with a tutorial and walkthrough
+of the various features guards.js has to offer.
 
 # Summary
 
