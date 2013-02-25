@@ -229,6 +229,41 @@
         }
     };
 
+    // Implementation of $.enableGuards(selector);
+    $.Guards.prototype.enableGuards = function(selector) {
+        var self = this;
+
+        this.on(selector, "submit", function() {
+            return self.guard($(this));
+        });
+    };
+
+    // Implementation of $.liveGuard(selector);
+    $.Guards.prototype.liveGuard = function(selector) {
+        var self = this;
+        this.enableGuards(selector);
+
+        this.on(selector, "change blur", function(e) {
+            var $element = $(e.target);
+
+            if (!$element.is(":guardable")) {
+                return;
+            }
+
+            self.applyGuards(function(guard) {
+                if (guard.isGrouped()) {
+                    if (guard.appliesTo($element)) {
+                        return $element.parents("form:first").find(":guardable");
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return $element;
+                }
+            });
+        });
+    };
+
     /**
      * Format all arguments into the first argument.  This is a
      * convenience function similar to the C sprintf function, though
@@ -1248,9 +1283,7 @@
      * selector.
      */
     $.enableGuards = function(selector) {
-        $.guards.on(selector, "submit", function() {
-            return $(this).guard();
-        });
+        $.guards.enableGuards(selector);
     };
 
     /**
@@ -1260,27 +1293,7 @@
      * submitted.
      */
     $.liveGuard = function(selector) {
-        $.enableGuards(selector);
-
-        $.guards.on(selector, "change blur", function(e) {
-            var $element = $(e.target);
-
-            if (!$element.is(":guardable")) {
-                return;
-            }
-
-            $.guards.applyGuards(function(guard) {
-                if (guard.isGrouped()) {
-                    if (guard.appliesTo($element)) {
-                        return $element.parents("form:first").find(":guardable");
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return $element;
-                }
-            });
-        });
+        $.guards.liveGuard(selector);
     };
 
     $.extend($.expr[":"], {
