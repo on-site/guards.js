@@ -271,8 +271,8 @@
     $.Guards.prototype.styleHtml = function() {
         var fieldStyle = {};
         var messageStyle = {};
-        var fieldSelector = ".invalid-field";
-        var messageSelector = ".error-message";
+        var fieldSelector = "." + this.defaults.invalidClass;
+        var messageSelector = "." + this.defaults.messageClass;
         var selectorScope, styles;
 
         if (this.defaults.style && this.defaults.style.field) {
@@ -302,8 +302,7 @@
             messageStyle = styles.message;
         }
 
-        var result = "";
-        result += "<style>\n";
+        var result = "<style>\n";
 
         var addStyles = function(selector, styles) {
             result += "  " + selector + " {";

@@ -506,7 +506,9 @@
             equal($("#form7-4")[0].nextSibling.nextSibling, $("#form7 ." + errorMsgClass())[0], "Error location");
           });
 
-          module("styling guards");
+          module("styling guards", { setup: function() {
+            resetGuards();
+          } });
 
           test("no arguments", function() {
             var $style = $($.guards.styleHtml());
@@ -557,7 +559,32 @@
             okStyle("#myForm .error-message", "background-color", "#0000ff", $style.html());
           });
 
-          module("custom guard");
+          test("using different default message and error classes", function() {
+            $.guards.defaults.invalidClass = "my-invalid";
+            $.guards.defaults.messageClass = "my-error-message";
+            var $style = $($.guards.styleHtml());
+            notOkStyle(".invalid-field", "background-color", "#ffff66", $style.html());
+            okStyle(".my-invalid", "background-color", "#ffff66", $style.html());
+            notOkStyle(".error-message", "color", "#ff0000", $style.html());
+            notOkStyle(".error-message", "margin-left", "10px", $style.html());
+            okStyle(".my-error-message", "color", "#ff0000", $style.html());
+            okStyle(".my-error-message", "margin-left", "10px", $style.html());
+          });
+
+          test("using different default message and error classes with selector scope and custom styles", function() {
+            $.guards.defaults.invalidClass = "my-invalid";
+            $.guards.defaults.messageClass = "my-error-message";
+            var $style = $($.guards.styleHtml("#myForm", { field: { color: "#00ff00" }, message: { "background-color": "#0000ff" } }));
+            notOkStyle("#myForm .invalid-field", "background-color", "#ffff66", $style.html());
+            okStyle("#myForm .my-invalid", "color", "#00ff00", $style.html());
+            notOkStyle("#myForm .error-message", "color", "#ff0000", $style.html());
+            notOkStyle("#myForm .error-message", "margin-left", "10px", $style.html());
+            okStyle("#myForm .my-error-message", "background-color", "#0000ff", $style.html());
+          });
+
+          module("custom guard", { setup: function() {
+            resetGuards();
+          } });
 
           function customGuard(value, element) {
             return $.inArray(value, ["bad", "invalid"]) == -1;
