@@ -269,6 +269,35 @@
     };
 
     $.Guards.prototype.styleHtml = function() {
+        var fieldStyle = {};
+        var messageStyle = {};
+
+        if (this.defaults.style && this.defaults.style.field) {
+            fieldStyle = this.defaults.style.field;
+        }
+
+        if (this.defaults.style && this.defaults.style.message) {
+            messageStyle = this.defaults.style.message;
+        }
+
+        var styles;
+
+        if (arguments.length == 1) {
+            if (typeof(arguments[0]) == "string") {
+                // TODO
+            } else {
+                styles = arguments[0];
+            }
+        }
+
+        if (styles && styles.field) {
+            fieldStyle = styles.field;
+        }
+
+        if (styles && styles.message) {
+            messageStyle = styles.message;
+        }
+
         var result = "";
         result += "<style>\n";
 
@@ -284,14 +313,8 @@
             result += " }\n";
         };
 
-        if (this.defaults.style && this.defaults.style.field) {
-            addStyles(".invalid-field", this.defaults.style.field);
-        }
-
-        if (this.defaults.style && this.defaults.style.message) {
-            addStyles(".error-message", this.defaults.style.message);
-        }
-
+        addStyles(".invalid-field", fieldStyle);
+        addStyles(".error-message", messageStyle);
         result += "</style>";
         return result;
     };

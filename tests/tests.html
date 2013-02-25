@@ -124,9 +124,14 @@
             }
           }
 
-          function regexOk(regex, string, message) {
+          function okRegex(regex, string, message) {
             message = message || ("\"" + string + "\" matches " + regex);
             ok(regex.test(string), message);
+          }
+
+          function notOkRegex(regex, string, message) {
+            message = message || ("\"" + string + "\" doesn't match " + regex);
+            ok(!regex.test(string), message);
           }
 
           // Thanks to http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
@@ -136,7 +141,12 @@
 
           function okStyle(selector, attr, value, html) {
             var message = "style:\n" + html + "\nshould have '" + selector + "' with style '" + attr + ": " + value + "'";
-            regexOk(new RegExp(RegExp.escape(selector) + "\\s*\\{[^}]*" + RegExp.escape(attr) + ":\\s*" + RegExp.escape(value) + ";[^}]*\\}"), html, message);
+            okRegex(new RegExp(RegExp.escape(selector) + "\\s*\\{[^}]*" + RegExp.escape(attr) + ":\\s*" + RegExp.escape(value) + ";[^}]*\\}"), html, message);
+          }
+
+          function notOkStyle(selector, attr, value, html) {
+            var message = "style:\n" + html + "\nshould not have '" + selector + "' with style '" + attr + ": " + value + "'";
+            notOkRegex(new RegExp(RegExp.escape(selector) + "\\s*\\{[^}]*" + RegExp.escape(attr) + ":\\s*" + RegExp.escape(value) + ";[^}]*\\}"), html, message);
           }
 
           function generateTest(options, args, fn) {
@@ -504,6 +514,31 @@
             okStyle(".invalid-field", "background-color", "#ffff66", $style.html());
             okStyle(".error-message", "color", "#ff0000", $style.html());
             okStyle(".error-message", "margin-left", "10px", $style.html());
+          });
+
+          test("customized field style", function() {
+            var $style = $($.guards.styleHtml({ field: { color: "#00ff00" } }));
+            notOkStyle(".invalid-field", "background-color", "#ffff66", $style.html());
+            okStyle(".invalid-field", "color", "#00ff00", $style.html());
+            okStyle(".error-message", "color", "#ff0000", $style.html());
+            okStyle(".error-message", "margin-left", "10px", $style.html());
+          });
+
+          test("customized message style", function() {
+            var $style = $($.guards.styleHtml({ message: { "background-color": "#0000ff" } }));
+            okStyle(".invalid-field", "background-color", "#ffff66", $style.html());
+            notOkStyle(".error-message", "color", "#ff0000", $style.html());
+            notOkStyle(".error-message", "margin-left", "10px", $style.html());
+            okStyle(".error-message", "background-color", "#0000ff", $style.html());
+          });
+
+          test("customized field and message style", function() {
+            var $style = $($.guards.styleHtml({ field: { color: "#00ff00" }, message: { "background-color": "#0000ff" } }));
+            notOkStyle(".invalid-field", "background-color", "#ffff66", $style.html());
+            okStyle(".invalid-field", "color", "#00ff00", $style.html());
+            notOkStyle(".error-message", "color", "#ff0000", $style.html());
+            notOkStyle(".error-message", "margin-left", "10px", $style.html());
+            okStyle(".error-message", "background-color", "#0000ff", $style.html());
           });
 
           module("custom guard");
