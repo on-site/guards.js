@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v0.7.1
+ * Guards JavaScript jQuery Plugin v0.7.2
  * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2013, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Sun Feb 24 20:32:47 2013 -0800
+ * Date: Mon Feb 25 03:47:45 2013 -0800
  */
 
 /**
@@ -48,9 +48,10 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "0.7.1";
+    $.guard.version = "0.7.2";
 
     $.Guards = function() {
+        var self = this;
         this._guards = [];
 
         this.options = {
@@ -65,8 +66,8 @@
             return function() {
                 var args = $.makeArray(arguments);
                 return function(value, element) {
-                    return $.guards[aggregator](value, function(v) {
-                        return $.guards[validator].apply($.guards[validator], $.merge([v], args));
+                    return self[aggregator](value, function(v) {
+                        return self[validator].apply(self, $.merge([v], args));
                     });
                 };
             };
@@ -74,7 +75,7 @@
 
         var minMaxMessage = function(formatting, minMaxFormat) {
             return function(options) {
-                if ($.guards.isNullOrUndefined(options)) {
+                if (self.isNullOrUndefined(options)) {
                     options = {};
                 }
 
@@ -82,32 +83,32 @@
                     minMaxFormat = function(x) { return x; };
                 }
 
-                var minDefined = !$.guards.isNullOrUndefined(options.min);
-                var maxDefined = !$.guards.isNullOrUndefined(options.max);
+                var minDefined = !self.isNullOrUndefined(options.min);
+                var maxDefined = !self.isNullOrUndefined(options.max);
 
                 if (minDefined && maxDefined) {
-                    return $.guards.format(formatting.minAndMax, minMaxFormat(options.min), minMaxFormat(options.max));
+                    return self.format(formatting.minAndMax, minMaxFormat(options.min), minMaxFormat(options.max));
                 }
 
                 if (minDefined) {
-                    return $.guards.format(formatting.min, minMaxFormat(options.min));
+                    return self.format(formatting.min, minMaxFormat(options.min));
                 }
 
                 if (maxDefined) {
-                    return $.guards.format(formatting.max, minMaxFormat(options.max));
+                    return self.format(formatting.max, minMaxFormat(options.max));
                 }
 
                 if (formatting.invalid) {
                     return formatting.invalid;
                 }
 
-                return $.guards.defaults.messages.undefined;
+                return self.defaults.messages.undefined;
             };
         };
 
         var arrayMessage = function(formatting) {
             return function(array) {
-                return $.guards.format(formatting, $.map(array, function(x, i) { return $.trim("" + x); }).join(", "));
+                return self.format(formatting, $.map(array, function(x, i) { return $.trim("" + x); }).join(", "));
             };
         };
 
@@ -204,7 +205,7 @@
         };
     };
 
-    $.Guards.prototype.version = "0.7.1";
+    $.Guards.prototype.version = "0.7.2";
 
     // Really old jQuery doesn't have isArray, so use this alias
     // instead.
@@ -239,6 +240,41 @@
         } else {
             this.log("Could not bind live handlers, probably because jQuery is too old.");
         }
+    };
+
+    // Implementation of $.enableGuards(selector);
+    $.Guards.prototype.enableGuards = function(selector) {
+        var self = this;
+
+        this.on(selector, "submit", function() {
+            return self.guard($(this));
+        });
+    };
+
+    // Implementation of $.liveGuard(selector);
+    $.Guards.prototype.liveGuard = function(selector) {
+        var self = this;
+        this.enableGuards(selector);
+
+        this.on(selector, "change blur", function(e) {
+            var $element = $(e.target);
+
+            if (!$element.is(":guardable")) {
+                return;
+            }
+
+            self.applyGuards(function(guard) {
+                if (guard.isGrouped()) {
+                    if (guard.appliesTo($element)) {
+                        return $element.parents("form:first").find(":guardable");
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return $element;
+                }
+            });
+        });
     };
 
     /**
@@ -455,7 +491,7 @@
      * or a string of just spaces.
      */
     $.Guards.prototype.isBlank = function(value) {
-        return $.guards.isNullOrUndefined(value) || $.trim(value) == "";
+        return this.isNullOrUndefined(value) || $.trim(value) == "";
     };
 
     /**
@@ -488,7 +524,7 @@
      * the list.  Whitespace is ignored.
      */
     $.Guards.prototype.isDisallowed = function(value, disallowed) {
-        return !$.guards.isAllowed(value, disallowed);
+        return !this.isAllowed(value, disallowed);
     };
 
     /**
@@ -502,7 +538,7 @@
      * Return the negation of calling isBlank(value).
      */
     $.Guards.prototype.isPresent = function(value) {
-        return !$.guards.isBlank(value);
+        return !this.isBlank(value);
     };
 
     /**
@@ -532,12 +568,12 @@
      * to options.max (if options.max is defined).
      */
     $.Guards.prototype.isInRange = function(value, options) {
-        if ($.guards.isNullOrUndefined(options)) {
+        if (this.isNullOrUndefined(options)) {
             options = {};
         }
 
-        var bigEnough = $.guards.isNullOrUndefined(options.min) || value >= options.min;
-        var smallEnough = $.guards.isNullOrUndefined(options.max) || value <= options.max;
+        var bigEnough = this.isNullOrUndefined(options.min) || value >= options.min;
+        var smallEnough = this.isNullOrUndefined(options.max) || value <= options.max;
         return bigEnough && smallEnough;
     };
 
@@ -558,7 +594,7 @@
         }
 
         value = parseInt(value, 10);
-        return $.guards.isInRange(value, options);
+        return this.isInRange(value, options);
     };
 
     /**
@@ -578,7 +614,7 @@
         }
 
         value = parseFloat(value);
-        return $.guards.isInRange(value, options);
+        return this.isInRange(value, options);
     };
 
     /**
@@ -614,7 +650,7 @@
         }
 
         value = parseFloat(value.replace(/[\$,]/g, ""));
-        return $.guards.isInRange(value, options);
+        return this.isInRange(value, options);
     };
 
     /**
@@ -652,7 +688,7 @@
      */
     $.Guards.prototype.isValidString = function(value, options) {
         value = $.trim(value);
-        return $.guards.isValidInt("" + value.length, options);
+        return this.isValidInt("" + value.length, options);
     };
 
     /**
@@ -723,11 +759,12 @@
      */
     $.Guards.prototype.applyGuards = function(callback) {
         var result = true;
+        var self = this;
 
         $.each(this._guards, function(index, guard) {
             var fields = callback(guard);
 
-            if (fields !== false && !$.guards.test(guard, fields)) {
+            if (fields !== false && !self.test(guard, fields)) {
                 result = false;
             }
         });
@@ -801,7 +838,7 @@
 
             var fn = this._guards.defaults.guards[guard];
 
-            if ($.guards.isNullOrUndefined(fn)) {
+            if (this._guards.isNullOrUndefined(fn)) {
                 throw new Error("There is no standard guard named '" + guard + "'");
             }
 
@@ -993,7 +1030,7 @@
             return true;
         }
 
-        if (!$.guards.options.stackErrors && $elements.hasErrors()) {
+        if (!this._guards.options.stackErrors && $elements.hasErrors()) {
             return false;
         }
 
@@ -1259,9 +1296,7 @@
      * selector.
      */
     $.enableGuards = function(selector) {
-        $.guards.on(selector, "submit", function() {
-            return $(this).guard();
-        });
+        $.guards.enableGuards(selector);
     };
 
     /**
@@ -1271,27 +1306,7 @@
      * submitted.
      */
     $.liveGuard = function(selector) {
-        $.enableGuards(selector);
-
-        $.guards.on(selector, "change blur", function(e) {
-            var $element = $(e.target);
-
-            if (!$element.is(":guardable")) {
-                return;
-            }
-
-            $.guards.applyGuards(function(guard) {
-                if (guard.isGrouped()) {
-                    if (guard.appliesTo($element)) {
-                        return $element.parents("form:first").find(":guardable");
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return $element;
-                }
-            });
-        });
+        $.guards.liveGuard(selector);
     };
 
     $.extend($.expr[":"], {

@@ -252,6 +252,7 @@ Examples:
 
 # Downloads
 
+* 0.7.2: [production minified](https://raw.github.com/on-site/guards.js/0.7.2/downloads/guards-0.7.2.min.js), [development](https://raw.github.com/on-site/guards.js/0.7.2/downloads/guards-0.7.2.js)
 * 0.7.1: [production minified](https://raw.github.com/on-site/guards.js/0.7.1/downloads/guards-0.7.1.min.js), [development](https://raw.github.com/on-site/guards.js/0.7.1/downloads/guards-0.7.1.js)
 * 0.7.0: [production minified](https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.min.js), [development](https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.js)
 * 0.6.5: [production minified](https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.min.js), [development](https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.js)
