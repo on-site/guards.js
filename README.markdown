@@ -213,6 +213,37 @@ events on field changes:
 
     $.liveGuard("#myForm");
 
+## Styling guards
+
+To style guards, you can either use your own css, or you can use the
+$.guards.style function to add in a style block to the head of your
+document.
+
+Examples:
+
+    // Style guards with the default styling (yellow error fields and red error messages).
+    $.guards.style();
+
+    // Use the default styling but scope it with the #myForm selector.
+    $.guards.style("#myForm");
+
+    // Use default styling for error messages, but customize error field styling.
+    $.guards.style({
+        field: {
+            color: "#ff0000"
+        }
+    });
+
+    // Customize error messages and fields scoped to #myForm.
+    $.guards.style("#myForm", {
+        field: {
+            color: "#ff0000"
+        },
+        message: {
+            color: "#ff6666"
+        }
+    });
+
 # Downloads
 
 * 0.7.0: [production minified](https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.min.js), [development](https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.js)
