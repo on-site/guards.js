@@ -39,12 +39,15 @@
 
     $.Guards = function() {
         this._guards = [];
+
         this.options = {
             stackErrors: false
         };
+
         this.constants = {
             notChecked: ""
         };
+
         var defineGuard = function(aggregator, validator) {
             return function() {
                 var args = $.makeArray(arguments);
@@ -55,6 +58,7 @@
                 };
             };
         };
+
         var minMaxMessage = function(formatting, minMaxFormat) {
             return function(options) {
                 if ($.guards.isNullOrUndefined(options)) {
@@ -87,11 +91,13 @@
                 return $.guards.defaults.messages.undefined;
             };
         };
+
         var arrayMessage = function(formatting) {
             return function(array) {
                 return $.guards.format(formatting, $.map(array, function(x, i) { return $.trim("" + x); }).join(", "));
             };
         };
+
         this.defaults = {
             grouped: false,
             guard: "required",
@@ -122,38 +128,56 @@
                 different: "These values must all be different.",
                 disallow: arrayMessage("Please don't enter: #{0}."),
                 email: "Please enter a valid E-mail address.",
+
                 "float": minMaxMessage({
                     minAndMax: "Please enter a number from #{0} to #{1}.",
                     min: "Please enter a number no less than #{0}.",
                     max: "Please enter a number no greater than #{0}.",
                     invalid: "Please enter a number."
                 }),
+
                 "int": minMaxMessage({
                     minAndMax: "Please enter a number from #{0} to #{1}.",
                     min: "Please enter a number no less than #{0}.",
                     max: "Please enter a number no greater than #{0}.",
                     invalid: "Please enter a number."
                 }),
+
                 moneyUS: minMaxMessage({
                     minAndMax: "Please enter a dollar amount from #{0} to #{1}.",
                     min: "Please enter a dollar amount no less than #{0}.",
                     max: "Please enter a dollar amount no greater than #{0}.",
                     invalid: "Please enter a dollar amount."
                 }, function(x) { return x.toFixed(2); }),
+
                 never: "There was an error.",
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
                 same: "These values must all match.",
+
                 string: minMaxMessage({
                     minAndMax: "Please enter a string with length #{0} to #{1}.",
                     min: "Please enter a string with length at least #{0}.",
                     max: "Please enter a string with length no greater than #{0}."
                 }),
-                undefined: "Please fix this field."
+
+                "undefined": "Please fix this field."
+            },
+
+            style: {
+                field: {
+                    "background-color": "#ffff66"
+                },
+
+                message: {
+                    color: "#ff0000",
+                    "margin-left": "10px"
+                }
             },
 
             tag: "span",
+
             target: function(errorElement) {
                 var last = $(this).filter(":last");
 
@@ -247,13 +271,27 @@
     $.Guards.prototype.styleHtml = function() {
         var result = "";
         result += "<style>\n";
-        result += "  .invalid-field {\n";
-        result += "    background-color: #ffff66;\n";
-        result += "  }\n";
-        result += "  .error-message {\n";
-        result += "    color: #ff0000;\n";
-        result += "    margin-left: 10px;\n";
-        result += "  }\n";
+
+        var addStyles = function(selector, styles) {
+            result += "  " + selector + " {";
+
+            if (styles) {
+                $.each(styles, function(key, value) {
+                    result += " " + key + ": " + value +  ";";
+                });
+            }
+
+            result += " }\n";
+        };
+
+        if (this.defaults.style && this.defaults.style.field) {
+            addStyles(".invalid-field", this.defaults.style.field);
+        }
+
+        if (this.defaults.style && this.defaults.style.message) {
+            addStyles(".error-message", this.defaults.style.message);
+        }
+
         result += "</style>";
         return result;
     };
