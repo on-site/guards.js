@@ -163,8 +163,10 @@
 <div class="example">
   <div class="display">
     <script>
-      $.guard("#form5 input[name='input1']").using("allow", ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
-      $.guard("#form5 input[name='input2']").using("disallow", ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
+      $.guard("#form5 input[name='input1']").using("allow",
+          ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
+      $.guard("#form5 input[name='input2']").using("disallow",
+          ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
       $.liveGuard("#form5");
     </script>
 

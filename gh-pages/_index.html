@@ -136,11 +136,13 @@
 <div class="example">
   <div class="display">
     <script>
-      $.guard("#form3 input[name='name'], #form3 input[name='email']").using("required");
+      $.guard("#form3 input[name='name'], #form3 input[name='email']")
+          .using("required");
       $.guard("#form3 input[name='email']").using("email");
       $(function() { $("#form3").enableGuards(); });
 
-      $.guard("#form4 input[name='name'], #form4 input[name='phone']").using("required");
+      $.guard("#form4 input[name='name'], #form4 input[name='phone']")
+          .using("required");
       $.guard("#form4 input[name='phone']").using("phoneUS");
       $.liveGuard("#form4");
     </script>
