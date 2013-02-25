@@ -11,7 +11,6 @@ def define_pages
   end
 
   page do
-    pending!
     step "Customization"
   end
 
