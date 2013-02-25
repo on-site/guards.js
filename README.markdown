@@ -1,3 +1,5 @@
+<a class="button primary" href="http://on-site.github.com/guards.js/">Live Demo</a>
+
 # Summary
 
 Guard your forms with class (or any other selectors).  guards.js is a
