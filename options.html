@@ -7,12 +7,15 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <link rel="stylesheet" href="stylesheets/additional-styles.css">
+    <link rel="stylesheet" href="stylesheets/prettify-sunburst.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
+    <script src="javascripts/prettify.js"></script>
+    <script src="javascripts/lang-css.js"></script>
     <script src="javascripts/show-source.js"></script>
   </head>
 
@@ -30,13 +33,14 @@
   <ol>
     <li><a href="index.html">Introduction</a></li>
     <li class="current"><a href="options.html">Options</a></li>
+    <li><a href="customization.html">Customization</a></li>
   </ol>
 </div>
 
 
         <p>
           <a href="index.html">previous</a>
-          
+          <a href="customization.html">next</a>
         </p>
 
         <h1>Options</h1>
@@ -205,8 +209,10 @@
 <div class="example">
   <div class="display">
     <script>
-      $.guard("#form5 input[name='input1']").using("allow", ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
-      $.guard("#form5 input[name='input2']").using("disallow", ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
+      $.guard("#form5 input[name='input1']").using("allow",
+          ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
+      $.guard("#form5 input[name='input2']").using("disallow",
+          ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]);
       $.liveGuard("#form5");
     </script>
 
@@ -233,7 +239,7 @@
 
         <p>
           <a href="index.html">previous</a>
-          
+          <a href="customization.html">next</a>
         </p>
       </section>
     </div>

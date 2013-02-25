@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>guards.js by On-Site.com</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/additional-styles.css">
+    <link rel="stylesheet" href="stylesheets/prettify-sunburst.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
+    <script src="javascripts/prettify.js"></script>
+    <script src="javascripts/lang-css.js"></script>
+    <script src="javascripts/show-source.js"></script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>guards.js</h1>
+        <p>Guard your forms with class (or any other selectors).</p>
+        <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
+      </header>
+
+      <section>
+        
+<div class="wizard">
+  <ol>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="options.html">Options</a></li>
+    <li class="current"><a href="customization.html">Customization</a></li>
+  </ol>
+</div>
+
+
+        <p>
+          <a href="options.html">previous</a>
+          
+        </p>
+
+        <h1>Customization</h1>
+        <h2>Changing the error message</h2>
+
+<p>
+  All aspects of the error message can be changed, including the
+  content of the message, where it is placed, what type of tag it is,
+  and what class it uses (even what class is attached to the field
+  that had an error).  Try out the next form to see how the various
+  aspects are changed.
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#form1 input[name='input1']").using("required")
+          .message("ERROR'D!!!");
+      $.guard("#form1 input[name='input2']").using("required")
+          .tag("p").messageClass("green");
+      $.guard("#form1 input[name='input3']").using("required")
+          .invalidClass("invalid-blue");
+      $.guard("#form1 input[name='input4']").using("required")
+          .target("#form1 .errors").message("Moved message.");
+      $.liveGuard("#form1");
+    </script>
+
+    <style>
+      p.green { color: #006600; }
+      .invalid-blue { background-color: #6666ff; }
+    </style>
+
+    <form id="form1">
+      <p><input type="text" name="input1" /></p>
+      <p><input type="text" name="input2" /></p>
+      <p><input type="text" name="input3" /></p>
+      <p><input type="text" name="input4" /></p>
+      <p><input type="submit" /></p>
+      <p class="errors"></p>
+    </form>
+  </div>
+</div>
+
+<p>
+  Notice from the example that multiple adjustments to the errors can
+  be chained.  Methods that modify a guard can all be chained
+  together, much like jQuery methods.
+</p>
+
+<h2>Custom guard</h2>
+
+<p>
+  The built in guards are not the only guards available.  Custom
+  validation functions can be used in place of a built in guard by
+  passing a function instead of a string to the <code>using</code>
+  method.  The following form demonstrates custom guard validation.
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("#regexp").using(function(value, element) {
+        try {
+          new RegExp(value);
+          return true;
+        } catch(e) {
+          return false;
+        }
+      }).message("Invalid regular expression.");
+
+      $.guard("#string").using(function(value, element) {
+        try {
+          var regexp = new RegExp($("#regexp").val());
+          return regexp.test(value);
+        } catch(e) {
+          return false;
+        }
+      }).message("Regular expression does not match.");
+
+      $.liveGuard("#form2");
+    </script>
+
+    <form id="form2">
+      <p>
+        <label for="regexp">Regular Expression:</label><br />
+        <input type="text" id="regexp" name="regexp" value="\d{1,2}-\d{1,2}-\d{4}" />
+      </p>
+
+      <p>
+        <label for="string">Test String:</label><br />
+        <input type="text" id="string" name="string" value="4/2/1942" />
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<h2>Separate guards instances and defaults</h2>
+
+<p>
+  Defaults for how guards.js behaves are available in
+  the <code>$.guards.defaults</code> object.  If you would like guards
+  to have default behavior that differs between two different forms,
+  one option is to create a separate <code>$.Guards</code> instance
+  and change the defaults.  The 2 forms below demonstrate this.
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      var g1 = new $.Guards();
+      g1.defaults.invalidClass = "g1-invalid";
+      g1.defaults.messageClass = "g1-error";
+      g1.add("#form3 input[type='text']").using("required");
+      g1.liveGuard("#form3");
+
+      var g2 = new $.Guards();
+      g2.defaults.invalidClass = "g2-invalid";
+      g2.defaults.messageClass = "g2-error";
+      g2.add("#form4 input[type='text']").using("required");
+      g2.liveGuard("#form4");
+    </script>
+
+    <style>
+      .g1-invalid { background-color: #66ff66; }
+      .g1-error { color: #006600; margin-left: 10px; }
+
+      .g2-invalid { background-color: #6666ff; }
+      .g2-error { color: #000066; margin-left: 10px; }
+    </style>
+
+    <form id="form3">
+      <p><input type="text" name="input1" /></p>
+      <p><input type="text" name="input2" /></p>
+      <p><input type="submit" /></p>
+    </form>
+
+    <form id="form4">
+      <p><input type="text" name="input1" /></p>
+      <p><input type="text" name="input2" /></p>
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<!-- TODO: Write up this section.
+<h2>Stacked errors</h2>
+
+<p>
+</p>
+-->
+
+
+        <p>
+          <a href="options.html">previous</a>
+          
+        </p>
+      </section>
+    </div>
+
+    <footer>
+      <div class="footer-links">
+        <p>
+          <a href="https://github.com/on-site/guards.js">repository</a>
+          <a href="https://github.com/on-site/guards.js#summary">documentation</a>
+          <a href="https://github.com/on-site/guards.js#downloads">downloads</a>
+          <a href="https://github.com/on-site/guards.js/issues">report bugs</a>
+          <a href="http://plugins.jquery.com/guards/">jQuery plugin</a>
+        </p>
+      </div>
+
+      <div>
+        <p>This project is maintained by <a href="https://github.com/on-site">On-Site.com</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </div>
+    </footer>
+
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>
