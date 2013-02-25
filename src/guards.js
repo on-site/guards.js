@@ -268,6 +268,10 @@
         return str;
     };
 
+    $.Guards.prototype.style = function() {
+        $("head").append(this.styleHtml.apply(this, arguments));
+    };
+
     $.Guards.prototype.styleHtml = function() {
         var fieldStyle = {};
         var messageStyle = {};
@@ -1222,7 +1226,7 @@
         $.enableGuards(selector);
 
         $.guards.on(selector, "change blur", function(e) {
-            var $element = $(e.srcElement);
+            var $element = $(e.target);
 
             if (!$element.is(":guardable")) {
                 return;
