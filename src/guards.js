@@ -268,10 +268,45 @@
         return str;
     };
 
+    /**
+     * Add a style element to the document head which will style
+     * elements with errors and their error messages.  This will use
+     * $.guards.defaults.style.field and
+     * $.guards.defaults.style.message to determine what styling to
+     * use.  These defaults are initialized to a yellow background for
+     * the invalid fields, and red color with a small left margin for
+     * error messages.  The selectors used to style these are
+     * determined by $.guards.defaults.invalidClass and
+     * $.guards.defaults.messageClass.
+     *
+     * There are 2 optional arguments allowed.  The first is a
+     * selector scope to use, and the second is overrides for styling.
+     * Either, both or neither arguments are allowed.
+     *
+     * With a changed selector scope, the selector for the styles is
+     * scoped to the given value.  This can be useful for different
+     * styling on different forms.  Note that the keys to the object
+     * in the "field" and "message" keys are used as css styles, and
+     * the values to those keys are the values for those styles.
+     *
+     * The custom style overrides can be used to change the field,
+     * message or both styles.
+     *
+     * Example: $.guards.style();
+     * Example: $.guards.style("#myForm");
+     * Example: $.guards.style({ field: { "color": "#ff0000" } });
+     * Example: $.guards.style({ message: { "color": "#ff6666" } });
+     * Example: $.guards.style("#myForm", { field: { "color": "#ff0000" }, message: { "color": "#ff6666" } });
+     */
     $.Guards.prototype.style = function() {
         $("head").append(this.styleHtml.apply(this, arguments));
     };
 
+    /**
+     * Retrieve the style html as a string to use for the
+     * $.guards.style() function.  The documentation for that function
+     * applies to this as well.
+     */
     $.Guards.prototype.styleHtml = function() {
         var fieldStyle = {};
         var messageStyle = {};
