@@ -1,6 +1,6 @@
 /*!
- * Guards JavaScript jQuery Plugin v0.7.0
- * http://github.com/on-site/Guards-Javascript-Validation
+ * Guards JavaScript jQuery Plugin v0.7.1
+ * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2013, On-Site.com, http://www.on-site.com/
  * Licensed under the MIT license.
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Fri Feb 22 22:35:49 2013 -0800
+ * Date: Sun Feb 24 20:32:47 2013 -0800
  */
 
 /**
@@ -48,16 +48,19 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "0.7.0";
+    $.guard.version = "0.7.1";
 
     $.Guards = function() {
         this._guards = [];
+
         this.options = {
             stackErrors: false
         };
+
         this.constants = {
             notChecked: ""
         };
+
         var defineGuard = function(aggregator, validator) {
             return function() {
                 var args = $.makeArray(arguments);
@@ -68,6 +71,7 @@
                 };
             };
         };
+
         var minMaxMessage = function(formatting, minMaxFormat) {
             return function(options) {
                 if ($.guards.isNullOrUndefined(options)) {
@@ -100,11 +104,13 @@
                 return $.guards.defaults.messages.undefined;
             };
         };
+
         var arrayMessage = function(formatting) {
             return function(array) {
                 return $.guards.format(formatting, $.map(array, function(x, i) { return $.trim("" + x); }).join(", "));
             };
         };
+
         this.defaults = {
             grouped: false,
             guard: "required",
@@ -135,38 +141,56 @@
                 different: "These values must all be different.",
                 disallow: arrayMessage("Please don't enter: #{0}."),
                 email: "Please enter a valid E-mail address.",
+
                 "float": minMaxMessage({
                     minAndMax: "Please enter a number from #{0} to #{1}.",
                     min: "Please enter a number no less than #{0}.",
                     max: "Please enter a number no greater than #{0}.",
                     invalid: "Please enter a number."
                 }),
+
                 "int": minMaxMessage({
                     minAndMax: "Please enter a number from #{0} to #{1}.",
                     min: "Please enter a number no less than #{0}.",
                     max: "Please enter a number no greater than #{0}.",
                     invalid: "Please enter a number."
                 }),
+
                 moneyUS: minMaxMessage({
                     minAndMax: "Please enter a dollar amount from #{0} to #{1}.",
                     min: "Please enter a dollar amount no less than #{0}.",
                     max: "Please enter a dollar amount no greater than #{0}.",
                     invalid: "Please enter a dollar amount."
                 }, function(x) { return x.toFixed(2); }),
+
                 never: "There was an error.",
                 oneRequired: "Specify at least one.",
                 phoneUS: "Please enter a valid phone number.",
                 required: "This field is required.",
                 same: "These values must all match.",
+
                 string: minMaxMessage({
                     minAndMax: "Please enter a string with length #{0} to #{1}.",
                     min: "Please enter a string with length at least #{0}.",
                     max: "Please enter a string with length no greater than #{0}."
                 }),
-                undefined: "Please fix this field."
+
+                "undefined": "Please fix this field."
+            },
+
+            style: {
+                field: {
+                    "background-color": "#ffff66"
+                },
+
+                message: {
+                    color: "#ff0000",
+                    "margin-left": "10px"
+                }
             },
 
             tag: "span",
+
             target: function(errorElement) {
                 var last = $(this).filter(":last");
 
@@ -180,7 +204,7 @@
         };
     };
 
-    $.Guards.prototype.version = "0.7.0";
+    $.Guards.prototype.version = "0.7.1";
 
     // Really old jQuery doesn't have isArray, so use this alias
     // instead.
@@ -255,6 +279,104 @@
         }
 
         return str;
+    };
+
+    /**
+     * Add a style element to the document head which will style
+     * elements with errors and their error messages.  This will use
+     * $.guards.defaults.style.field and
+     * $.guards.defaults.style.message to determine what styling to
+     * use.  These defaults are initialized to a yellow background for
+     * the invalid fields, and red color with a small left margin for
+     * error messages.  The selectors used to style these are
+     * determined by $.guards.defaults.invalidClass and
+     * $.guards.defaults.messageClass.
+     *
+     * There are 2 optional arguments allowed.  The first is a
+     * selector scope to use, and the second is overrides for styling.
+     * Either, both or neither arguments are allowed.
+     *
+     * With a changed selector scope, the selector for the styles is
+     * scoped to the given value.  This can be useful for different
+     * styling on different forms.  Note that the keys to the object
+     * in the "field" and "message" keys are used as css styles, and
+     * the values to those keys are the values for those styles.
+     *
+     * The custom style overrides can be used to change the field,
+     * message or both styles.
+     *
+     * Example: $.guards.style();
+     * Example: $.guards.style("#myForm");
+     * Example: $.guards.style({ field: { "color": "#ff0000" } });
+     * Example: $.guards.style({ message: { "color": "#ff6666" } });
+     * Example: $.guards.style("#myForm", { field: { "color": "#ff0000" }, message: { "color": "#ff6666" } });
+     */
+    $.Guards.prototype.style = function() {
+        $("head").append(this.styleHtml.apply(this, arguments));
+    };
+
+    /**
+     * Retrieve the style html as a string to use for the
+     * $.guards.style() function.  The documentation for that function
+     * applies to this as well.
+     */
+    $.Guards.prototype.styleHtml = function() {
+        var fieldStyle = {};
+        var messageStyle = {};
+        var fieldSelector = "." + this.defaults.invalidClass;
+        var messageSelector = "." + this.defaults.messageClass;
+        var selectorScope, styles;
+
+        if (this.defaults.style && this.defaults.style.field) {
+            fieldStyle = this.defaults.style.field;
+        }
+
+        if (this.defaults.style && this.defaults.style.message) {
+            messageStyle = this.defaults.style.message;
+        }
+
+        if (arguments.length == 1) {
+            if (typeof(arguments[0]) == "string") {
+                selectorScope = arguments[0];
+            } else {
+                styles = arguments[0];
+            }
+        } else if (arguments.length == 2) {
+            selectorScope = arguments[0];
+            styles = arguments[1];
+        }
+
+        if (styles && styles.field) {
+            fieldStyle = styles.field;
+        }
+
+        if (styles && styles.message) {
+            messageStyle = styles.message;
+        }
+
+        var result = "<style>\n";
+
+        var addStyles = function(selector, styles) {
+            result += "  " + selector + " {";
+
+            if (styles) {
+                $.each(styles, function(key, value) {
+                    result += " " + key + ": " + value +  ";";
+                });
+            }
+
+            result += " }\n";
+        };
+
+        if (selectorScope) {
+            fieldSelector = selectorScope + " " + fieldSelector;
+            messageSelector = selectorScope + " " + messageSelector;
+        }
+
+        addStyles(fieldSelector, fieldStyle);
+        addStyles(messageSelector, messageStyle);
+        result += "</style>";
+        return result;
     };
 
     /**
@@ -1144,14 +1266,15 @@
 
     /**
      * Live guard the form(s) in the given selector.  This will bind
-     * live on change events that will guard the elements when they
-     * change.  It will also guard the form when it is submitted.
+     * live on change and blur events that will guard the elements
+     * when they change.  It will also guard the form when it is
+     * submitted.
      */
     $.liveGuard = function(selector) {
         $.enableGuards(selector);
 
-        $.guards.on(selector, "change", function(e) {
-            var $element = $(e.srcElement);
+        $.guards.on(selector, "change blur", function(e) {
+            var $element = $(e.target);
 
             if (!$element.is(":guardable")) {
                 return;
