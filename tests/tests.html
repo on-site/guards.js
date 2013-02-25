@@ -541,6 +541,13 @@
             okStyle(".error-message", "background-color", "#0000ff", $style.html());
           });
 
+          test("with selector scope", function() {
+            var $style = $($.guards.styleHtml("#myForm"));
+            okStyle("#myForm .invalid-field", "background-color", "#ffff66", $style.html());
+            okStyle("#myForm .error-message", "color", "#ff0000", $style.html());
+            okStyle("#myForm .error-message", "margin-left", "10px", $style.html());
+          });
+
           module("custom guard");
 
           function customGuard(value, element) {

@@ -271,6 +271,7 @@
     $.Guards.prototype.styleHtml = function() {
         var fieldStyle = {};
         var messageStyle = {};
+        var selectorScope, styles;
 
         if (this.defaults.style && this.defaults.style.field) {
             fieldStyle = this.defaults.style.field;
@@ -280,11 +281,9 @@
             messageStyle = this.defaults.style.message;
         }
 
-        var styles;
-
         if (arguments.length == 1) {
             if (typeof(arguments[0]) == "string") {
-                // TODO
+                selectorScope = arguments[0];
             } else {
                 styles = arguments[0];
             }
@@ -313,8 +312,16 @@
             result += " }\n";
         };
 
-        addStyles(".invalid-field", fieldStyle);
-        addStyles(".error-message", messageStyle);
+        var fieldSelector = ".invalid-field";
+        var messageSelector = ".error-message";
+
+        if (selectorScope) {
+            fieldSelector = selectorScope + " " + fieldSelector;
+            messageSelector = selectorScope + " " + messageSelector;
+        }
+
+        addStyles(fieldSelector, fieldStyle);
+        addStyles(messageSelector, messageStyle);
         result += "</style>";
         return result;
     };
