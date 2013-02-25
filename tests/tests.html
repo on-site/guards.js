@@ -4,16 +4,21 @@
     <title>Tests for guards.js</title>
     <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.11.0.css" type="text/css" media="screen" />
     <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.11.0.js"></script>
+    <script type="text/javascript" src="blanket.js"></script>
 
     <script>
       var JQUERY_VERSIONS = ["1.2.6", "1.3.2", "1.4.2", "1.4.4", "1.5.2", "1.6.4", "1.7.2", "1.8.3", "1.9.1"];
       var DEFAULT_JQUERY_VERSION = "1.4.2";
       QUnit.config.jquery = QUnit.urlParams.jquery || DEFAULT_JQUERY_VERSION;
 
-      function loadScript(url, callback) {
+      function loadScript(url, callback, enableCoverage) {
         var script = document.createElement("script");
         script.type = "text/javascript";
         script.src = url;
+
+        if (enableCoverage) {
+          script.setAttribute("data-cover", "true");
+        }
 
         if (callback) {
           script.onload = callback;
@@ -24,7 +29,7 @@
       }
 
       loadScript("http://ajax.googleapis.com/ajax/libs/jquery/" + QUnit.config.jquery + "/jquery.js", function() {
-        loadScript("../src/guards.js", scriptsReady);
+        loadScript("../src/guards.js", scriptsReady, true);
       });
 
       function scriptsReady() {
