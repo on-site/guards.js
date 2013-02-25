@@ -548,6 +548,15 @@
             okStyle("#myForm .error-message", "margin-left", "10px", $style.html());
           });
 
+          test("with selector scope and customized style", function() {
+            var $style = $($.guards.styleHtml("#myForm", { field: { color: "#00ff00" }, message: { "background-color": "#0000ff" } }));
+            notOkStyle("#myForm .invalid-field", "background-color", "#ffff66", $style.html());
+            okStyle("#myForm .invalid-field", "color", "#00ff00", $style.html());
+            notOkStyle("#myForm .error-message", "color", "#ff0000", $style.html());
+            notOkStyle("#myForm .error-message", "margin-left", "10px", $style.html());
+            okStyle("#myForm .error-message", "background-color", "#0000ff", $style.html());
+          });
+
           module("custom guard");
 
           function customGuard(value, element) {
