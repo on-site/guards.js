@@ -177,7 +177,17 @@ end
 def copy(dirname)
   path = File.expand_path "../#{dirname}", __FILE__
   return unless File.directory? path
-  FileUtils.cp_r path, File.join(OUTPUT_DIR, dirname), :remove_destination => true
+
+  Dir.foreach path do |file|
+    file_path = File.join path, file
+    next unless File.file? file_path
+    output_file = File.join OUTPUT_DIR, dirname, file
+    contents = File.read file_path
+
+    File.open output_file, "w" do |f|
+      f << contents
+    end
+  end
 end
 
 def generate
