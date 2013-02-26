@@ -141,9 +141,47 @@
   </div>
 </div>
 
-<!-- TODO: Write up this section.
 <h2>Stacked errors</h2>
 
 <p>
+  Errors in guards.js are displayed one at a time.  The first guard to
+  detect an error is displayed before the next is considered.  This
+  behavior can be changed by enabling stacked errors.  To enabled
+  stacked errors, set <code>$.guards.options.stackErrors</code> to
+  true.  With stacked errors enabled, all errors will be displayed
+  rather than simply the first one.  Below demonstrates two forms, one
+  with stacked errors, one without.
 </p>
--->
+
+<div class="example">
+  <div class="display">
+    <script>
+      function startsWithA(value) { return /^(a|A)/.test(value); };
+      function endsWithB(value) { return /(b|B)$/.test(value); };
+
+      var withoutStacked = new $.Guards();
+      var withStacked = new $.Guards();
+      withStacked.options.stackErrors = true;
+
+      withoutStacked.add("#form5 input[type='text']").using(startsWithA).message("Please start with A");
+      withoutStacked.add("#form5 input[type='text']").using(endsWithB).message("Please end with B");
+      withoutStacked.liveGuard("#form5");
+
+      withStacked.add("#form6 input[type='text']").using(startsWithA).message("Please start with A");
+      withStacked.add("#form6 input[type='text']").using(endsWithB).message("Please end with B");
+      withStacked.liveGuard("#form6");
+    </script>
+
+    <form id="form5">
+      <h3>Without stacked errors</h3>
+      <p><input type="text" name="input1" /></p>
+      <p><input type="submit" /></p>
+    </form>
+
+    <form id="form6">
+      <h3>With stacked errors</h3>
+      <p><input type="text" name="input1" /></p>
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
