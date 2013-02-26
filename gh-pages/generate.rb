@@ -177,7 +177,7 @@ end
 def copy(dirname)
   path = File.expand_path "../#{dirname}", __FILE__
   return unless File.directory? path
-  FileUtils.cp_r path, File.join(OUTPUT_DIR, dirname)
+  FileUtils.cp_r path, File.join(OUTPUT_DIR, dirname), :remove_destination => true
 end
 
 def generate
