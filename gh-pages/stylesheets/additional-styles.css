@@ -1,0 +1,25 @@
+.invalid-field {
+    background-color: #ffff66;
+}
+
+.error-message {
+    color: #ff0000;
+    margin-left: 10px;
+}
+
+footer div.footer-links p {
+    text-align: center;
+    width: 100%;
+}
+
+footer div.footer-links a {
+    margin: 0 20px;
+}
+
+.wizard li.current {
+    font-weight: bold;
+}
+
+code, pre {
+    font-family: monospace;
+}

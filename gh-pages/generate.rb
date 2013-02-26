@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+require "fileutils"
+
+OUTPUT_DIR = ARGV.first
+
 def define_pages
   page do
     step "Introduction"
@@ -84,7 +88,7 @@ class Page
   end
 
   def output_file
-    File.join Page.output_dir, get_file
+    File.join OUTPUT_DIR, get_file
   end
 
   def generate
@@ -144,10 +148,6 @@ class Page
   end
 
   class << self
-    def output_dir
-      ARGV.first
-    end
-
     def input_file(name)
       File.expand_path("../#{name}", __FILE__)
     end
@@ -174,8 +174,18 @@ def check_usage
   end
 end
 
+def copy(dirname)
+  path = File.expand_path "../#{dirname}", __FILE__
+  return unless File.directory? path
+  FileUtils.cp_r path, File.join(OUTPUT_DIR, dirname)
+end
+
 def generate
+  FileUtils.mkdir OUTPUT_DIR unless File.directory? OUTPUT_DIR
   PAGES.each &:generate
+  copy "stylesheets"
+  copy "javascripts"
+  copy "images"
 end
 
 define_pages
