@@ -91,6 +91,10 @@
         });
 
         $(function() {
+          $.guards.on("form", "submit", function(e) {
+            e.preventDefault();
+          });
+
           function resetGuards() {
             $.guards = new $.Guards();
           }
@@ -294,6 +298,42 @@
             equal($("#form1-1").errors().length, 1, "Error count on a single element");
             ok(!$("#form1-1").hasClass(invalidClass()), "Single element doesn't have the default invalid error anymore");
             ok($("#form1-1").hasClass("my-invalid"), "Single element has the custom invalid error class");
+          });
+
+          test("enabled guards can be removed", function() {
+            $("#form1").submit();
+            equal($("#form1 :has-error").size(), 0, "Errors after submitting");
+            $("#form1").enableGuards();
+            $("#form1").submit();
+            equal($("#form1 :has-error").size(), 4, "Errors after submitting");
+            $("#form1 :has-error").clearErrors();
+            $("#form1").disableGuards();
+            $("#form1").submit();
+            equal($("#form1 :has-error").size(), 0, "Errors after submitting");
+          });
+
+          test("enabled delegated guards can be removed", function() {
+            $("#form1").submit();
+            equal($("#form1 :has-error").size(), 0, "Errors after submitting");
+            $.enableGuards("#form1");
+            $("#form1").submit();
+            equal($("#form1 :has-error").size(), 4, "Errors after submitting");
+            $("#form1 :has-error").clearErrors();
+            $.disableGuards("#form1");
+            $("#form1").submit();
+            equal($("#form1 :has-error").size(), 0, "Errors after submitting");
+          });
+
+          test("live guards can be removed", function() {
+            $("#form1-1").blur();
+            equal($("#form1 :has-error").size(), 0, "Errors after blurring");
+            $.liveGuard("#form1");
+            $("#form1-1").blur();
+            equal($("#form1 :has-error").size(), 1, "Errors after blurring");
+            $("#form1 :has-error").clearErrors();
+            $.disableLiveGuard("#form1");
+            $("#form1-1").blur();
+            equal($("#form1 :has-error").size(), 0, "Errors after blurring");
           });
 
           test("separate Guards instances with separate defaults both work at the same time", function() {

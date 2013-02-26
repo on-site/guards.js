@@ -121,6 +121,27 @@
             },
 
             invalidClass: "invalid-field",
+
+            liveCallback: function(e) {
+                var $element = $(e.target);
+
+                if (!$element.is(":guardable")) {
+                    return;
+                }
+
+                self.applyGuards(function(guard) {
+                    if (guard.isGrouped()) {
+                        if (guard.appliesTo($element)) {
+                            return $element.parents("form:first").find(":guardable");
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return $element;
+                    }
+                });
+            },
+
             messageClass: "error-message",
 
             messages: {
@@ -177,6 +198,7 @@
                 }
             },
 
+            submitCallback: function() { return self.guard($(this)); },
             tag: "span",
 
             target: function(errorElement) {
@@ -229,39 +251,40 @@
         }
     };
 
+    // Utility method to remove live events, but works against any
+    // jQuery version that supports live events.
+    $.Guards.prototype.off = function(selector, event, callback) {
+        if ($.fn.off) {
+            $(document).off(event, selector, callback);
+        } else if ($.fn.undelegate) {
+            $(document).undelegate(selector, event, callback);
+        } else if ($.fn.die) {
+            $(selector).die(event, callback);
+        } else {
+            this.log("Could not unbind live handlers, probably because jQuery is too old.");
+        }
+    };
+
     // Implementation of $.enableGuards(selector);
     $.Guards.prototype.enableGuards = function(selector) {
-        var self = this;
+        this.on(selector, "submit", this.defaults.submitCallback);
+    };
 
-        this.on(selector, "submit", function() {
-            return self.guard($(this));
-        });
+    // Implementation of $.disableGuards(selector);
+    $.Guards.prototype.disableGuards = function(selector) {
+        this.off(selector, "submit", this.defaults.submitCallback);
     };
 
     // Implementation of $.liveGuard(selector);
     $.Guards.prototype.liveGuard = function(selector) {
-        var self = this;
         this.enableGuards(selector);
+        this.on(selector, "change blur", this.defaults.liveCallback);
+    };
 
-        this.on(selector, "change blur", function(e) {
-            var $element = $(e.target);
-
-            if (!$element.is(":guardable")) {
-                return;
-            }
-
-            self.applyGuards(function(guard) {
-                if (guard.isGrouped()) {
-                    if (guard.appliesTo($element)) {
-                        return $element.parents("form:first").find(":guardable");
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return $element;
-                }
-            });
-        });
+    // Implementation of $.disableLiveGuard(selector);
+    $.Guards.prototype.disableLiveGuard = function(selector) {
+        this.disableGuards(selector);
+        this.off(selector, "change blur", this.defaults.liveCallback);
     };
 
     /**
@@ -1272,9 +1295,15 @@
      * submitted if guarding fails.
      */
     $.fn.enableGuards = function() {
-        return this.submit(function() {
-            return $(this).guard();
-        });
+        return this.bind("submit", $.guards.defaults.submitCallback);
+    };
+
+    /**
+     * Disable form submit callbacks set up via the enableGuards
+     * function.
+     */
+    $.fn.disableGuards = function() {
+        return this.unbind("submit", $.guards.defaults.submitCallback);
     };
 
     /**
@@ -1287,6 +1316,13 @@
     };
 
     /**
+     * Disable the live events set up via $.enableGuards.
+     */
+    $.disableGuards = function(selector) {
+        $.guards.disableGuards(selector);
+    };
+
+    /**
      * Live guard the form(s) in the given selector.  This will bind
      * live on change and blur events that will guard the elements
      * when they change.  It will also guard the form when it is
@@ -1294,6 +1330,13 @@
      */
     $.liveGuard = function(selector) {
         $.guards.liveGuard(selector);
+    };
+
+    /**
+     * Disable live guard events that were enabled via $.liveGuard.
+     */
+    $.disableLiveGuard = function(selector) {
+        $.guards.disableLiveGuard(selector);
     };
 
     $.extend($.expr[":"], {
