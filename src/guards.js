@@ -52,7 +52,7 @@
         var defineGuard = function(aggregator, validator) {
             return function() {
                 var args = $.makeArray(arguments);
-                return function(value, element) {
+                return function(value) {
                     return self[aggregator](value, function(v) {
                         return self[validator].apply(self, $.merge([v], args));
                     });
@@ -95,7 +95,7 @@
 
         var arrayMessage = function(formatting) {
             return function(array) {
-                return self.format(formatting, $.map(array, function(x, i) { return $.trim("" + x); }).join(", "));
+                return self.format(formatting, $.map(array, function(x) { return $.trim("" + x); }).join(", "));
             };
         };
 
@@ -204,7 +204,7 @@
 
         $.Guards.prototype.isArray = function(obj) {
             // Simplistic, but good enough for guards.
-            return obj.constructor == ARRAY_CONSTRUCTOR || obj.constructor == JQUERY_CONSTRUCTOR;
+            return obj.constructor === ARRAY_CONSTRUCTOR || obj.constructor === JQUERY_CONSTRUCTOR;
         };
     }
 
@@ -358,13 +358,13 @@
             messageStyle = this.defaults.style.message;
         }
 
-        if (arguments.length == 1) {
-            if (typeof(arguments[0]) == "string") {
+        if (arguments.length === 1) {
+            if (typeof(arguments[0]) === "string") {
                 selectorScope = arguments[0];
             } else {
                 styles = arguments[0];
             }
-        } else if (arguments.length == 2) {
+        } else if (arguments.length === 2) {
             selectorScope = arguments[0];
             styles = arguments[1];
         }
@@ -406,7 +406,7 @@
      * This guard test method is intended to always fail, thus it
      * returns false no matter what.
      */
-    $.Guards.prototype.always = function(value) {
+    $.Guards.prototype.always = function() {
         return false;
     };
 
@@ -418,7 +418,7 @@
      */
     $.Guards.prototype.isAllowed = function(value, allowed) {
         value = $.trim(value);
-        return $.inArray(value, $.map(allowed, function(x, i) { return $.trim("" + x); })) != -1;
+        return $.inArray(value, $.map(allowed, function(x) { return $.trim("" + x); })) !== -1;
     };
 
     /**
@@ -478,7 +478,7 @@
      * or a string of just spaces.
      */
     $.Guards.prototype.isBlank = function(value) {
-        return this.isNullOrUndefined(value) || $.trim(value) == "";
+        return this.isNullOrUndefined(value) || $.trim(value) === "";
     };
 
     /**
@@ -540,7 +540,7 @@
         var result = true;
 
         $.each(values, function(i, x) {
-            if (x != value) {
+            if (x !== value) {
                 result = false;
                 return false;
             }
@@ -572,7 +572,7 @@
     $.Guards.prototype.isValidInt = function(value, options) {
         value = $.trim(value);
 
-        if (value == "") {
+        if (value === "") {
             return true;
         }
 
@@ -592,7 +592,7 @@
     $.Guards.prototype.isValidFloat = function(value, options) {
         value = $.trim(value);
 
-        if (value == "") {
+        if (value === "") {
             return true;
         }
 
@@ -612,7 +612,7 @@
     $.Guards.prototype.isValidMoneyUS = function(value, options) {
         value = $.trim(value);
 
-        if (value == "") {
+        if (value === "") {
             return true;
         }
 
@@ -649,14 +649,14 @@
      */
     $.Guards.prototype.isValidEmail = function(value, options) {
         if (options && options.allowDisplay) {
-            var result = /.*\<([^>]+)\>\s*$/.exec(value);
+            var result = /.*<([^>]+)>\s*$/.exec(value);
 
             if (result) {
                 value = result[1];
             }
         }
 
-        return value == "" || /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i.test(value);
+        return value === "" || /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i.test(value);
     };
 
     /**
@@ -664,7 +664,7 @@
      */
     $.Guards.prototype.isValidPhoneUS = function(value) {
         value = value.replace(/\s+/g, "");
-        return value == "" || value.length > 9 &&
+        return value === "" || value.length > 9 &&
               value.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/);
     };
 
@@ -683,7 +683,7 @@
      * returns true no matter what.  It is intended to be used to set
      * up a guard that is triggered manually via triggerError().
      */
-    $.Guards.prototype.never = function(value) {
+    $.Guards.prototype.never = function() {
         return true;
     };
 
@@ -733,7 +733,7 @@
      */
     $.Guards.prototype.guard = function(form) {
         var fields = form.guardableFields().clearErrors();
-        var result = this.applyGuards(function(guard) { return fields; });
+        var result = this.applyGuards(function() { return fields; });
         fields.filter(":visible:has-error").eq(0).focus();
         return result;
     };
@@ -816,7 +816,7 @@
      * });
      */
     $.Guard.prototype.using = function(guard) {
-        if (typeof(guard) == "string") {
+        if (typeof(guard) === "string") {
             var args = [];
 
             if (arguments.length > 1) {
@@ -886,7 +886,7 @@
      * Example: $.guard(".required").using("required").grouped(true);
      */
     $.Guard.prototype.grouped = function() {
-        if (arguments.length == 0) {
+        if (arguments.length === 0) {
             return this.grouped(true);
         }
 
@@ -1013,7 +1013,7 @@
     $.Guard.prototype.test = function(element) {
         var $elements = $(element).filter(this._selector);
 
-        if ($elements.size() == 0) {
+        if ($elements.size() === 0) {
             return true;
         }
 
@@ -1072,7 +1072,7 @@
         }
 
         return this;
-    }
+    };
 
     $.GuardError = function(guard, element, errorElement, linked) {
         this._guard = guard;
@@ -1141,7 +1141,7 @@
      * each selected element instead of just 1.
      */
     $.fn.addSingleError = function(guard) {
-        if (this.size() == 0) {
+        if (this.size() === 0) {
             $.guards.log("Attempted to add error to nothing.");
             return this;
         }
@@ -1227,7 +1227,7 @@
         var result = false;
 
         $.each(this.errors(), function(i, error) {
-            if (error._guard._invalidClass == invalidClass) {
+            if (error._guard._invalidClass === invalidClass) {
                 result = true;
                 return false;
             }
@@ -1247,7 +1247,7 @@
         if (this.is(":radio")) {
             var checked = $("input[name='" + this.attr("name") + "']:radio:checked", this.parents("form"));
 
-            if (checked.size() == 0) {
+            if (checked.size() === 0) {
                 return guards.constants.notChecked;
             }
 
@@ -1298,10 +1298,10 @@
 
     $.extend($.expr[":"], {
         "has-error": function(x) {
-            return new Boolean(x.errors && x.errors.length > 0).valueOf();
+            return !!(x.errors && x.errors.length > 0);
         },
         "guardable": function(x) {
-            return x.tagName.toLowerCase() == "input" || x.tagName.toLowerCase() == "textarea" || x.tagName.toLowerCase() == "select";
+            return x.tagName.toLowerCase() === "input" || x.tagName.toLowerCase() === "textarea" || x.tagName.toLowerCase() === "select";
         }
     });
 
