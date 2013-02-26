@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>Example for guards.js</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script type="text/javascript" src="../src/guards.js"></script>
+    <script>
+      $.guards.style();
+      $.guard(".required").using("required");
+      $.guard(".phone").using("phoneUS");
+      $.guard(".email").using("email");
+      $.liveGuard("form");
+    </script>
+  </head>
+
+  <body>
+    <form>
+      <p>
+        <label for="name">Name:</label><br />
+        <input type="text" id="name" class="required" />
+      </p>
+
+      <p>
+        <label for="phone">Phone Number:</label><br />
+        <input type="text" id="phone" class="required phone" />
+      </p>
+
+      <p>
+        <label for="email">Email Address:</label><br />
+        <input type="text" id="email" class="required email" />
+      </p>
+
+      <p>
+        <input type="submit" />
+      </p>
+    </form>
+  </body>
+</html>

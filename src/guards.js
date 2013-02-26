@@ -89,7 +89,7 @@
                     return formatting.invalid;
                 }
 
-                return self.defaults.messages.undefined;
+                return self.defaults.messages["undefined"];
             };
         };
 
@@ -808,7 +808,7 @@
      * Note that the message is implicitly set when this method is
      * called.  If the guard is a string, the message will be set to
      * $.guards.defaults.messages[guard].  If it is a function, it
-     * will be set to $.guards.defaults.messages.undefined.
+     * will be set to $.guards.defaults.messages["undefined"].
      *
      * Example: $.guard(".required").using("required");
      * Example: $.guard(".required").using(function(value, element) {
@@ -840,7 +840,7 @@
         }
 
         this._guard = guard;
-        return this.message(this._guards.defaults.messages.undefined);
+        return this.message(this._guards.defaults.messages["undefined"]);
     };
 
     /**
@@ -915,7 +915,7 @@
      * with a string, this is implicitly invoked using
      * $.guards.defaults.messages[usingValue].  If using is called
      * with a function, this is implicitly invoked using
-     * $.guards.defaults.messages.undefined.
+     * $.guards.defaults.messages["undefined"].
      *
      * Example: $.guard(".required").using("required").message("Enter something!");
      */
@@ -1307,23 +1307,20 @@
 
     $.guards = new $.Guards();
 
-    $(function() {
-        // Clear errors when the user expresses intent to fix the
-        // errors.
-        var clearFn = function() { $(this).clearErrors(); };
-        $.guards.on(":has-error", "change", clearFn);
-        $.guards.on(":has-error:radio,:has-error:checkbox", "mouseup", clearFn);
-        $.guards.on("select:has-error", "mousedown", clearFn);
+    // Clear errors when the user expresses intent to fix the errors.
+    var clearFn = function() { $(this).clearErrors(); };
+    $.guards.on(":has-error", "change", clearFn);
+    $.guards.on(":has-error:radio,:has-error:checkbox", "mouseup", clearFn);
+    $.guards.on("select:has-error", "mousedown", clearFn);
 
-        // Make sure we don't clear it if there was no error when the
-        // keydown happened, otherwise a submit on enter will have the
-        // error flash and then go away on the keyup.
-        $.guards.on(":has-error", "keydown", function() { this.clearable = true; });
-        $.guards.on(":has-error", "keyup", function() {
-            if (this.clearable) {
-                this.clearable = false;
-                $(this).clearErrors();
-            }
-        });
+    // Make sure we don't clear it if there was no error when the
+    // keydown happened, otherwise a submit on enter will have the
+    // error flash and then go away on the keyup.
+    $.guards.on(":has-error", "keydown", function() { this.clearable = true; });
+    $.guards.on(":has-error", "keyup", function() {
+        if (this.clearable) {
+            this.clearable = false;
+            $(this).clearErrors();
+        }
     });
 })(jQuery);
