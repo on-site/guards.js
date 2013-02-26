@@ -215,6 +215,18 @@
             });
           }
 
+          function testWithRecentJQuery(name, fn) {
+            var isOld = ["1.2.6", "1.3.2"].indexOf(QUnit.config.jquery) >= 0;
+
+            if (isOld) {
+              test(name, function() {
+                ok(!isOld, "jQuery is too old for this test.");
+              });
+            } else {
+              test(name, fn);
+            }
+          }
+
           module("guardable fields", { setup: function() {
             resetGuards();
           } });
@@ -300,7 +312,21 @@
             ok($("#form1-1").hasClass("my-invalid"), "Single element has the custom invalid error class");
           });
 
-          test("enabled guards can be removed", function() {
+          test("stacked errors won't double up with live guards", function() {
+            $.guard("input").using("required").message("Other error");
+            $.guards.options.stackErrors = true;
+            $.liveGuard("#form1");
+            $("#form1-1").blur();
+            equal($("#form1-1").errors().length, 2, "There are 2 errors after first blur");
+            equal($("#form1 .error-message").size(), 2, "There are 2 error messages after first blur");
+            $("#form1-1").blur();
+            equal($("#form1-1").errors().length, 2, "There are 2 errors after second blur");
+            equal($("#form1 .error-message").size(), 2, "There are 2 error messages after first blur");
+            $("#form1 :has-error").clearErrors();
+            $.disableLiveGuard("#form1");
+          });
+
+          testWithRecentJQuery("enabled guards can be removed", function() {
             $("#form1").submit();
             equal($("#form1 :has-error").size(), 0, "Errors after submitting");
             $("#form1").enableGuards();
@@ -312,7 +338,7 @@
             equal($("#form1 :has-error").size(), 0, "Errors after submitting");
           });
 
-          test("enabled delegated guards can be removed", function() {
+          testWithRecentJQuery("enabled delegated guards can be removed", function() {
             $("#form1").submit();
             equal($("#form1 :has-error").size(), 0, "Errors after submitting");
             $.enableGuards("#form1");
@@ -430,6 +456,25 @@
             equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
             guard.triggerError("#form1-1, #form1-2");
             equal($("#form1 input").errors().length, 2, "There are 2 errors after triggering a manual error");
+          });
+
+          test("manually triggered errors can't double up", function() {
+            var guard = $.guard("input").using("required");
+            equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
+            guard.triggerError("#form1-1, #form1-2");
+            guard.triggerError("#form1-1, #form1-2");
+            equal($("#form1 input").errors().length, 2, "There are 2 errors after triggering a manual error");
+          });
+
+          test("manually triggered grouped errors can't double up", function() {
+            var guard = $.guard("input").grouped().using("oneRequired");
+            equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
+            guard.triggerError("#form1 input");
+            equal($("#form1 input").errors().length, 4, "There are 4 errors after triggering the first manual grouped error");
+            equal($("#form1 .error-message").size(), 1, "There is 1 error message after triggering the first manual grouped error");
+            guard.triggerError("#form1 input");
+            equal($("#form1 input").errors().length, 4, "There are 4 errors after triggering the second manual grouped error");
+            equal($("#form1 .error-message").size(), 1, "There is 1 error message after triggering the second manual grouped error");
           });
 
           module("radio buttons", { setup: function() {

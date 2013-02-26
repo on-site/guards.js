@@ -1169,6 +1169,11 @@
             return this;
         }
 
+        // Don't add the error if it is already there.
+        if (this.hasError(guard)) {
+            return this;
+        }
+
         var element = guard.errorElement();
         guard.attachError(this, element);
         this.addClass(guard._invalidClass);
@@ -1237,6 +1242,23 @@
         });
 
         return this;
+    };
+
+    /**
+     * Determine if the given guard already has an error in the
+     * selected elements.
+     */
+    $.fn.hasError = function(guard) {
+        var result = false;
+
+        $.each(this.errors(), function(i, error) {
+            if (error._guard === guard) {
+                result = true;
+                return false;
+            }
+        });
+
+        return result;
     };
 
     /**
