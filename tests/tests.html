@@ -312,6 +312,17 @@
             ok($("#form1-1").hasClass("my-invalid"), "Single element has the custom invalid error class");
           });
 
+          test("multiple stacked errors show in defined order", function() {
+            $.guard("input").using("required").message("This is the second error.");
+            $.guard("input").using("required").message("This is the third error.");
+            $.guards.options.stackErrors = true;
+            $("#form1").guard();
+            var $errors = $("#form1 .error-message");
+            equal($errors.eq(0).text(), $.guards.defaults.messages.required, "The first error message");
+            equal($errors.eq(1).text(), "This is the second error.", "The second error message");
+            equal($errors.eq(2).text(), "This is the third error.", "The third error message");
+          });
+
           test("stacked errors won't double up with live guards", function() {
             $.guard("input").using("required").message("Other error");
             $.guards.options.stackErrors = true;

@@ -204,8 +204,15 @@
             target: function(errorElement) {
                 var last = $(this).filter(":last");
 
-                if (last.is(":radio,:checkbox")) {
+                if (last.is(":radio,:checkbox") && last[0].nextSibling) {
                     last = $(last[0].nextSibling);
+                }
+
+                var next = last.next();
+
+                while (next.size() > 0 && next[0].isGuardError) {
+                    last = next;
+                    next = last.next();
                 }
 
                 errorElement.insertAfter(last);
@@ -965,7 +972,9 @@
     };
 
     $.Guard.prototype.errorElement = function() {
-        return this._messageFn();
+        var element = this._messageFn();
+        element[0].isGuardError = true;
+        return element;
     };
 
     $.Guard.prototype.attachError = function(elements, errorElement) {
