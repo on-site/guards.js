@@ -11,14 +11,10 @@
 <div class="example">
   <div class="display">
     <script>
-      $.guard("#form1 input[name='input1']").using("required")
-          .message("ERROR'D!!!");
-      $.guard("#form1 input[name='input2']").using("required")
-          .tag("p").messageClass("green");
-      $.guard("#form1 input[name='input3']").using("required")
-          .invalidClass("invalid-blue");
-      $.guard("#form1 input[name='input4']").using("required")
-          .target("#form1 .errors").message("Moved message.");
+      $.guard("#form1 input[name='input1']").using("required").message("ERROR'D!!!");
+      $.guard("#form1 input[name='input2']").using("required").tag("p").messageClass("green");
+      $.guard("#form1 input[name='input3']").using("required").invalidClass("invalid-blue");
+      $.guard("#form1 input[name='input4']").using("required").target("#form1 .errors").message("Moved message.");
       $.liveGuard("#form1");
     </script>
 
