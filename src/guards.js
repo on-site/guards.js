@@ -1053,31 +1053,31 @@
             return false;
         }
 
-        var result;
+        var result, elements, values;
 
         // Grouped expects a group of elements, while non-grouped
         // expects a single element.
         if (this._grouped) {
-            var values = [];
-            var elements = [];
+            values = [];
+            elements = [];
 
             $elements.each(function() {
                 values.push($(this).inputValue(this._guards));
                 elements.push(this);
             });
-
-            if (this._precondition && this._precondition(values, elements) === false) {
-                result = true;
-            } else {
-                result = this._guard(values, elements);
-            }
         } else {
-            var value = $elements.inputValue(this._guards);
+            values = $elements.inputValue(this._guards);
+            elements = element;
+        }
 
-            if (this._precondition && this._precondition(value, element) === false) {
-                result = true;
-            } else {
-                result = this._guard(value, element);
+        if (!this.testPrecondition(values, elements)) {
+            result = true;
+        } else {
+            try {
+                result = this._guard(values, elements);
+            } catch(e) {
+                this._guards.log("A guard threw an error: " + e);
+                result = false;
             }
         }
 
@@ -1086,6 +1086,27 @@
         }
 
         return result;
+    };
+
+    /**
+     * Test this precondition, if there is one.  Returns true if there
+     * is no precondition, or if the precondition doesn't return
+     * false.  Returns false if the precondition throws an exception
+     * or if the precondition returned false.  No return of the
+     * precondition (or return value of undefined, null or 0) is
+     * considered passing.
+     */
+    $.Guard.prototype.testPrecondition = function(values, elements) {
+        if (!this._precondition) {
+            return true;
+        }
+
+        try {
+            return this._precondition(values, elements) !== false;
+        } catch(e) {
+            this._guards.log("A precondition threw an error: " + e);
+            return false;
+        }
     };
 
     /**

@@ -699,6 +699,30 @@
             return $.inArray(value, ["bad", "invalid"]) == -1;
           }
 
+          test("custom guard that throws an exception causes guard to fail", function() {
+            $.guard("input").using(function() { throw new Error("This guard always fails."); });
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: 4,
+              expectedErrorMessageCount: 4,
+              errorMessageLocations: $("#form1 input"),
+              errorMessages: $.guards.defaults.messages.undefined
+            });
+          });
+
+          test("custom grouped guard that throws an exception causes guard to fail", function() {
+            $.guard("input").grouped().using(function() { throw new Error("This guard always fails."); });
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: 4,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("#form1 input:last"),
+              errorMessages: $.guards.defaults.messages.undefined
+            });
+          });
+
           test("with custom function and no error message defined", function() {
             resetGuards();
             $.guard("input").using(customGuard);
@@ -1292,11 +1316,19 @@
 
           module("Using preconditions", { setup: function() {
             resetGuards();
-            $.guard("#form1-1").using("required").precondition(function() { return $("#form1-2").val() != "abc"; });
+            $.guard("#form1-1").using("required").precondition(function() {
+              if ($("#form1-2").val() == "fail") {
+                throw new Error("Precondition failed");
+              }
+
+              return $("#form1-2").val() != "abc";
+            });
           } });
 
           successTest("", "abc", { testName: "with precondition unmet and guard unmet" });
           successTest("123", "abc", { testName: "with precondition unmet and guard met" });
+          successTest("", "fail", { testName: "with precondition unmet due to exception and guard unmet" });
+          successTest("123", "fail", { testName: "with precondition unmet due to exception and guard met" });
 
           failureTest("", "", {
             testName: "with precondition met and guard unmet",
