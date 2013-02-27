@@ -31,6 +31,9 @@
  *       .message("Please specify at least one email.").grouped();
  */
 (function($) {
+    /*jshint devel:true, jquery:true */
+    "use strict";
+
     $.guard = function(selector) {
         return $.guards.add(selector);
     };
