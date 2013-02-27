@@ -132,6 +132,8 @@
                     return;
                 }
 
+                $element.clearErrors();
+
                 self.applyGuards(function(guard) {
                     if (guard.isGrouped()) {
                         if (guard.appliesTo($element)) {

@@ -323,20 +323,6 @@
             equal($errors.eq(2).text(), "This is the third error.", "The third error message");
           });
 
-          test("stacked errors won't double up with live guards", function() {
-            $.guard("input").using("required").message("Other error");
-            $.guards.options.stackErrors = true;
-            $.liveGuard("#form1");
-            $("#form1-1").blur();
-            equal($("#form1-1").errors().length, 2, "There are 2 errors after first blur");
-            equal($("#form1 .error-message").size(), 2, "There are 2 error messages after first blur");
-            $("#form1-1").blur();
-            equal($("#form1-1").errors().length, 2, "There are 2 errors after second blur");
-            equal($("#form1 .error-message").size(), 2, "There are 2 error messages after first blur");
-            $("#form1 :has-error").clearErrors();
-            $.disableLiveGuard("#form1");
-          });
-
           testWithRecentJQuery("enabled guards can be removed", function() {
             $("#form1").submit();
             equal($("#form1 :has-error").size(), 0, "Errors after submitting");
@@ -359,18 +345,6 @@
             $.disableGuards("#form1");
             $("#form1").submit();
             equal($("#form1 :has-error").size(), 0, "Errors after submitting");
-          });
-
-          test("live guards can be removed", function() {
-            $("#form1-1").blur();
-            equal($("#form1 :has-error").size(), 0, "Errors after blurring");
-            $.liveGuard("#form1");
-            $("#form1-1").blur();
-            equal($("#form1 :has-error").size(), 1, "Errors after blurring");
-            $("#form1 :has-error").clearErrors();
-            $.disableLiveGuard("#form1");
-            $("#form1-1").blur();
-            equal($("#form1 :has-error").size(), 0, "Errors after blurring");
           });
 
           test("separate Guards instances with separate defaults both work at the same time", function() {
@@ -494,6 +468,64 @@
             guard.triggerError("#form1 input");
             equal($("#form1 input").errors().length, 4, "There are 4 errors after triggering the second manual grouped error");
             equal($("#form1 .error-message").size(), 1, "There is 1 error message after triggering the second manual grouped error");
+          });
+
+          module("live guards", { setup: function() {
+            resetGuards();
+          } });
+
+          test("stacked errors won't double up with live guards", function() {
+            $.guard("input").using("required");
+            $.guard("input").using("required").message("Other error");
+            $.guards.options.stackErrors = true;
+            $.liveGuard("#form1");
+            $("#form1-1").blur();
+            equal($("#form1-1").errors().length, 2, "There are 2 errors after first blur");
+            equal($("#form1 .error-message").size(), 2, "There are 2 error messages after first blur");
+            $("#form1-1").blur();
+            equal($("#form1-1").errors().length, 2, "There are 2 errors after second blur");
+            equal($("#form1 .error-message").size(), 2, "There are 2 error messages after first blur");
+            $("#form1 :has-error").clearErrors();
+            $.disableLiveGuard("#form1");
+          });
+
+          test("live guards can be removed", function() {
+            $.guard("input").using("required");
+            $("#form1-1").blur();
+            equal($("#form1 :has-error").size(), 0, "Errors after blurring");
+            $.liveGuard("#form1");
+            $("#form1-1").blur();
+            equal($("#form1 :has-error").size(), 1, "Errors after blurring");
+            $("#form1 :has-error").clearErrors();
+            $.disableLiveGuard("#form1");
+            $("#form1-1").blur();
+            equal($("#form1 :has-error").size(), 0, "Errors after blurring");
+          });
+
+          test("live guard onblur will clear error if it passes", function() {
+            var pass = false;
+            $.guard("#form1 input").using(function() { return pass; });
+            $.liveGuard("#form1");
+            equal($("#form1 :has-error").size(), 0, "Errors before blurring");
+            $("#form1 input").blur();
+            equal($("#form1 :has-error").size(), 4, "Errors after blurring everything");
+            pass = true;
+            $("#form1-1").blur();
+            equal($("#form1 :has-error").size(), 3, "Errors after blurring when error should no longer happen");
+            ok($("#form1-1:has-error").size() === 0, "Blurred field no longer has an error");
+          });
+
+          test("live guard onblur will clear grouped errors if it passes", function() {
+            var pass = false;
+            $.guard("#form1 input").grouped().using(function() { return pass; });
+            $.liveGuard("#form1");
+            equal($("#form1 :has-error").size(), 0, "Errors before blurring");
+            $("#form1 input").blur();
+            equal($("#form1 :has-error").size(), 4, "Errors after blurring everything");
+            pass = true;
+            $("#form1-1").blur();
+            equal($("#form1 :has-error").size(), 0, "Errors after blurring when error should no longer happen");
+            ok($("#form1-1:has-error").size() === 0, "Blurred field no longer has an error");
           });
 
           module("radio buttons", { setup: function() {
