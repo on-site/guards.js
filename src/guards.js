@@ -1096,7 +1096,17 @@
      * jQuery selector.  Note that the elements don't have to be valid
      * for this guard to be applied.
      */
-    $.Guard.prototype.triggerError = function(elements) {
+    $.Guard.prototype.triggerError = function() {
+        var elements;
+
+        if (arguments.length === 0) {
+            elements = this._selector;
+        } else if (arguments.length === 1) {
+            elements = arguments[0];
+        } else {
+            throw new Error("Expected 0 or 1 argument to triggerError, got " + arguments.length);
+        }
+
         if (this._grouped) {
             $(elements).addSingleError(this);
         } else {

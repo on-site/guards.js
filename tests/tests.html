@@ -469,6 +469,14 @@
             equal($("#form1 input").errors().length, 2, "There are 2 errors after triggering a manual error");
           });
 
+          test("errors can be manually triggered from a guard with no arguments", function() {
+            var guard = $.guard("#form1-1, #form1-3").using("required");
+            equal($("#form1 :has-error").size(), 0, "There are 0 errors before doing anything");
+            guard.triggerError();
+            equal($("#form1 :has-error").size(), 2, "There are 2 errors after triggering a manual error");
+            ok($("#form1-1:has-error, #form1-3:has-error").size() === 2, "The right elements have the error");
+          });
+
           test("manually triggered errors can't double up", function() {
             var guard = $.guard("input").using("required");
             equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
