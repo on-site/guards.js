@@ -181,7 +181,9 @@ def copy(dirname)
   Dir.foreach path do |file|
     file_path = File.join path, file
     next unless File.file? file_path
-    output_file = File.join OUTPUT_DIR, dirname, file
+    output_dir = File.join OUTPUT_DIR, dirname
+    FileUtils.mkdir output_dir unless File.directory? output_dir
+    output_file = File.join output_dir, file
     contents = File.read file_path
 
     File.open output_file, "w" do |f|

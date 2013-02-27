@@ -57,21 +57,13 @@
   <div class="display">
     <script>
       $.guard("#regexp").using(function(value, element) {
-        try {
-          new RegExp(value);
-          return true;
-        } catch(e) {
-          return false;
-        }
+        // Parse exception causes guard to fail
+        return new RegExp(value);
       }).message("Invalid regular expression.");
 
       $.guard("#string").using(function(value, element) {
-        try {
-          var regexp = new RegExp($("#regexp").val());
-          return regexp.test(value);
-        } catch(e) {
-          return false;
-        }
+        var regexp = new RegExp($("#regexp").val());
+        return regexp.test(value);
       }).message("Regular expression does not match.");
 
       $.liveGuard("#form2");
