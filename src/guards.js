@@ -121,7 +121,7 @@
 
         this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.arrayMessage("Please enter one of: #{0}."));
         this.name("always").using(this.aggregate(this.isAllValid, this.always)).message("There was an error.");
-        this.name("different").using(this.aggregate(this.passThrough, this.isDifferent)).message("These values must all be different.");
+        this.name("different").grouped().using(this.aggregate(this.passThrough, this.isDifferent)).message("These values must all be different.");
         this.name("disallow").using(this.aggregate(this.isAllValid, this.isDisallowed)).message(this.arrayMessage("Please don't enter: #{0}."));
         this.name("email").using(this.aggregate(this.isAllValid, this.isValidEmail)).message("Please enter a valid E-mail address.");
         this.name("float").using(this.aggregate(this.isAllValid, this.isValidFloat)).message(this.minMaxMessage({
@@ -143,10 +143,10 @@
             invalid: "Please enter a dollar amount."
         }, function(x) { return x.toFixed(2); }));
         this.name("never").using(this.aggregate(this.isAllValid, this.never)).message("There was an error.");
-        this.name("oneRequired").using(this.aggregate(this.isAnyValid, this.isPresent)).message("Specify at least one.");
+        this.name("oneRequired").grouped().using(this.aggregate(this.isAnyValid, this.isPresent)).message("Specify at least one.");
         this.name("phoneUS").using(this.aggregate(this.isAllValid, this.isValidPhoneUS)).message("Please enter a valid phone number.");
         this.name("required").using(this.aggregate(this.isAllValid, this.isPresent)).message("This field is required.");
-        this.name("same").using(this.aggregate(this.passThrough, this.isSame)).message("These values must all match.");
+        this.name("same").grouped().using(this.aggregate(this.passThrough, this.isSame)).message("These values must all match.");
         this.name("string").using(this.aggregate(this.isAllValid, this.isValidString)).message(this.minMaxMessage({
             minAndMax: "Please enter a string with length #{0} to #{1}.",
             min: "Please enter a string with length at least #{0}.",

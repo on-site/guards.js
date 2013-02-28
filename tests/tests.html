@@ -460,7 +460,7 @@
           });
 
           test("manually triggered grouped errors can't double up", function() {
-            var guard = $.guard("input").grouped().using("oneRequired");
+            var guard = $.guard("input").using("oneRequired");
             equal($("#form1 input").errors().length, 0, "There are 0 errors before doing anything");
             guard.triggerError("#form1 input");
             equal($("#form1 input").errors().length, 4, "There are 4 errors after triggering the first manual grouped error");
@@ -838,7 +838,7 @@
 
           module("oneRequired guard", { setup: function() {
             resetGuards();
-            $.guard("input").using("oneRequired").grouped();
+            $.guard("input").using("oneRequired");
           } });
 
           test("with nothing entered", function() {
@@ -1401,8 +1401,8 @@
 
           module("same", { setup: function() {
             resetGuards();
-            $.guard("#form1-1, #form1-2").grouped().using("same");
-            $.guard("#form1-3").grouped().using("same");
+            $.guard("#form1-1, #form1-2").using("same");
+            $.guard("#form1-3").using("same");
           } });
 
           successTest("", "", "");
@@ -1428,8 +1428,8 @@
 
           module("different", { setup: function() {
             resetGuards();
-            $.guard("#form1-1, #form1-2").grouped().using("different");
-            $.guard("#form1-3").grouped().using("different");
+            $.guard("#form1-1, #form1-2").using("different");
+            $.guard("#form1-3").using("different");
           } });
 
           successTest("abc 123", "321 cba", "something");
