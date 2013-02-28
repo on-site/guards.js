@@ -266,7 +266,7 @@
           test("using standard guard that doesn't exist", function() {
             throws(function() {
               $.guard("input").using("foobar");
-            }, /There is no standard guard named 'foobar'/, "Non-existant standard guard throws an error");
+            }, /There is no named guard 'foobar'/, "Non-existant standard guard throws an error");
           });
 
           test("version is specified", function() {
@@ -318,7 +318,7 @@
             $.guards.options.stackErrors = true;
             $("#form1").guard();
             var $errors = $("#form1 .error-message");
-            equal($errors.eq(0).text(), $.guards.defaults.messages.required, "The first error message");
+            equal($errors.eq(0).text(), "This field is required.", "The first error message");
             equal($errors.eq(1).text(), "This is the second error.", "The second error message");
             equal($errors.eq(2).text(), "This is the third error.", "The third error message");
           });
@@ -541,7 +541,7 @@
               expectedErrorCount: 5,
               expectedErrorMessageCount: 2,
               errorMessageLocations: $("#form2-3,#form2-5"),
-              errorMessages: $.guards.defaults.messages.required
+              errorMessages: "This field is required."
             });
           });
 
@@ -552,7 +552,7 @@
               expectedErrorCount: 5,
               expectedErrorMessageCount: 2,
               errorMessageLocations: $("#form2-3,#form2-5"),
-              errorMessages: $.guards.defaults.messages.required
+              errorMessages: "This field is required."
             });
           });
 
@@ -564,7 +564,7 @@
               expectedErrorCount: 3,
               expectedErrorMessageCount: 1,
               errorMessageLocations: $("#form2-3"),
-              errorMessages: $.guards.defaults.messages.required
+              errorMessages: "This field is required."
             });
           });
 
@@ -593,7 +593,7 @@
               expectedErrorCount: 3,
               expectedErrorMessageCount: 3,
               errorMessageLocations: $("#form3 input"),
-              errorMessages: $.guards.defaults.messages.required
+              errorMessages: "This field is required."
             });
           });
 
@@ -605,7 +605,7 @@
               expectedErrorCount: 2,
               expectedErrorMessageCount: 2,
               errorMessageLocations: $("#form3 input[id!='form3-2']"),
-              errorMessages: $.guards.defaults.messages.required
+              errorMessages: "This field is required."
             });
           });
 
@@ -739,7 +739,7 @@
               expectedErrorCount: 4,
               expectedErrorMessageCount: 4,
               errorMessageLocations: $("#form1 input"),
-              errorMessages: $.guards.defaults.messages.undefined
+              errorMessages: "Please fix this field."
             });
           });
 
@@ -751,7 +751,7 @@
               expectedErrorCount: 4,
               expectedErrorMessageCount: 1,
               errorMessageLocations: $("#form1 input:last"),
-              errorMessages: $.guards.defaults.messages.undefined
+              errorMessages: "Please fix this field."
             });
           });
 
@@ -765,7 +765,7 @@
               expectedErrorCount: 1,
               expectedErrorMessageCount: 1,
               errorMessageLocations: $("#form1-3"),
-              errorMessages: $.guards.defaults.messages.undefined
+              errorMessages: "Please fix this field."
             });
           });
 
@@ -848,7 +848,7 @@
               expectedErrorCount: $("#form1 input").size(),
               expectedErrorMessageCount: 1,
               errorMessageLocations: $("#form1 input:last"),
-              errorMessages: $.guards.defaults.messages.oneRequired
+              errorMessages: "Specify at least one."
             });
           });
 
@@ -880,7 +880,7 @@
               expectedErrorCount: $("#form1 input").size(),
               expectedErrorMessageCount: $("#form1 input").size(),
               errorMessageLocations: $("#form1 input"),
-              errorMessages: $.guards.defaults.messages.required
+              errorMessages: "This field is required."
             });
           });
 
@@ -892,7 +892,7 @@
               expectedErrorCount: $("#form1 input").size() - 1,
               expectedErrorMessageCount: $("#form1 input").size() - 1,
               errorMessageLocations: $("#form1 input[id!='form1-3']"),
-              errorMessages: $.guards.defaults.messages.required
+              errorMessages: "This field is required."
             });
           });
 
@@ -904,7 +904,7 @@
               expectedErrorCount: 1,
               expectedErrorMessageCount: 1,
               errorMessageLocations: $("#form1-2"),
-              errorMessages: $.guards.defaults.messages.required
+              errorMessages: "This field is required."
             });
           });
 
@@ -924,11 +924,11 @@
           successTest("");
 
           failureTest("aaa", {
-            errorMessages: $.guards.defaults.messages.email
+            errorMessages: "Please enter a valid E-mail address."
           });
 
           failureTest("aaa@bbb", {
-            errorMessages: $.guards.defaults.messages.email
+            errorMessages: "Please enter a valid E-mail address."
           });
 
           successTest("aaa@bbb.com");
@@ -941,11 +941,11 @@
           successTest("");
 
           failureTest("aaa", {
-            errorMessages: $.guards.defaults.messages.email
+            errorMessages: "Please enter a valid E-mail address."
           });
 
           failureTest("aaa@bbb", {
-            errorMessages: $.guards.defaults.messages.email
+            errorMessages: "Please enter a valid E-mail address."
           });
 
           successTest("aaa@bbb.com");
@@ -960,15 +960,15 @@
           successTest("");
 
           failureTest("aaa", {
-            errorMessages: $.guards.defaults.messages.phoneUS
+            errorMessages: "Please enter a valid phone number."
           });
 
           failureTest("123", {
-            errorMessages: $.guards.defaults.messages.phoneUS
+            errorMessages: "Please enter a valid phone number."
           });
 
           failureTest("555-2345", {
-            errorMessages: $.guards.defaults.messages.phoneUS
+            errorMessages: "Please enter a valid phone number."
           });
 
           successTest("408 555-2345");
@@ -1376,7 +1376,7 @@
 
           failureTest("", {
             testName: "errors are as expected",
-            errorMessages: $.guards.defaults.messages.always
+            errorMessages: "There was an error."
           });
 
           var neverGuard1, neverGuard2;
@@ -1394,8 +1394,8 @@
             neverGuard2.triggerError("#form1-3, #form1-4");
             equal($("#form1 input").errors().length, 4, "Error count after triggering the never guards");
             equal($("#form1 .error-message").size(), 3, "Error message count");
-            equal($("#form1 .error-message:eq(0)").text(), $.guards.defaults.messages.never, "First error message");
-            equal($("#form1 .error-message:eq(1)").text(), $.guards.defaults.messages.never, "Second error message");
+            equal($("#form1 .error-message:eq(0)").text(), "There was an error.", "First error message");
+            equal($("#form1 .error-message:eq(1)").text(), "There was an error.", "Second error message");
             equal($("#form1 .error-message:eq(2)").text(), "Grouped never message.", "Third error message");
           });
 
@@ -1411,19 +1411,19 @@
           failureTest("abc 123", "321 cba", {
             expectedErrorCount: 2,
             errorMessageSelector: "#form1-2",
-            errorMessages: $.guards.defaults.messages.same
+            errorMessages: "These values must all match."
           });
 
           failureTest("abc 123", "", {
             expectedErrorCount: 2,
             errorMessageSelector: "#form1-2",
-            errorMessages: $.guards.defaults.messages.same
+            errorMessages: "These values must all match."
           });
 
           failureTest("", "abc 123", {
             expectedErrorCount: 2,
             errorMessageSelector: "#form1-2",
-            errorMessages: $.guards.defaults.messages.same
+            errorMessages: "These values must all match."
           });
 
           module("different", { setup: function() {
@@ -1443,19 +1443,19 @@
           failureTest("", "", {
             expectedErrorCount: 2,
             errorMessageSelector: "#form1-2",
-            errorMessages: $.guards.defaults.messages.different
+            errorMessages: "These values must all be different."
           });
 
           failureTest("abc 123", "abc 123", {
             expectedErrorCount: 2,
             errorMessageSelector: "#form1-2",
-            errorMessages: $.guards.defaults.messages.different
+            errorMessages: "These values must all be different."
           });
 
           failureTest(" abc 123", " abc 123", {
             expectedErrorCount: 2,
             errorMessageSelector: "#form1-2",
-            errorMessages: $.guards.defaults.messages.different
+            errorMessages: "These values must all be different."
           });
         });
       }

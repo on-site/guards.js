@@ -43,6 +43,7 @@
     $.Guards = function() {
         var self = this;
         this._guards = [];
+        this.named = {};
 
         this.options = {
             stackErrors: false
@@ -52,77 +53,9 @@
             notChecked: ""
         };
 
-        var defineGuard = function(aggregator, validator) {
-            return function() {
-                var args = $.makeArray(arguments);
-                return function(value) {
-                    return self[aggregator](value, function(v) {
-                        return self[validator].apply(self, $.merge([v], args));
-                    });
-                };
-            };
-        };
-
-        var minMaxMessage = function(formatting, minMaxFormat) {
-            return function(options) {
-                if (self.isNullOrUndefined(options)) {
-                    options = {};
-                }
-
-                if (!$.isFunction(minMaxFormat)) {
-                    minMaxFormat = function(x) { return x; };
-                }
-
-                var minDefined = !self.isNullOrUndefined(options.min);
-                var maxDefined = !self.isNullOrUndefined(options.max);
-
-                if (minDefined && maxDefined) {
-                    return self.format(formatting.minAndMax, minMaxFormat(options.min), minMaxFormat(options.max));
-                }
-
-                if (minDefined) {
-                    return self.format(formatting.min, minMaxFormat(options.min));
-                }
-
-                if (maxDefined) {
-                    return self.format(formatting.max, minMaxFormat(options.max));
-                }
-
-                if (formatting.invalid) {
-                    return formatting.invalid;
-                }
-
-                return self.defaults.messages["undefined"];
-            };
-        };
-
-        var arrayMessage = function(formatting) {
-            return function(array) {
-                return self.format(formatting, $.map(array, function(x) { return $.trim("" + x); }).join(", "));
-            };
-        };
-
         this.defaults = {
             grouped: false,
             guard: "required",
-
-            guards: {
-                allow: defineGuard("isAllValid", "isAllowed"),
-                always: defineGuard("isAllValid", "always"),
-                different: defineGuard("passThrough", "isDifferent"),
-                disallow: defineGuard("isAllValid", "isDisallowed"),
-                email: defineGuard("isAllValid", "isValidEmail"),
-                "float": defineGuard("isAllValid", "isValidFloat"),
-                "int": defineGuard("isAllValid", "isValidInt"),
-                moneyUS: defineGuard("isAllValid", "isValidMoneyUS"),
-                never: defineGuard("isAllValid", "never"),
-                oneRequired: defineGuard("isAnyValid", "isPresent"),
-                phoneUS: defineGuard("isAllValid", "isValidPhoneUS"),
-                required: defineGuard("isAllValid", "isPresent"),
-                same: defineGuard("passThrough", "isSame"),
-                string: defineGuard("isAllValid", "isValidString")
-            },
-
             invalidClass: "invalid-field",
 
             liveCallback: function(e) {
@@ -150,45 +83,6 @@
             messageClass: "error-message",
 
             messages: {
-                allow: arrayMessage("Please enter one of: #{0}."),
-                always: "There was an error.",
-                different: "These values must all be different.",
-                disallow: arrayMessage("Please don't enter: #{0}."),
-                email: "Please enter a valid E-mail address.",
-
-                "float": minMaxMessage({
-                    minAndMax: "Please enter a number from #{0} to #{1}.",
-                    min: "Please enter a number no less than #{0}.",
-                    max: "Please enter a number no greater than #{0}.",
-                    invalid: "Please enter a number."
-                }),
-
-                "int": minMaxMessage({
-                    minAndMax: "Please enter a number from #{0} to #{1}.",
-                    min: "Please enter a number no less than #{0}.",
-                    max: "Please enter a number no greater than #{0}.",
-                    invalid: "Please enter a number."
-                }),
-
-                moneyUS: minMaxMessage({
-                    minAndMax: "Please enter a dollar amount from #{0} to #{1}.",
-                    min: "Please enter a dollar amount no less than #{0}.",
-                    max: "Please enter a dollar amount no greater than #{0}.",
-                    invalid: "Please enter a dollar amount."
-                }, function(x) { return x.toFixed(2); }),
-
-                never: "There was an error.",
-                oneRequired: "Specify at least one.",
-                phoneUS: "Please enter a valid phone number.",
-                required: "This field is required.",
-                same: "These values must all match.",
-
-                string: minMaxMessage({
-                    minAndMax: "Please enter a string with length #{0} to #{1}.",
-                    min: "Please enter a string with length at least #{0}.",
-                    max: "Please enter a string with length no greater than #{0}."
-                }),
-
                 "undefined": "Please fix this field."
             },
 
@@ -224,6 +118,40 @@
                 return false;
             }
         };
+
+        this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.arrayMessage("Please enter one of: #{0}."));
+        this.name("always").using(this.aggregate(this.isAllValid, this.always)).message("There was an error.");
+        this.name("different").using(this.aggregate(this.passThrough, this.isDifferent)).message("These values must all be different.");
+        this.name("disallow").using(this.aggregate(this.isAllValid, this.isDisallowed)).message(this.arrayMessage("Please don't enter: #{0}."));
+        this.name("email").using(this.aggregate(this.isAllValid, this.isValidEmail)).message("Please enter a valid E-mail address.");
+        this.name("float").using(this.aggregate(this.isAllValid, this.isValidFloat)).message(this.minMaxMessage({
+            minAndMax: "Please enter a number from #{0} to #{1}.",
+            min: "Please enter a number no less than #{0}.",
+            max: "Please enter a number no greater than #{0}.",
+            invalid: "Please enter a number."
+        }));
+        this.name("int").using(this.aggregate(this.isAllValid, this.isValidInt)).message(this.minMaxMessage({
+            minAndMax: "Please enter a number from #{0} to #{1}.",
+            min: "Please enter a number no less than #{0}.",
+            max: "Please enter a number no greater than #{0}.",
+            invalid: "Please enter a number."
+        }));
+        this.name("moneyUS").using(this.aggregate(this.isAllValid, this.isValidMoneyUS)).message(this.minMaxMessage({
+            minAndMax: "Please enter a dollar amount from #{0} to #{1}.",
+            min: "Please enter a dollar amount no less than #{0}.",
+            max: "Please enter a dollar amount no greater than #{0}.",
+            invalid: "Please enter a dollar amount."
+        }, function(x) { return x.toFixed(2); }));
+        this.name("never").using(this.aggregate(this.isAllValid, this.never)).message("There was an error.");
+        this.name("oneRequired").using(this.aggregate(this.isAnyValid, this.isPresent)).message("Specify at least one.");
+        this.name("phoneUS").using(this.aggregate(this.isAllValid, this.isValidPhoneUS)).message("Please enter a valid phone number.");
+        this.name("required").using(this.aggregate(this.isAllValid, this.isPresent)).message("This field is required.");
+        this.name("same").using(this.aggregate(this.passThrough, this.isSame)).message("These values must all match.");
+        this.name("string").using(this.aggregate(this.isAllValid, this.isValidString)).message(this.minMaxMessage({
+            minAndMax: "Please enter a string with length #{0} to #{1}.",
+            min: "Please enter a string with length at least #{0}.",
+            max: "Please enter a string with length no greater than #{0}."
+        }));
     };
 
     $.Guards.prototype.version = "{{VERSION}}";
@@ -231,6 +159,72 @@
     // Really old jQuery doesn't have isArray, so use this alias
     // instead.
     $.Guards.prototype.isArray = $.isArray;
+
+    $.Guards.prototype.name = function(name) {
+        var guard = new $.Guard(null, this, true);
+        this.named[name] = guard;
+        return guard;
+    };
+
+    $.Guards.prototype.aggregate = function(aggregator, validator) {
+        var self = this;
+
+        var result = function() {
+            var args = $.makeArray(arguments);
+
+            return function(value) {
+                return aggregator.call(self, value, function(v) {
+                    return validator.apply(self, $.merge([v], args));
+                });
+            };
+        };
+
+        result.acceptsArguments = true;
+        return result;
+    };
+
+    $.Guards.prototype.arrayMessage = function(formatting) {
+        var self = this;
+
+        return function(array) {
+            return self.format(formatting, $.map(array, function(x) { return $.trim("" + x); }).join(", "));
+        };
+    };
+
+    $.Guards.prototype.minMaxMessage = function(formatting, minMaxFormat) {
+        var self = this;
+
+        return function(options) {
+            if (self.isNullOrUndefined(options)) {
+                options = {};
+            }
+
+            if (!$.isFunction(minMaxFormat)) {
+                minMaxFormat = function(x) { return x; };
+            }
+
+            var minDefined = !self.isNullOrUndefined(options.min);
+            var maxDefined = !self.isNullOrUndefined(options.max);
+
+            if (minDefined && maxDefined) {
+                return self.format(formatting.minAndMax, minMaxFormat(options.min), minMaxFormat(options.max));
+            }
+
+            if (minDefined) {
+                return self.format(formatting.min, minMaxFormat(options.min));
+            }
+
+            if (maxDefined) {
+                return self.format(formatting.max, minMaxFormat(options.max));
+            }
+
+            if (formatting.invalid) {
+                return formatting.invalid;
+            }
+
+            return self.defaults.messages["undefined"];
+        };
+    };
 
     if (!$.Guards.prototype.isArray) {
         var ARRAY_CONSTRUCTOR = [].constructor;
@@ -488,8 +482,8 @@
      * values is not an array, the result of calling the given fn on
      * that value is returned directly.
      *
-     * Example: $.guards.isAllValid([false, false, true], function(x) { return x; }); // true
-     * Example: $.guards.isAllValid(false, function(x) { return x; });                // false
+     * Example: $.guards.isAnyValid([false, false, true], function(x) { return x; }); // true
+     * Example: $.guards.isAnyValid(false, function(x) { return x; });                // false
      */
     $.Guards.prototype.isAnyValid = function(values, fn) {
         if (this.isArray(values)) {
@@ -799,7 +793,7 @@
      * will be applied if the field doesn't have an error yet.
      */
     $.Guards.prototype.test = function(guard, fields) {
-        if (guard._grouped) {
+        if (guard.isGrouped()) {
             return guard.test(fields);
         }
 
@@ -814,29 +808,65 @@
         return result;
     };
 
-    $.Guard = function(selector, guards) {
+    $.Guard = function(selector, guards, named) {
+        this._named = named;
         this._guards = guards || $.guards;
         this._selector = selector;
-        this._grouped = this._guards.defaults.grouped;
-        this._tag = this._guards.defaults.tag;
-        this._messageClass = this._guards.defaults.messageClass;
-        this._invalidClass = this._guards.defaults.invalidClass;
-        this._target = this._guards.defaults.target;
-        this.using(this._guards.defaults.guard);
+        this._guard = null;
+
+        if (!named) {
+            this.using(this._guards.defaults.guard);
+        }
+    };
+
+    $.Guard.prototype.cloneGuard = function(guard, args) {
+        var self = this;
+        var namedGuard = this._guards.named[guard];
+
+        if (this._guards.isNullOrUndefined(namedGuard)) {
+            throw new Error("There is no named guard '" + guard + "'");
+        }
+
+        var copyAttribute = function(attribute) {
+            if (self[attribute] !== undefined || namedGuard[attribute] === undefined) {
+                return;
+            }
+
+            self[attribute] = namedGuard[attribute];
+        };
+
+        copyAttribute("_grouped");
+        copyAttribute("_tag");
+        copyAttribute("_messageClass");
+        copyAttribute("_invalidClass");
+        copyAttribute("_target");
+        copyAttribute("_precondition");
+        this._guard = namedGuard._guard;
+
+        if (this._guard.acceptsArguments) {
+            this._guard = this._guard.apply(this._guards, args);
+        }
+
+        if ($.isFunction(namedGuard._message)) {
+            return this.message(namedGuard._message.apply(this._guards, args));
+        } else {
+            return this.message(namedGuard._message);
+        }
     };
 
     /**
      * Guard inputs using a specified guard.  The guard may be either
-     * a string or a function.  When it is a string, it must match one
-     * of the pre-defined guards defined in $.guards.defaults.guards.
-     * The function is expected to have 2 arguments.  The first is the
-     * value of the element being guarded, and the second is the
-     * actual element.  If grouped is true, it will be an array of all
-     * matched values and all matched elements (the order of values
-     * will match the order of elements).  Radio buttons are passed as
-     * separate values and elements, but the value of each will be the
-     * same.  Specifically, the value of the checked radio button is
-     * the value used, unless none are checked, in which case
+     * a string or a function.  When it is a string, it must match a
+     * named guard defined via $.guards.name(), or already defined in
+     * the $.guards.named hash.  The function is expected to have 2
+     * arguments.  The first is the value of the element being
+     * guarded, and the second is the actual element.  If grouped is
+     * true, it will be an array of all matched values and all matched
+     * elements (the order of values will match the order of
+     * elements).  Radio buttons are passed as separate values and
+     * elements, but the value of each will be the same.
+     * Specifically, the value of the checked radio button is the
+     * value used, unless none are checked, in which case
      * $.guards.constants.notChecked will be used (which is predefined
      * as an empty string).
      *
@@ -858,24 +888,19 @@
                 args = $.makeArray(arguments).slice(1);
             }
 
-            var fn = this._guards.defaults.guards[guard];
-
-            if (this._guards.isNullOrUndefined(fn)) {
-                throw new Error("There is no standard guard named '" + guard + "'");
-            }
-
-            this._guard = fn.apply(this._guards.defaults.guards, args);
-            var message = this._guards.defaults.messages[guard];
-
-            if ($.isFunction(message)) {
-                message = message.apply(this._guards.defaults.messages, args);
-            }
-
-            return this.message(message);
+            return this.cloneGuard(guard, args);
         }
 
         this._guard = guard;
         return this.message(this._guards.defaults.messages["undefined"]);
+    };
+
+    $.Guard.prototype.getPrecondition = function() {
+        if (this._precondition === undefined) {
+            return this._guards.defaults.precondition;
+        }
+
+        return this._precondition;
     };
 
     /**
@@ -906,6 +931,10 @@
      * Return whether or not this guard is grouped.
      */
     $.Guard.prototype.isGrouped = function() {
+        if (this._grouped === undefined) {
+            return this._guards.defaults.grouped;
+        }
+
         return this._grouped;
     };
 
@@ -929,6 +958,14 @@
         return this;
     };
 
+    $.Guard.prototype.getTag = function() {
+        if (this._tag === undefined) {
+            return this._guards.defaults.tag;
+        }
+
+        return this._tag;
+    };
+
     /**
      * Set the type of tag to surround the error message with
      * (defaults to $.guards.defaults.tag, which defaults to span).
@@ -938,6 +975,14 @@
     $.Guard.prototype.tag = function(tag) {
         this._tag = tag;
         return this.resetMessageFn();
+    };
+
+    $.Guard.prototype.getMessageClass = function() {
+        if (this._messageClass === undefined) {
+            return this._guards.defaults.messageClass;
+        }
+
+        return this._messageClass;
     };
 
     $.Guard.prototype.messageClass = function(messageClass) {
@@ -959,6 +1004,14 @@
         return this.resetMessageFn();
     };
 
+    $.Guard.prototype.getInvalidClass = function() {
+        if (this._invalidClass === undefined) {
+            return this._guards.defaults.invalidClass;
+        }
+
+        return this._invalidClass;
+    };
+
     $.Guard.prototype.invalidClass = function(invalidClass) {
         this._invalidClass = invalidClass;
         return this;
@@ -967,7 +1020,7 @@
     $.Guard.prototype.resetMessageFn = function() {
         var self = this;
         return this.messageFn(function() {
-            return $('<' + self._tag + ' class="' + self._messageClass + '"/>').html(self._message);
+            return $('<' + self.getTag() + ' class="' + self.getMessageClass() + '"/>').html(self._message);
         });
     };
 
@@ -983,17 +1036,27 @@
     };
 
     $.Guard.prototype.attachError = function(elements, errorElement) {
-        if (this._target && $.isFunction(this._target)) {
-            var result = this._target.call(elements, errorElement);
+        var target = this.getTarget();
+
+        if (target && $.isFunction(target)) {
+            var result = target.call(elements, errorElement);
 
             if (result !== false) {
                 errorElement.appendTo($(result).eq(0));
             }
-        } else if (this._target) {
-            errorElement.appendTo($(this._target).eq(0));
+        } else if (target) {
+            errorElement.appendTo($(target).eq(0));
         } else {
             throw new Error("The target must be a function or selector!");
         }
+    };
+
+    $.Guard.prototype.getTarget = function() {
+        if (this._target === undefined) {
+            return this._guards.defaults.target;
+        }
+
+        return this._target;
     };
 
     /**
@@ -1062,7 +1125,7 @@
 
         // Grouped expects a group of elements, while non-grouped
         // expects a single element.
-        if (this._grouped) {
+        if (this.isGrouped()) {
             values = [];
             elements = [];
 
@@ -1102,12 +1165,14 @@
      * considered passing.
      */
     $.Guard.prototype.testPrecondition = function(values, elements) {
-        if (!this._precondition) {
+        var precondition = this.getPrecondition();
+
+        if (!precondition) {
             return true;
         }
 
         try {
-            return this._precondition(values, elements) !== false;
+            return precondition(values, elements) !== false;
         } catch(e) {
             this._guards.log("A precondition threw an error: " + e);
             return false;
@@ -1133,7 +1198,7 @@
             throw new Error("Expected 0 or 1 argument to triggerError, got " + arguments.length);
         }
 
-        if (this._grouped) {
+        if (this.isGrouped()) {
             $(elements).addSingleError(this);
         } else {
             $(elements).addError(this);
@@ -1166,8 +1231,8 @@
             this._element.errors.splice(index, 1);
         }
 
-        if (!$(this._element).hasErrorsWithInvalidClass(this._guard._invalidClass)) {
-            $(this._element).removeClass(this._guard._invalidClass);
+        if (!$(this._element).hasErrorsWithInvalidClass(this._guard.getInvalidClass())) {
+            $(this._element).removeClass(this._guard.getInvalidClass());
         }
 
         this._cleared = true;
@@ -1221,7 +1286,7 @@
 
         var element = guard.errorElement();
         guard.attachError(this, element);
-        this.addClass(guard._invalidClass);
+        this.addClass(guard.getInvalidClass());
         var linked = [];
 
         return this.each(function() {
@@ -1317,7 +1382,7 @@
         var result = false;
 
         $.each(this.errors(), function(i, error) {
-            if (error._guard._invalidClass === invalidClass) {
+            if (error._guard.getInvalidClass() === invalidClass) {
                 result = true;
                 return false;
             }
