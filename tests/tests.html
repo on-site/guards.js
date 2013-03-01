@@ -489,6 +489,11 @@
             });
           });
 
+          test("includes the name on guards that use it", function() {
+            $.guards.name("testing").using(function(value) { return value === "testing"; }).message("It wasn't 'testing'");
+            equal($.guard("#form1 input").using("testing").name, "testing", "Guard name");
+          });
+
           module("live guards", { setup: function() {
             resetGuards();
           } });

@@ -842,6 +842,7 @@
         copyAttribute("_target");
         copyAttribute("_precondition");
         this._guard = namedGuard._guard;
+        this.name = guard;
 
         if (this._guard.acceptsArguments) {
             this._guard = this._guard.apply(this._guards, args);
