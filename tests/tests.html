@@ -227,9 +227,7 @@
             }
           }
 
-          module("guardable fields", { setup: function() {
-            resetGuards();
-          } });
+          module("guardable fields", { setup: resetGuards });
 
           test("without options", function() {
             var results = $("#form1, #form2 input").guardableFields();
@@ -470,9 +468,7 @@
             equal($("#form1 .error-message").size(), 1, "There is 1 error message after triggering the second manual grouped error");
           });
 
-          module("named guards", { setup: function() {
-            resetGuards();
-          } });
+          module("named guards", { setup: resetGuards });
 
           test("works with simple setup", function() {
             $.guards.name("testing").using(function(value) { return value === "testing"; }).message("It wasn't 'testing'");
@@ -494,9 +490,7 @@
             equal($.guard("#form1 input").using("testing").name, "testing", "Guard name");
           });
 
-          module("live guards", { setup: function() {
-            resetGuards();
-          } });
+          module("live guards", { setup: resetGuards });
 
           test("stacked errors won't double up with live guards", function() {
             $.guard("input").using("required");
@@ -671,9 +665,7 @@
             equal($("#form7-4")[0].nextSibling.nextSibling, $("#form7 ." + errorMsgClass())[0], "Error location");
           });
 
-          module("styling guards", { setup: function() {
-            resetGuards();
-          } });
+          module("styling guards", { setup: resetGuards });
 
           test("no arguments", function() {
             var $style = $($.guards.styleHtml());
@@ -747,9 +739,7 @@
             okStyle("#myForm .my-error-message", "background-color", "#0000ff", $style.html());
           });
 
-          module("custom guard", { setup: function() {
-            resetGuards();
-          } });
+          module("custom guard", { setup: resetGuards });
 
           function customGuard(value, element) {
             return $.inArray(value, ["bad", "invalid"]) == -1;
