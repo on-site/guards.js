@@ -156,10 +156,6 @@
 
     $.Guards.prototype.version = "{{VERSION}}";
 
-    // Really old jQuery doesn't have isArray, so use this alias
-    // instead.
-    $.Guards.prototype.isArray = $.isArray;
-
     $.Guards.prototype.name = function(name) {
         var guard = new $.Guard(null, this, true);
         this.named[name] = guard;
@@ -225,16 +221,6 @@
             return self.defaults.messages["undefined"];
         };
     };
-
-    if (!$.Guards.prototype.isArray) {
-        var ARRAY_CONSTRUCTOR = [].constructor;
-        var JQUERY_CONSTRUCTOR = jQuery;
-
-        $.Guards.prototype.isArray = function(obj) {
-            // Simplistic, but good enough for guards.
-            return obj.constructor === ARRAY_CONSTRUCTOR || obj.constructor === JQUERY_CONSTRUCTOR;
-        };
-    }
 
     // Alias for console.log, but check that such a thing exists.
     $.Guards.prototype.log = function(message) {
@@ -460,7 +446,7 @@
      * Example: $.guards.isAllValid(true, function(x) { return x; });                // true
      */
     $.Guards.prototype.isAllValid = function(values, fn) {
-        if (this.isArray(values)) {
+        if ($.isArray(values)) {
             var result = true;
 
             $.each(values, function(i, x) {
@@ -486,7 +472,7 @@
      * Example: $.guards.isAnyValid(false, function(x) { return x; });                // false
      */
     $.Guards.prototype.isAnyValid = function(values, fn) {
-        if (this.isArray(values)) {
+        if ($.isArray(values)) {
             var result = false;
 
             $.each(values, function(i, x) {
@@ -726,7 +712,7 @@
      * Example: $.guards.passThrough(true, function(x) { return x[0]; });                // true
      */
     $.Guards.prototype.passThrough = function(values, fn) {
-        if (!this.isArray(values)) {
+        if (!$.isArray(values)) {
             values = [values];
         }
 
