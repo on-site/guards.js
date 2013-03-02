@@ -490,6 +490,50 @@
             equal($.guard("#form1 input").using("testing").name, "testing", "Guard name");
           });
 
+          module("guard events", { setup: resetGuards });
+
+          test("guard error", function() {
+            var errors = [];
+            $("form input").bind("guardError", function(e) { errors.push(e); });
+
+            $.guard("#form1 input").using("required");
+            $.guard("#form1-3").using("email");
+            $("#form1-2").val("Something");
+            $("#form1-3").val("Not an email");
+            $("#form1").guard();
+            equal(errors.length, 3, "Number of events fired");
+          });
+
+          test("grouped guard error", function() {
+            var errors = [];
+            $("form input").bind("guardError", function(e) { errors.push(e); });
+
+            $.guard("#form1-1,#form1-2,#form1-3").using("oneRequired");
+            $("#form1").guard();
+            equal(errors.length, 3, "Number of events fired");
+          });
+
+          test("guard form error", function() {
+            var errors = [];
+            $("form").bind("guardFormError", function(e) { errors.push(e); });
+
+            $.guard("#form1 input").using("required");
+            $.guard("#form1-3").using("email");
+            $("#form1-2").val("Something");
+            $("#form1-3").val("Not an email");
+            $("#form1").guard();
+            equal(errors.length, 3, "Number of events fired");
+          });
+
+          test("grouped guard form error", function() {
+            var errors = [];
+            $("form").bind("guardFormError", function(e) { errors.push(e); });
+
+            $.guard("#form1-1,#form1-2,#form1-3").using("oneRequired");
+            $("#form1").guard();
+            equal(errors.length, 1, "Number of events fired");
+          });
+
           module("live guards", { setup: resetGuards });
 
           test("stacked errors won't double up with live guards", function() {

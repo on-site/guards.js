@@ -1285,6 +1285,10 @@
             return this;
         }
 
+        var event = $.Event("guardError");
+        this.trigger(event);
+        var event = $.Event("guardFormError");
+        this.parents("form").trigger(event);
         var element = guard.errorElement();
         guard.attachError(this, element);
         this.addClass(guard.getInvalidClass());
