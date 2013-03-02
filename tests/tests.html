@@ -133,6 +133,20 @@
             }
           }
 
+          function equalArray(array, expected, message) {
+            if (message) {
+              message = message + ": ";
+            } else {
+              message = "";
+            }
+
+            equal(array.length, expected.length, message + "array length");
+
+            for (var i = 0; i < array.length; i++) {
+              equal(array[i], expected[i], message + "array item at index " + i);
+            }
+          }
+
           function okRegex(regex, string, message) {
             message = message || ("\"" + string + "\" matches " + regex);
             ok(regex.test(string), message);
@@ -528,6 +542,51 @@
             $.guard("#form1-1,#form1-2,#form1-3").using("oneRequired");
             $("#form1").guard();
             equal(events.length, 1, "Number of events fired");
+          });
+
+          test("guard error event", function() {
+            var event, self;
+            $("#form1-1").bind("guardError", function(e) { self = this; event = e; });
+            var guard = $.guard("#form1 input").using("required");
+            $("#form1").guard();
+            equal(self, $("#form1-1")[0], "Event context");
+            equal(event.guard, guard, "Event guard");
+            equalArray(event.errorElements, [$("#form1-1")[0]], "Event error elements");
+          });
+
+          test("grouped guard error event", function() {
+            var event, self;
+            $("#form1-1").bind("guardError", function(e) { self = this; event = e; });
+            var guard = $.guard("#form1 input").using("oneRequired");
+            $("#form1").guard();
+            equal(self, $("#form1-1")[0], "Event context");
+            equal(event.guard, guard, "Event guard");
+            equalArray(event.errorElements, $("#form1 input").toArray(), "Event error elements");
+          });
+
+          test("guard form error event", function() {
+            var event, self;
+            $("form").bind("guardFormError", function(e) {
+              if ($(e.errorElements).is("#form1-1")) {
+                self = this;
+                event = e;
+              }
+            });
+            var guard = $.guard("#form1 input").using("required");
+            $("#form1").guard();
+            equal(self, $("#form1")[0], "Event context");
+            equal(event.guard, guard, "Event guard");
+            equalArray(event.errorElements, [$("#form1-1")[0]], "Event error elements");
+          });
+
+          test("grouped guard form error event", function() {
+            var event, self;
+            $("form").bind("guardFormError", function(e) { self = this; event = e; });
+            var guard = $.guard("#form1 input").using("oneRequired");
+            $("#form1").guard();
+            equal(self, $("#form1")[0], "Event context");
+            equal(event.guard, guard, "Event guard");
+            equalArray(event.errorElements, $("#form1 input").toArray(), "Event error elements");
           });
 
           module("live guards", { setup: resetGuards });

@@ -1194,6 +1194,19 @@
         return this;
     };
 
+    $.Guard.prototype.sendEvent = function(name, selectedElements, forForm) {
+        var event = $.Event(name);
+        event.guard = this;
+        event.errorElements = selectedElements.toArray();
+        var target = selectedElements;
+
+        if (forForm) {
+            target = target.parents("form");
+        }
+
+        target.trigger(event);
+    };
+
     $.GuardError = function(guard, element, errorElement, linked) {
         this._guard = guard;
         this._element = element;
@@ -1271,10 +1284,8 @@
             return this;
         }
 
-        var event = $.Event("guardError");
-        this.trigger(event);
-        var event = $.Event("guardFormError");
-        this.parents("form").trigger(event);
+        guard.sendEvent("guardError", this);
+        guard.sendEvent("guardFormError", this, true);
         var element = guard.errorElement();
         guard.attachError(this, element);
         this.addClass(guard.getInvalidClass());
