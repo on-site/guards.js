@@ -26,11 +26,13 @@ footer {
 
 a {
   color: #4D7A9D;
+  color: #54BCEB;
   text-decoration: none;
 }
 
 a:hover {
   color: #779AC0;
+  color: #a9ddf4;
 }
 
 strong {
@@ -320,12 +322,11 @@ header ul a strong {
 }
 
 .wizard li a:hover {
-  color: #4D7A9D;
+  color: #54BCEB;
 }
 
 .wizard li:hover {
-  background: #ebf0f6;
-  background: #fef1da;
+  background: #ebf0f6;/*background: #fef1da;*/
 }
 
 .wizard li,
@@ -357,11 +358,11 @@ header ul a strong {
   font-weight: normal;
   margin-bottom: 10px;
   /*color: #60688F;*/
-  color: #F7B954;
+  color: #3A5F80;
 }
 
 .wizard-content h2 {
-  color: #F3901D;
+  color: #4B79A3;
   margin: 20px 0 10px 0;
 }
 
@@ -449,6 +450,11 @@ header ul a strong {
 }
 
 .footer-notes a {
+  color: #4B79A3;
+}
+
+.footer-notes a:hover {
+  color: #f3f4f1;
 }
 
 
