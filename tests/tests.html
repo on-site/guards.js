@@ -544,6 +544,20 @@
             equal(events.length, 1, "Number of events fired");
           });
 
+          test("guard error can prevent default", function() {
+            $("#form1-1").bind("guardError", function(e) { e.preventDefault(); });
+            var guard = $.guard("#form1-1").using("required");
+            $("#form1").guard();
+            equal($(":has-error").size(), 0, "Errors after default prevented");
+          });
+
+          test("grouped guard error can prevent default", function() {
+            $("#form1-1").bind("guardError", function(e) { e.preventDefault(); });
+            var guard = $.guard("#form1 input").using("oneRequired");
+            $("#form1").guard();
+            equal($(":has-error").size(), 0, "Errors after default prevented");
+          });
+
           test("guard error event", function() {
             var event, self;
             $("#form1-1").bind("guardError", function(e) { self = this; event = e; });

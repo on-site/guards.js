@@ -1205,6 +1205,7 @@
         }
 
         target.trigger(event);
+        return event;
     };
 
     $.GuardError = function(guard, element, errorElement, linked) {
@@ -1284,7 +1285,10 @@
             return this;
         }
 
-        guard.sendEvent("guardError", this);
+        if (guard.sendEvent("guardError", this).isDefaultPrevented()) {
+            return this;
+        }
+
         guard.sendEvent("guardFormError", this, true);
         var element = guard.errorElement();
         guard.attachError(this, element);
