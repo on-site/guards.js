@@ -168,13 +168,33 @@ h2 {
   right: -98px;
   width: 474px;
   height: 378px;
-  background: url(../images/header-art.png) 0 0 no-repeat;
+  background: url(../images/tree.png) 0 0 no-repeat;
+}
+
+.header-main .header-art .bird {
+  position: absolute;
+  bottom: 173px;
+  left: -4px;
+  height: 125px;
+  width: 130px;
+  background: url(../images/bird-sprite.png) 0 0 no-repeat;
+  z-index: 9999;
+}
+
+.header-main .header-art .shadow {
+  position: absolute;
+  bottom: 112px;
+  left: 28px;
+  height: 74px;
+  width: 138px;
+  background: url(../images/bird-shadow.png) 0 0 no-repeat;
+  z-index: 999;
 }
 
 .header-main .header-art .overlapping-leaves {
   position: absolute;
   bottom: 92px;
-  left: -4px;
+  left: 0;
   height: 74px;
   width: 138px;
   background: url(../images/overlapping-leaves.png) 0 0 no-repeat;
