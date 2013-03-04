@@ -7,7 +7,7 @@ html {
 body {
   margin: 0;
   font-family: 'PT Sans', Verdana, Arial, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   /*color: #636566;*/
   color: #6A5546;
   background-color: #fff;
@@ -182,7 +182,7 @@ h2 {
 }
 
 .header-main h1 {
-  padding: 60px 0 0 0;
+  padding: 50px 0 0 0;
   margin-bottom: 0;
   font-size: 5em;
   font-weight: normal;
@@ -403,7 +403,7 @@ header ul a strong {
 }
 
 .footer-main {
-  padding: 16px 0;
+  padding: 15px 0 30px 0;
   color: #596649;
 }
 
@@ -417,7 +417,7 @@ header ul a strong {
 }
 
 .footer-main nav {
-  margin-left: 200px;
+  margin-left: 183px;
 }
 
 .footer-main nav ul {
@@ -442,11 +442,11 @@ header ul a strong {
 }
 
 .footer-notes {
-  margin: 14px 0 0 205px;
+  margin: 14px 0 0 190px;
 }
 
-.footer-notes p {
-  margin-bottom: 3px;
+.footer-notes small {
+  margin-right: 15px;
 }
 
 .footer-notes a {
