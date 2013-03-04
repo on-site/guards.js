@@ -1,16 +1,16 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <title>guards.js by On-Site.com</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <link rel="stylesheet" href="stylesheets/additional-styles.css">
-    <link rel="stylesheet" href="stylesheets/prettify-sunburst.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/styles.css" />
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css" />
+    <link rel="stylesheet" href="stylesheets/additional-styles.css" />
+    <link rel="stylesheet" href="stylesheets/prettify-sunburst.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
@@ -21,14 +21,40 @@
 
   <body>
     <div class="wrapper">
-      <header>
-        <h1>guards.js</h1>
-        <p>Guard your forms with class (or any other selectors).</p>
-        <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
-      </header>
+      <div class="top-bar-wrapper">
+        <div class="top-bar">
+          <div class="logo"><a href="https://www.on-site.com"></a></div>
 
-      <section>
-        
+          <nav>
+            <ul>
+              <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
+              <li><a class="transition-background" href="https://github.com/on-site/guards.js#summary">Documentation</a></li>
+              <li><a class="transition-background" href="https://github.com/on-site/guards.js#downloads">Downloads</a></li>
+              <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
+              <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
+            </ul>
+          </nav>
+
+          <div class="clear-both"></div>
+        </div>
+      </div>
+
+      <div class="header-main-wrapper">
+        <header class="header-main">
+          <div class="header-art">
+            <div class="overlapping-leaves"></div>
+          </div>
+
+          <h1>guards.js</h1>
+          <aside>Guard your forms with class (or any other selectors).</aside>
+          <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
+        </header>
+
+        <div class="white-fence"></div>
+      </div>
+
+      <section class="content">
+        <div class="wizard-wrapper">
 <div class="wizard">
   <ol>
     <li class="current"><a href="index.html">Introduction</a></li>
@@ -36,15 +62,11 @@
     <li><a href="customization.html">Customization</a></li>
   </ol>
 </div>
+</div>
 
-
-        <p>
-          
-          <a href="options.html">next</a>
-        </p>
-
-        <h1>Introduction</h1>
-        <h2>Getting started</h2>
+        <div class="wizard-content">
+          <h1>Introduction</h1>
+          <h2>Getting started</h2>
 
 <p>
   Guards is a plugin for <a href="http://jquery.com/">jQuery</a> that
@@ -182,13 +204,11 @@
 <div class="example">
   <div class="display">
     <script>
-      $.guard("#form3 input[name='name'], #form3 input[name='email']")
-          .using("required");
+      $.guard("#form3 input[name='name'], #form3 input[name='email']").using("required");
       $.guard("#form3 input[name='email']").using("email");
       $(function() { $("#form3").enableGuards(); });
 
-      $.guard("#form4 input[name='name'], #form4 input[name='phone']")
-          .using("required");
+      $.guard("#form4 input[name='name'], #form4 input[name='phone']").using("required");
       $.guard("#form4 input[name='phone']").using("phoneUS");
       $.liveGuard("#form4");
     </script>
@@ -226,29 +246,36 @@
 </div>
 
 
-        <p>
-          
-          <a href="options.html">next</a>
-        </p>
+          <p class="paging">
+            
+            <a href="options.html">next</a>
+          </p>
+        </div>
+
+        <div class="clear-both"></div>
       </section>
     </div>
 
-    <footer>
-      <div class="footer-links">
-        <p>
-          <a href="https://github.com/on-site/guards.js">repository</a>
-          <a href="https://github.com/on-site/guards.js#summary">documentation</a>
-          <a href="https://github.com/on-site/guards.js#downloads">downloads</a>
-          <a href="https://github.com/on-site/guards.js/issues">report bugs</a>
-          <a href="http://plugins.jquery.com/guards/">jQuery plugin</a>
-        </p>
-      </div>
+    <div class="footer-main-wrapper">
+      <footer class="footer-main">
+        <div class="footer-art"></div>
 
-      <div>
-        <p>This project is maintained by <a href="https://github.com/on-site">On-Site.com</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </div>
-    </footer>
+        <nav>
+          <ul>
+            <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
+            <li><a class="transition-background" href="https://github.com/on-site/guards.js#summary">Documentation</a></li>
+            <li><a class="transition-background" href="https://github.com/on-site/guards.js#downloads">Downloads</a></li>
+            <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
+            <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
+          </ul>
+        </nav>
+
+        <div class="footer-notes">
+          <p>This project is maintained by <a href="https://github.com/on-site">On-Site.com</a></p>
+          <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://www.on-site.com">RanJo</a></small>
+        </div>
+      </footer>
+    </div>
 
     <script src="javascripts/scale.fix.js"></script>
   </body>
