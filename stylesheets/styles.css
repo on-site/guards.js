@@ -7,7 +7,7 @@ html {
 body {
   margin: 0;
   font-family: 'PT Sans', Verdana, Arial, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   /*color: #636566;*/
   color: #6A5546;
   background-color: #fff;
@@ -165,16 +165,36 @@ h2 {
 .header-main .header-art {
   position: absolute;
   top: -52px;
-  right: -98px;
-  width: 474px;
-  height: 378px;
-  background: url(../images/header-art.png) 0 0 no-repeat;
+  right: -104px;
+  width: 480px;
+  height: 380px;
+  background: url(../images/tree.png) 0 0 no-repeat;
+}
+
+.header-main .header-art .bird {
+  position: absolute;
+  bottom: 170px;
+  left: -4px;
+  height: 130px;
+  width: 131px;
+  background: url(../images/bird-sprite.png) 0 0 no-repeat;
+  z-index: 9999;
+}
+
+.header-main .header-art .shadow {
+  position: absolute;
+  bottom: 174px;
+  left: 28px;
+  height: 14px;
+  width: 62px;
+  background: url(../images/bird-shadow.png) 0 0 no-repeat;
+  z-index: 999;
 }
 
 .header-main .header-art .overlapping-leaves {
   position: absolute;
-  bottom: 92px;
-  left: -4px;
+  bottom: 94px;
+  left: 0;
   height: 74px;
   width: 138px;
   background: url(../images/overlapping-leaves.png) 0 0 no-repeat;
@@ -182,7 +202,7 @@ h2 {
 }
 
 .header-main h1 {
-  padding: 60px 0 0 0;
+  padding: 50px 0 0 0;
   margin-bottom: 0;
   font-size: 5em;
   font-weight: normal;
@@ -403,7 +423,7 @@ header ul a strong {
 }
 
 .footer-main {
-  padding: 16px 0;
+  padding: 15px 0 30px 0;
   color: #596649;
 }
 
@@ -417,7 +437,7 @@ header ul a strong {
 }
 
 .footer-main nav {
-  margin-left: 200px;
+  margin-left: 183px;
 }
 
 .footer-main nav ul {
@@ -442,11 +462,11 @@ header ul a strong {
 }
 
 .footer-notes {
-  margin: 14px 0 0 205px;
+  margin: 14px 0 0 190px;
 }
 
-.footer-notes p {
-  margin-bottom: 3px;
+.footer-notes small {
+  margin-right: 15px;
 }
 
 .footer-notes a {
