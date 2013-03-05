@@ -181,6 +181,7 @@ def copy(dirname)
   Dir.foreach path do |file|
     file_path = File.join path, file
     next unless File.file? file_path
+    next if file =~ /~$/
     output_dir = File.join OUTPUT_DIR, dirname
     FileUtils.mkdir output_dir unless File.directory? output_dir
     output_file = File.join output_dir, file
