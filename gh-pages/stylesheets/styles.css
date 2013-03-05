@@ -477,6 +477,20 @@ header ul a strong {
   color: #f3f4f1;
 }
 
+/* Code Example */
+
+.example {
+  margin: 0 0 1em 0;
+  padding: 1em;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #f2f2f2;
+}
+
+.example h3 {
+  color: #60688F;
+}
 
 /*p,
 ul,
