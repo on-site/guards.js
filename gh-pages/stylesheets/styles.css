@@ -165,35 +165,35 @@ h2 {
 .header-main .header-art {
   position: absolute;
   top: -52px;
-  right: -98px;
-  width: 474px;
-  height: 378px;
+  right: -104px;
+  width: 480px;
+  height: 380px;
   background: url(../images/tree.png) 0 0 no-repeat;
 }
 
 .header-main .header-art .bird {
   position: absolute;
-  bottom: 173px;
+  bottom: 170px;
   left: -4px;
-  height: 125px;
-  width: 130px;
+  height: 130px;
+  width: 131px;
   background: url(../images/bird-sprite.png) 0 0 no-repeat;
   z-index: 9999;
 }
 
 .header-main .header-art .shadow {
   position: absolute;
-  bottom: 112px;
+  bottom: 174px;
   left: 28px;
-  height: 74px;
-  width: 138px;
+  height: 14px;
+  width: 62px;
   background: url(../images/bird-shadow.png) 0 0 no-repeat;
   z-index: 999;
 }
 
 .header-main .header-art .overlapping-leaves {
   position: absolute;
-  bottom: 92px;
+  bottom: 94px;
   left: 0;
   height: 74px;
   width: 138px;
