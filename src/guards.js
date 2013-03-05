@@ -1285,11 +1285,13 @@
             return this;
         }
 
-        if (guard.sendEvent("guardError", this).isDefaultPrevented()) {
+        var guardErrorPrevented = guard.sendEvent("guardError", this).isDefaultPrevented();
+        var guardFormErrorPrevented = guard.sendEvent("guardFormError", this, true).isDefaultPrevented();
+
+        if (guardErrorPrevented || guardFormErrorPrevented) {
             return this;
         }
 
-        guard.sendEvent("guardFormError", this, true);
         var element = guard.errorElement();
         guard.attachError(this, element);
         this.addClass(guard.getInvalidClass());
