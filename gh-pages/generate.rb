@@ -5,9 +5,9 @@ require "fileutils"
 OUTPUT_DIR = ARGV.first
 
 def define_pages
-  page_group "Repository", "https://github.com/on-site/guards.js"
+  page_group :name => "Repository", :path => "https://github.com/on-site/guards.js"
 
-  page_group "Demo", "/" do
+  page_group :name => "Demo", :path => "/" do
     page do
       title "Introduction"
       file "index.html"
@@ -49,18 +49,18 @@ def define_pages
     end
   end
 
-  page_group "Documentation", "https://github.com/on-site/guards.js#summary"
-  page_group "Downloads", "https://github.com/on-site/guards.js#downloads"
-  page_group "Report Bugs", "https://github.com/on-site/guards.js/issues"
-  page_group "jQuery Plugin", "http://plugins.jquery.com/guards/"
+  page_group :name => "Documentation", :path => "https://github.com/on-site/guards.js#summary"
+  page_group :name => "Downloads", :path => "https://github.com/on-site/guards.js#downloads"
+  page_group :name => "Report Bugs", :path => "https://github.com/on-site/guards.js/issues"
+  page_group :name => "jQuery Plugin", :path => "http://plugins.jquery.com/guards/"
 end
 
 class PageGroup
   attr_reader :name, :path
 
-  def initialize(name, path)
-    @name = name
-    @path = path
+  def initialize(options)
+    @name = options[:name]
+    @path = options[:path]
   end
 
   def navigation_html
@@ -170,7 +170,13 @@ class Page
     @content_html ||= File.read(Page.input_file("_#{get_file}"))
   end
 
+  def wizard_disabled?
+    page_group.pages.length <= 1
+  end
+
   def wizard_html
+    return "" if wizard_disabled?
+
     @wizard_html ||= "\n".tap do |wizard|
       wizard << %{<div class="wizard">\n}
       wizard << %{  <ol>\n}
@@ -218,8 +224,8 @@ end
 
 PAGE_GROUPS = []
 
-def page_group(name, path, &block)
-  group = PageGroup.new name, path
+def page_group(options, &block)
+  group = PageGroup.new options
   group.instance_eval &block if block
   PAGE_GROUPS << group unless group.pending?
 end
