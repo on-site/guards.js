@@ -1194,7 +1194,7 @@
         return this;
     };
 
-    $.Guard.prototype.sendEvent = function(name, selectedElements, forForm) {
+    $.Guard.prototype.sendEvent = function(name, selectedElements, forForm, errorMessageElement) {
         var event = $.Event(name);
         event.guard = this;
         event.errorElements = selectedElements.toArray();
@@ -1202,6 +1202,10 @@
 
         if (forForm) {
             target = target.parents("form");
+        }
+
+        if (errorMessageElement) {
+            event.errorMessage = $(errorMessageElement)[0];
         }
 
         target.trigger(event);
@@ -1307,8 +1311,8 @@
             this.errors.push(error);
         });
 
-        guard.sendEvent("afterGuardError", this);
-        guard.sendEvent("afterGuardFormError", this, true);
+        guard.sendEvent("afterGuardError", this, false, element);
+        guard.sendEvent("afterGuardFormError", this, true, element);
         return this;
     };
 
