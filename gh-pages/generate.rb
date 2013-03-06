@@ -5,48 +5,112 @@ require "fileutils"
 OUTPUT_DIR = ARGV.first
 
 def define_pages
-  page do
-    step "Introduction"
-    file "index.html"
+  page_group "Repository", "https://github.com/on-site/guards.js"
+
+  page_group "Demo", "/" do
+    page do
+      step "Introduction"
+      file "index.html"
+    end
+
+    page do
+      step "Options"
+    end
+
+    page do
+      step "Customization"
+    end
+
+    page do
+      pending!
+      step "Grouped Guards"
+      file "grouped.html"
+    end
+
+    page do
+      pending!
+      step "Preconditions"
+    end
+
+    page do
+      pending!
+      step "Styling"
+    end
+
+    page do
+      pending!
+      step "Guards and jQuery"
+      file "jquery.html"
+    end
+
+    page do
+      pending!
+      step "Playground"
+    end
   end
 
-  page do
-    step "Options"
+  page_group "Documentation", "https://github.com/on-site/guards.js#summary"
+  page_group "Downloads", "https://github.com/on-site/guards.js#downloads"
+  page_group "Report Bugs", "https://github.com/on-site/guards.js/issues"
+  page_group "jQuery Plugin", "http://plugins.jquery.com/guards/"
+end
+
+class PageGroup
+  attr_reader :name, :path
+
+  def initialize(name, path)
+    @name = name
+    @path = path
   end
 
-  page do
-    step "Customization"
+  def navigation_html
+    @navigation_html ||= "\n".tap do |nav|
+      nav << %{<ul>\n}
+
+      PAGE_GROUPS.each do |group|
+        nav << "  #{group.to_li(group == self)}\n"
+      end
+
+      nav << %{</ul>\n}
+    end
   end
 
-  page do
-    pending!
-    step "Grouped Guards"
-    file "grouped.html"
+  def to_li(current = false)
+    current_class = " current" if current
+    %{<li><a class="transition-background#{current_class}" href="#{path}">#{name}</a></li>}
   end
 
-  page do
-    pending!
-    step "Preconditions"
+  def pages
+    @pages ||= []
   end
 
-  page do
-    pending!
-    step "Styling"
+  def page(&block)
+    p = Page.new self
+    p.index pages.length
+    p.instance_eval &block
+    pages << p unless p.pending?
   end
 
-  page do
-    pending!
-    step "Guards and jQuery"
-    file "jquery.html"
+  def pending!
+    @pending = true
   end
 
-  page do
-    pending!
-    step "Playground"
+  def pending?
+    @pending
+  end
+
+  def generate
+    pages.each &:generate
   end
 end
 
 class Page
+  attr_reader :page_group
+
+  def initialize(page_group)
+    @page_group = page_group
+  end
+
   def index(value)
     @index = value
   end
@@ -92,10 +156,12 @@ class Page
   end
 
   def generate
+    puts "generating '#{get_file}'"
     result = Page.template.clone
     result.gsub! "{{title}}", title_html
     result.gsub! "{{content}}", content_html
     result.gsub! "{{wizard}}", wizard_html
+    result.gsub! "{{navigation}}", page_group.navigation_html
     result.gsub! "{{prev}}", prev_html
     result.gsub! "{{next}}", next_html
 
@@ -117,7 +183,7 @@ class Page
       wizard << %{<div class="wizard">\n}
       wizard << %{  <ol>\n}
 
-      PAGES.each do |page|
+      page_group.pages.each do |page|
         wizard << "    #{page.to_li(page == self)}\n"
       end
 
@@ -128,15 +194,15 @@ class Page
 
   def prev_html
     @prev_html ||= if get_index > 0
-                     %{<a href="#{PAGES[get_index - 1].get_file}">previous</a>}
+                     %{<a href="#{page_group.pages[get_index - 1].get_file}">previous</a>}
                    else
                      ""
                    end
   end
 
   def next_html
-    @next_html ||= if get_index < PAGES.length - 1
-                     %{<a href="#{PAGES[get_index + 1].get_file}">next</a>}
+    @next_html ||= if get_index < page_group.pages.length - 1
+                     %{<a href="#{page_group.pages[get_index + 1].get_file}">next</a>}
                    else
                      ""
                    end
@@ -158,13 +224,12 @@ class Page
   end
 end
 
-PAGES = []
+PAGE_GROUPS = []
 
-def page(&block)
-  p = Page.new
-  p.index PAGES.length
-  p.instance_eval &block
-  PAGES << p unless p.pending?
+def page_group(name, path, &block)
+  group = PageGroup.new name, path
+  group.instance_eval &block if block
+  PAGE_GROUPS << group unless group.pending?
 end
 
 def check_usage
@@ -195,7 +260,7 @@ end
 
 def generate
   FileUtils.mkdir OUTPUT_DIR unless File.directory? OUTPUT_DIR
-  PAGES.each &:generate
+  PAGE_GROUPS.each &:generate
   copy "stylesheets"
   copy "javascripts"
   copy "images"
