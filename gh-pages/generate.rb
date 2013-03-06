@@ -69,7 +69,7 @@ def define_pages
 end
 
 class JsDoc
-  attr_accessor :page, :content
+  attr_accessor :page, :section, :since, :content
   attr_reader :doc
 
   def initialize(doc)
@@ -77,8 +77,15 @@ class JsDoc
     parse!
   end
 
+  def section_id
+    @section_id ||= section.downcase.gsub(/\W/, "_").gsub(/_+/, "_")
+  end
+
   def content_html
-    content
+    @content_html ||= "\n".tap do |result|
+      result << %{<h2 id="#{section_id}">#{section}</h2>} if section && !section.empty?
+      result << content
+    end
   end
 
   private
@@ -90,6 +97,8 @@ class JsDoc
 
   def parse!
     self.page = remove_annotation "page"
+    self.section = remove_annotation "section"
+    self.since = remove_annotation "since"
     self.content = doc.gsub(/^\s*\/\*\*\s*^/, "").gsub(/^\s*\*\/\s*/, "").gsub(/^\s*\*/, "")
   end
 end
@@ -123,7 +132,10 @@ class DocumentationPage
   end
 
   def content_html
-    @content_html ||= jsdocs.map(&:content_html).join("\n")
+    @content_html ||= "".tap do |content|
+      content << "<script>$.liveGuard(\".example\");</script>"
+      content << jsdocs.map(&:content_html).join("\n")
+    end
   end
 
   def prev_html

@@ -119,6 +119,28 @@
             }
         };
 
+        /**
+         * @page Named Guards
+         * @section allow
+         * @since 1.0.0
+         *
+         * <p>
+         *   Only values found in the given list are considered valid.  Anything else triggers a failure.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".primary-color").using("allow", ["red", "yellow", "blue"]);
+         *     </script>
+         *
+         *     <p>
+         *       <input class="primary-color" type="text" /><br />
+         *       <small>Allowed values: red, yellow, blue</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.arrayMessage("Please enter one of: #{0}."));
         this.name("always").using(this.aggregate(this.isAllValid, this.always)).message("There was an error.");
         this.name("different").grouped().using(this.aggregate(this.passThrough, this.isDifferent)).message("These values must all be different.");
