@@ -544,6 +544,44 @@
             equal(events.length, 1, "Number of events fired");
           });
 
+          test("after guard error", function() {
+            var events = [];
+            $("form input").bind("afterGuardError", function(e) { events.push(e); });
+            $.guard("#form1 input").using("required");
+            $.guard("#form1-3").using("email");
+            $("#form1-2").val("Something");
+            $("#form1-3").val("Not an email");
+            $("#form1").guard();
+            equal(events.length, 3, "Number of events fired");
+          });
+
+          test("after grouped guard error", function() {
+            var events = [];
+            $("form input").bind("afterGuardError", function(e) { events.push(e); });
+            $.guard("#form1-1,#form1-2,#form1-3").using("oneRequired");
+            $("#form1").guard();
+            equal(events.length, 3, "Number of events fired");
+          });
+
+          test("after guard form error", function() {
+            var events = [];
+            $("form").bind("afterGuardFormError", function(e) { events.push(e); });
+            $.guard("#form1 input").using("required");
+            $.guard("#form1-3").using("email");
+            $("#form1-2").val("Something");
+            $("#form1-3").val("Not an email");
+            $("#form1").guard();
+            equal(events.length, 3, "Number of events fired");
+          });
+
+          test("after grouped guard form error", function() {
+            var events = [];
+            $("form").bind("afterGuardFormError", function(e) { events.push(e); });
+            $.guard("#form1-1,#form1-2,#form1-3").using("oneRequired");
+            $("#form1").guard();
+            equal(events.length, 1, "Number of events fired");
+          });
+
           test("guard error can prevent default", function() {
             var guardFormErrorTriggered = false;
             $("#form1").bind("guardFormError", function(e) { guardFormErrorTriggered = true; });

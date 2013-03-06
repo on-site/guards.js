@@ -1297,7 +1297,7 @@
         this.addClass(guard.getInvalidClass());
         var linked = [];
 
-        return this.each(function() {
+        this.each(function() {
             if (!this.errors) {
                 this.errors = [];
             }
@@ -1306,6 +1306,10 @@
             linked.push(error);
             this.errors.push(error);
         });
+
+        guard.sendEvent("afterGuardError", this);
+        guard.sendEvent("afterGuardFormError", this, true);
+        return this;
     };
 
     /**
