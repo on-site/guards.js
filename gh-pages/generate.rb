@@ -9,43 +9,43 @@ def define_pages
 
   page_group "Demo", "/" do
     page do
-      step "Introduction"
+      title "Introduction"
       file "index.html"
     end
 
     page do
-      step "Options"
+      title "Options"
     end
 
     page do
-      step "Customization"
+      title "Customization"
     end
 
     page do
       pending!
-      step "Grouped Guards"
+      title "Grouped Guards"
       file "grouped.html"
     end
 
     page do
       pending!
-      step "Preconditions"
+      title "Preconditions"
     end
 
     page do
       pending!
-      step "Styling"
+      title "Styling"
     end
 
     page do
       pending!
-      step "Guards and jQuery"
+      title "Guards and jQuery"
       file "jquery.html"
     end
 
     page do
       pending!
-      step "Playground"
+      title "Playground"
     end
   end
 
@@ -115,10 +115,6 @@ class Page
     @index = value
   end
 
-  def step(value)
-    @step = value
-  end
-
   def title(value)
     @title = value
   end
@@ -131,16 +127,12 @@ class Page
     @index
   end
 
-  def get_step
-    @step
-  end
-
   def get_title
-    @title || get_step
+    @title
   end
 
   def get_file
-    @file || "#{get_step.downcase}.html"
+    @file || "#{get_title.downcase}.html"
   end
 
   def pending!
@@ -210,7 +202,7 @@ class Page
 
   def to_li(current = false)
     css_class = %{ class="current"} if current
-    %{<li#{css_class}><a href="#{get_file}">#{get_step}</a></li>}
+    %{<li#{css_class}><a href="#{get_file}">#{get_title}</a></li>}
   end
 
   class << self
