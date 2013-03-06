@@ -86,16 +86,15 @@ def update_manifest!
   end
 end
 
-def update_readme!
+def update_downloads_page!
   version = get_version
-  contents = File.read "README.markdown"
-  return if contents =~ /\* #{Regexp.quote version}: \[production minified\]/
-  contents.sub! /^# Downloads\n\n/, "# Downloads
-
-* #{version}: [production minified](https://raw.github.com/on-site/guards.js/#{version}/downloads/guards-#{version}.min.js), [development](https://raw.github.com/on-site/guards.js/#{version}/downloads/guards-#{version}.js)
+  contents = File.read "gh-pages/_downloads.html"
+  return if contents =~ /<li>#{Regexp.quote version}: /
+  contents.sub! /^  <ul>\n/, "  <ul>
+    <li>#{version}: <a href=\"https://raw.github.com/on-site/guards.js/#{version}/downloads/guards-#{version}.min.js\">production minified</a>, <a href=\"https://raw.github.com/on-site/guards.js/#{version}/downloads/guards-#{version}.js\">development</a></li>
 "
 
-  File.open "README.markdown", "w" do |f|
+  File.open "gh-pages/_downloads.html", "w" do |f|
     f << contents
   end
 end
@@ -105,7 +104,7 @@ def prepare(version)
   update_version! version
   update_downloads!
   update_manifest!
-  update_readme!
+  update_downloads_page!
 end
 
 die "usage: package.rb tag

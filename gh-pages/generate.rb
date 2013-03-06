@@ -7,7 +7,7 @@ OUTPUT_DIR = ARGV.first
 def define_pages
   page_group :name => "Repository", :path => "https://github.com/on-site/guards.js"
 
-  page_group :name => "Demo", :path => "/" do
+  page_group :name => "Demo", :path => "index.html" do
     page do
       title "Introduction"
       file "index.html"
@@ -50,7 +50,13 @@ def define_pages
   end
 
   page_group :name => "Documentation", :path => "https://github.com/on-site/guards.js#summary"
-  page_group :name => "Downloads", :path => "https://github.com/on-site/guards.js#downloads"
+
+  page_group :name => "Downloads", :path => "downloads.html" do
+    page do
+      title "Downloads"
+    end
+  end
+
   page_group :name => "Report Bugs", :path => "https://github.com/on-site/guards.js/issues"
   page_group :name => "jQuery Plugin", :path => "http://plugins.jquery.com/guards/"
 end
