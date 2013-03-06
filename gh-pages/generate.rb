@@ -82,8 +82,8 @@ class PageGroup
   end
 
   def to_li(current = false)
-    current_class = " current" if current
-    %{<li><a class="transition-background#{current_class}" href="#{path}">#{name}</a></li>}
+    css_class = %{ class="current"} if current
+    %{<li#{css_class}><a class="transition-background" href="#{path}">#{name}</a></li>}
   end
 
   def pages
