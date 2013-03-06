@@ -49,7 +49,14 @@ def define_pages
     end
   end
 
-  page_group :name => "Documentation", :path => "https://github.com/on-site/guards.js#summary"
+  page_group :name => "Documentation", :path => "documentation.html" do
+    page do
+      title "Documentation"
+      skip_next_and_prev!
+    end
+
+    documentation!
+  end
 
   page_group :name => "Downloads", :path => "downloads.html" do
     page do
@@ -61,12 +68,147 @@ def define_pages
   page_group :name => "jQuery Plugin", :path => "http://plugins.jquery.com/guards/"
 end
 
+class JsDoc
+  attr_accessor :page, :content
+  attr_reader :doc
+
+  def initialize(doc)
+    @doc = doc
+    parse!
+  end
+
+  def content_html
+    content
+  end
+
+  private
+  def remove_annotation(name)
+    value = doc[/^\s*\*\s*@#{Regexp.quote name}\s*(.*?)\s*$/, 1]
+    doc.gsub! /^\s*\*\s*@#{Regexp.quote name}\s*(.*?)\s*$/, ""
+    value
+  end
+
+  def parse!
+    self.page = remove_annotation "page"
+    self.content = doc.gsub(/^\s*\/\*\*\s*^/, "").gsub(/^\s*\*\/\s*/, "").gsub(/^\s*\*/, "")
+  end
+end
+
+class DocumentationPage
+  attr_accessor :index
+  attr_reader :page_group
+
+  def initialize(page_group)
+    @page_group = page_group
+  end
+
+  def jsdocs
+    @jsdocs ||= []
+  end
+
+  def file
+    @file ||= (title.downcase.gsub(/\s/, "_").gsub(/\W+/, "_").gsub(/_+/, "_") + ".html")
+  end
+
+  def get_file
+    file
+  end
+
+  def title
+    jsdocs.first.page
+  end
+
+  def title_html
+    "<h1>#{title}</h1>"
+  end
+
+  def content_html
+    @content_html ||= jsdocs.map(&:content_html).join("\n")
+  end
+
+  def prev_html
+    ""
+  end
+
+  def next_html
+    ""
+  end
+
+  def wizard_html
+    @wizard_html ||= "\n".tap do |wizard|
+      wizard << %{<div class="wizard">\n}
+      wizard << %{  <ol>\n}
+
+      page_group.pages.each do |page|
+        wizard << "    #{page.to_li(page == self)}\n"
+      end
+
+      wizard << %{  </ol>\n}
+      wizard << %{</div>\n}
+    end
+  end
+
+  def to_li(current = false)
+    css_class = %{ class="current"} if current
+    %{<li#{css_class}><a href="#{file}">#{title}</a></li>}
+  end
+
+  def output_file
+    File.join OUTPUT_DIR, file
+  end
+
+  def generate
+    puts "generating '#{get_file}'"
+    result = Page.template.clone
+    result.gsub! "{{title}}", title_html
+    result.gsub! "{{content}}", content_html
+    result.gsub! "{{wizard}}", wizard_html
+    result.gsub! "{{navigation}}", page_group.navigation_html
+    result.gsub! "{{prev}}", prev_html
+    result.gsub! "{{next}}", next_html
+
+    File.open output_file, "w" do |f|
+      f << result
+    end
+  end
+
+  class << self
+    def parse(group)
+      guardsjs = File.read(File.expand_path("../../src/guards.js", __FILE__))
+      jsdocs = guardsjs.scan(/\/\*\*\s*+\*\s*@page.*?\*\//m).map { |x| JsDoc.new x }
+      pages = []
+      hash = {}
+
+      jsdocs.each do |doc|
+        if hash.include? doc.page
+          page = hash[doc.page]
+        else
+          page = DocumentationPage.new(group)
+          pages << page
+          hash[doc.page] = page
+        end
+
+        page.jsdocs << doc
+      end
+
+      pages.each do |page|
+        page.index = group.pages.length
+        group.pages << page
+      end
+    end
+  end
+end
+
 class PageGroup
   attr_reader :name, :path
 
   def initialize(options)
     @name = options[:name]
     @path = options[:path]
+  end
+
+  def documentation!
+    DocumentationPage.parse(self)
   end
 
   def navigation_html
@@ -196,7 +338,12 @@ class Page
     end
   end
 
+  def skip_next_and_prev!
+    @skip_next_and_prev = true
+  end
+
   def prev_html
+    return "" if @skip_next_and_prev
     @prev_html ||= if get_index > 0
                      %{<a href="#{page_group.pages[get_index - 1].get_file}">previous</a>}
                    else
@@ -205,6 +352,7 @@ class Page
   end
 
   def next_html
+    return "" if @skip_next_and_prev
     @next_html ||= if get_index < page_group.pages.length - 1
                      %{<a href="#{page_group.pages[get_index + 1].get_file}">next</a>}
                    else
