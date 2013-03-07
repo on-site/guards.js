@@ -1,34 +1,6 @@
 /**
  * This plugin is initially inspired by the standard Validation jQuery
- * plugin (http://docs.jquery.com/Plugins/Validation).
- *
- * To guard forms with this plugin, you must specify a set of guards
- * via $.guards.add(selector).using(guard) or
- * $.guard(selector).using(guard).  These guards are then invoked from
- * the first one specified to the last one specified.
- *
- * Example usage:
- *
- * $(function() {
- *   // Change the default error tag wrapper to a div.
- *   $.guards.defaults.tag = "div";
- *
- *   // Enable the submit guard hook for the form with the "myForm" id.
- *   $("#myForm").enableGuards();
- *
- *   // Guard that fields with "required" class have a value.
- *   $.guard(".required").using("required");
- *
- *   // Guard that the text fields don't have the value "invalid" or "bad".
- *   $.guard(":text").using(function(value, element) {
- *     return $.inArray(value, ["invalid", "bad"]) == -1;
- *   }).message("Don't use the keyword 'invalid' or 'bad'.");
- *
- *   // Guard that fields with "email" class specify at least one
- *   // value, but only show 1 error message if none is specified (but
- *   // still highlight all of the fields).
- *   $.guard(".email").using("oneRequired")
- *       .message("Please specify at least one email.").grouped();
+ * plugin (http://plugins.jquery.com/validation/).
  */
 (function($) {
     /*jshint devel:true, jquery:true */
@@ -126,6 +98,7 @@
          *
          * <p>
          *   Only values found in the given list are considered valid.  Anything else triggers a failure.
+         *   This guard <strong>requires</strong> an array parameter of the valid values.
          * </p>
          *
          * <div class="example">
@@ -142,16 +115,206 @@
          * </div>
          */
         this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.arrayMessage("Please enter one of: #{0}."));
+
+        /**
+         * @page Named Guards
+         * @section always
+         * @since 1.0.0
+         *
+         * <p>
+         *   Always fail, no matter what.  For this guard to pass, either the guard must be removed, or
+         *   the element(s) guarded must be removed.  No parameters are accepted.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".always").using("always");
+         *     </script>
+         *
+         *     <p>
+         *       <input class="always" type="text" /><br />
+         *       <small>Always fails, no matter what</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("always").using(this.aggregate(this.isAllValid, this.always)).message("There was an error.");
+
+        /**
+         * @page Named Guards
+         * @section different
+         * @since 1.0.0
+         *
+         * <p>
+         *   This is a grouped guard where every field must have a different value.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".unique").using("different");
+         *     </script>
+         *
+         *     <p>
+         *       <input class="unique" type="text" value="Unique Required" /><br />
+         *       <input class="unique" type="text" value="Unique Required" /><br />
+         *       <small>Each value must be unique</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("different").grouped().using(this.aggregate(this.passThrough, this.isDifferent)).message("These values must all be different.");
+
+        /**
+         * @page Named Guards
+         * @section disallow
+         * @since 1.0.0
+         *
+         * <p>
+         *   Guard against specific values.  This guard <strong>requires</strong> an array parameter
+         *   of the invalid values.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".not-primary-color").using("disallow", ["red", "yellow", "blue"]);
+         *     </script>
+         *
+         *     <p>
+         *       <input class="not-primary-color" type="text" value="red" /><br />
+         *       <small>Disallowed values: red, yellow, blue</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("disallow").using(this.aggregate(this.isAllValid, this.isDisallowed)).message(this.arrayMessage("Please don't enter: #{0}."));
+
+        /**
+         * @page Named Guards
+         * @section email
+         * @since 1.0.0
+         *
+         * <p>
+         *   Guard for a valid email address.  An empty value is ignored, so only once a value exists will
+         *   this guard start checking for an email address.  An optional argument of
+         *   <code>{ allowDisplay: true }</code> is allowed that may specify whether display emails of the
+         *   form <code>John Doe &lt;john@example.com&gt;</code> are allowed.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".email1").using("email");
+         *       $.guard(".email2").using("email", { allowDisplay: true });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="email1" type="text" value="invalid" /><br />
+         *       <small>Email address of the form "john@example.com"</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="email2" type="text" value="Still &lt;invalid&gt;" /><br />
+         *       <small>Email address of the form "John Doe &lt;john@example.com&gt;"</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("email").using(this.aggregate(this.isAllValid, this.isValidEmail)).message("Please enter a valid E-mail address.");
+
+        /**
+         * @page Named Guards
+         * @section float
+         * @since 1.0.0
+         *
+         * <p>
+         *   Guard for a floating point number.  Optionally, an object parameter may be passed with
+         *   <code>min</code> and/or <code>max</code>.  Min will restrict the minimum value, while
+         *   max restricts the maximum.  An empty value is considered valid.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".float1").using("float");
+         *       $.guard(".float2").using("float", { min: -5.5 });
+         *       $.guard(".float3").using("float", { max: 42.0 });
+         *       $.guard(".float4").using("float", { min: 0.0, max: 10.0 });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="float1" type="text" value="not valid" /><br />
+         *       <small>A number of any value</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="float2" type="text" value="-10.5" /><br />
+         *       <small>A number no smaller than -5.5</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="float3" type="text" value="64.32" /><br />
+         *       <small>A number no bigger than 42</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="float4" type="text" value="11" /><br />
+         *       <small>A number from 0 to 10</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("float").using(this.aggregate(this.isAllValid, this.isValidFloat)).message(this.minMaxMessage({
             minAndMax: "Please enter a number from #{0} to #{1}.",
             min: "Please enter a number no less than #{0}.",
             max: "Please enter a number no greater than #{0}.",
             invalid: "Please enter a number."
         }));
+
+        /**
+         * @page Named Guards
+         * @section int
+         * @since 1.0.0
+         *
+         * <p>
+         *   Guard for an integer number.  Optionally, an object parameter may be passed with
+         *   <code>min</code> and/or <code>max</code>.  Min will restrict the minimum value, while
+         *   max restricts the maximum.  An empty value is considered valid.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".int1").using("int");
+         *       $.guard(".int2").using("int", { min: -5 });
+         *       $.guard(".int3").using("int", { max: 42 });
+         *       $.guard(".int4").using("int", { min: 0, max: 10 });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="float1" type="text" value="not valid" /><br />
+         *       <small>An integer of any value</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="float2" type="text" value="-10.5" /><br />
+         *       <small>An integer no smaller than -5</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="float3" type="text" value="64.32" /><br />
+         *       <small>An integer no bigger than 42</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="float4" type="text" value="11" /><br />
+         *       <small>An integer from 0 to 10</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("int").using(this.aggregate(this.isAllValid, this.isValidInt)).message(this.minMaxMessage({
             minAndMax: "Please enter a number from #{0} to #{1}.",
             min: "Please enter a number no less than #{0}.",
