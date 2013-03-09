@@ -42,7 +42,7 @@
                 self.applyGuards(function(guard) {
                     if (guard.isGrouped()) {
                         if (guard.appliesTo($element)) {
-                            return $element.parents("form:first").find(":guardable");
+                            return self.parentContext($element).find(":guardable");
                         } else {
                             return false;
                         }
@@ -340,6 +340,17 @@
     };
 
     $.Guards.prototype.version = "{{VERSION}}";
+
+    $.Guards.prototype.parentContext = function(element) {
+        var $element = $(element);
+        var context = $element.parents("form:first");
+
+        if (context.size() == 0) {
+            context = $element.parents("*:last");
+        }
+
+        return context;
+    };
 
     $.Guards.prototype.name = function(name) {
         var guard = new $.Guard(null, this, true);
@@ -1521,7 +1532,8 @@
                 }
 
                 radiosAdded[name] = true;
-                var radios = $("input[name='" + name + "']:radio", $this.parents("form"));
+                var context = guard._guards.parentContext($this);
+                var radios = $("input[name='" + name + "']:radio", context);
                 radios.addSingleError(guard);
             } else {
                 $this.addSingleError(guard);
@@ -1601,7 +1613,7 @@
         guards = guards || $.guards;
 
         if (this.is(":radio")) {
-            var checked = $("input[name='" + this.attr("name") + "']:radio:checked", this.parents("form"));
+            var checked = $("input[name='" + this.attr("name") + "']:radio:checked", guards.parentContext(this));
 
             if (checked.size() === 0) {
                 return guards.constants.notChecked;

@@ -115,7 +115,11 @@
             options.expectedErrorCount = options.expectedErrorCount || 0;
             options.expectedErrorMessageCount = options.expectedErrorMessageCount || 0;
             var form = options.form;
-            equal($(form).guard(), options.expectedToPass, "Form guards should fail");
+
+            if (!options.skipInvokeGuard) {
+              equal($(form).guard(), options.expectedToPass, "Form guards should fail");
+            }
+
             equal($(form + " :has-error").size(), options.expectedErrorCount, "Number of fields with errors");
             equal($(form + " ." + errorMsgClass()).size(), options.expectedErrorMessageCount, "Error message count");
             if (options.errorMessageLocations) {
@@ -240,6 +244,81 @@
               test(name, fn);
             }
           }
+
+          module("discovered bugs", { setup: resetGuards });
+
+          test("#13: grouped guards with no form", function() {
+            $.guard("#form8 input[type='text']").using("different");
+
+            // Via guard
+            $("#form8").guard();
+            assertGuards({
+              skipInvokeGuard: true,
+              form: "#form8",
+              expectedToPass: false,
+              expectedErrorCount: 4,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("#form8-4"),
+              errorMessages: "These values must all be different."
+            });
+
+            // Via live guard
+            $("#form8 :has-error").clearErrors();
+            $.liveGuard("#form8");
+            $("#form8-1").blur();
+            assertGuards({
+              skipInvokeGuard: true,
+              form: "#form8",
+              expectedToPass: false,
+              expectedErrorCount: 4,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("#form8-4"),
+              errorMessages: "These values must all be different."
+            });
+          });
+
+          test("#13: radio button with no form", function() {
+            $.guard("#form8 input:radio").using("required");
+            $("#form8").guard();
+            assertGuards({
+              skipInvokeGuard: true,
+              form: "#form8",
+              expectedToPass: false,
+              expectedErrorCount: 3,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("#form8-7"),
+              errorMessages: "This field is required."
+            });
+          });
+
+          test("#13: radio button custom guard value with no form", function() {
+            var values = [];
+            $.guard("#form8 input:radio").using(function(v, e) {
+              values.push(v);
+              return true;
+            });
+            $("#form8-6").attr("checked", "checked");
+            $("#form8").guard();
+            equal(values.length, 3, "Values length");
+            equal(values[0], "2", "First value");
+            equal(values[1], "2", "Second value");
+            equal(values[2], "2", "Third value");
+          });
+
+          test("#13: radio button custom grouped guard value with no form", function() {
+            var values = [];
+            $.guard("#form8 input:radio").grouped().using(function(v, e) {
+              values.push(v);
+              return true;
+            });
+            $("#form8-6").attr("checked", "checked");
+            $("#form8").guard();
+            equal(values.length, 1, "Result length");
+            equal(values[0].length, 3, "Result[0] length");
+            equal(values[0][0], "2", "First value");
+            equal(values[0][1], "2", "Second value");
+            equal(values[0][2], "2", "Third value");
+          });
 
           module("guardable fields", { setup: resetGuards });
 
@@ -1764,6 +1843,17 @@
         <input id="form7-3" type="checkbox" name="box[]" value="2" /> Box 2
         <input id="form7-4" type="checkbox" name="other" value="3" /> Box 3
       </form>
+
+      <!-- fields with no actual form -->
+      <div id="form8">
+        <input id="form8-1" type="text" name="text" />
+        <input id="form8-2" type="text" name="grouped[]" />
+        <input id="form8-3" type="text" name="grouped[]" />
+        <input id="form8-4" type="text" name="other" />
+        <input id="form8-5" type="radio" name="group1" value="1" /> FirstOption 1
+        <input id="form8-6" type="radio" name="group1" value="2" /> FirstOption 2
+        <input id="form8-7" type="radio" name="group1" value="3" /> FirstOption 3
+      </div>
     </div>
   </body>
 </html>
