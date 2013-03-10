@@ -398,6 +398,30 @@
          * </div>
          */
         this.name("never").using(this.aggregate(this.isAllValid, this.never)).message("There was an error.");
+
+        /**
+         * @page Named Guards
+         * @section oneRequired
+         * @since 1.0.0
+         *
+         * <p>
+         *   This is a grouped guard where a single field of all the selected fields must have a value.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".oneRequired").using("oneRequired");
+         *     </script>
+         *
+         *     <p>
+         *       <input class="oneRequired" type="text" value="" /><br />
+         *       <input class="oneRequired" type="text" value="" /><br />
+         *       <small>One value is required</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("oneRequired").grouped().using(this.aggregate(this.isAnyValid, this.isPresent)).message("Specify at least one.");
         this.name("phoneUS").using(this.aggregate(this.isAllValid, this.isValidPhoneUS)).message("Please enter a valid phone number.");
         this.name("required").using(this.aggregate(this.isAllValid, this.isPresent)).message("This field is required.");
