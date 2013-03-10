@@ -505,6 +505,43 @@
          * </div>
          */
         this.name("same").grouped().using(this.aggregate(this.passThrough, this.isSame)).message("These values must all match.");
+
+        /**
+         * @page Named Guards
+         * @section string
+         * @since 1.0.0
+         *
+         * <p>
+         *   Validate the length of the string provided.  This requires an object parameter with
+         *   <code>min</code> and/or <code>max</code>.  Min will restrict the minimum length, while
+         *   max restricts the maximum length.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".string1").using("string", { min: 3 });
+         *       $.guard(".string2").using("string", { max: 7 });
+         *       $.guard(".string3").using("string", { min: 2, max: 4 });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="string1" type="text" value="I" /><br />
+         *       <small>A string with at lease 3 characters</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="string2" type="text" value="Hello World" /><br />
+         *       <small>A string with no more than 7 characters</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="string3" type="text" value="Goodnight Moon" /><br />
+         *       <small>A string with at least 2 characters and no more than 5</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("string").using(this.aggregate(this.isAllValid, this.isValidString)).message(this.minMaxMessage({
             minAndMax: "Please enter a string with length #{0} to #{1}.",
             min: "Please enter a string with length at least #{0}.",
