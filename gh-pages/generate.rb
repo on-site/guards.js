@@ -78,7 +78,7 @@ class JsDoc
   end
 
   def section_id
-    @section_id ||= section.downcase.gsub(/\W/, "_").gsub(/_+/, "_")
+    @section_id ||= section.gsub(/\W/, "_").gsub(/_+/, "_")
   end
 
   def content_html

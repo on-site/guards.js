@@ -370,6 +370,33 @@
             max: "Please enter a dollar amount no greater than #{0}.",
             invalid: "Please enter a dollar amount."
         }, function(x) { return x.toFixed(2); }));
+
+        /**
+         * @page Named Guards
+         * @section never
+         * @since 1.0.0
+         *
+         * <p>
+         *   Never fail, no matter what.  For this guard to fail, it must be manually triggered via
+         *   <a href="guard_type.html#triggerError"><code>guard.triggerError(selector)</code></a>.
+         *   This guard can be useful for marking a field as having an error immediately when the page
+         *   loads (such as for a server detected error).
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       var guard = $.guard(".never").using("never");
+         *       $(function() { guard.triggerError(".never"); });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="never" type="text" /><br />
+         *       <small>Never fails, except manually</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("never").using(this.aggregate(this.isAllValid, this.never)).message("There was an error.");
         this.name("oneRequired").grouped().using(this.aggregate(this.isAnyValid, this.isPresent)).message("Specify at least one.");
         this.name("phoneUS").using(this.aggregate(this.isAllValid, this.isValidPhoneUS)).message("Please enter a valid phone number.");
@@ -1406,12 +1433,45 @@
     };
 
     /**
-     * Explicitly trigger the error for this guard on all the elements
-     * provided to this function.  The elements are wrapped with a
-     * jQuery object, so they may be a single element, a list of
-     * elements, a jQuery selected set of elements, or even a valid
-     * jQuery selector.  Note that the elements don't have to be valid
-     * for this guard to be applied.
+     * @page Guard Type
+     * @section triggerError
+     * @since 1.0.0
+     *
+     * <p>
+     *   Exlicitly trigger an error for this guard on all elements provided to this function.
+     *   The argument provided is wrapped as a jQuery object, so it may be a selector, jQuery
+     *   object, element, or array of elements (or anything valid for a jQuery object).  Note
+     *   that the elements provided will have the guard applied, regardless of whether they
+     *   match the guard selector.
+     * </p>
+     *
+     * <p>
+     *   This method may alternatively be invoked with no arguments.  If this is done, the
+     *   selector used with the guard is used to select the elents to trigger the guard error.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       var guard1 = $.guard(".nothingToSelect").using("never").message("Error #1");
+     *       var guard2 = $.guard(".triggerError2").using("never").message("Error #2");
+     *       $(function() {
+     *         guard1.triggerError(".triggerError1");
+     *         guard2.triggerError();
+     *       });
+     *     </script>
+     *
+     *     <p>
+     *       <input class="triggerError1" type="text" /><br />
+     *       <small>Triggered with a different selector</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="triggerError2" type="text" /><br />
+     *       <small>Triggered using the guard's selector</small>
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.Guard.prototype.triggerError = function() {
         var elements;
