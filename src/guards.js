@@ -294,22 +294,22 @@
          *     </script>
          *
          *     <p>
-         *       <input class="float1" type="text" value="not valid" /><br />
+         *       <input class="int1" type="text" value="not valid" /><br />
          *       <small>An integer of any value</small>
          *     </p>
          *
          *     <p>
-         *       <input class="float2" type="text" value="-10.5" /><br />
+         *       <input class="int2" type="text" value="-10.5" /><br />
          *       <small>An integer no smaller than -5</small>
          *     </p>
          *
          *     <p>
-         *       <input class="float3" type="text" value="64.32" /><br />
+         *       <input class="int3" type="text" value="64.32" /><br />
          *       <small>An integer no bigger than 42</small>
          *     </p>
          *
          *     <p>
-         *       <input class="float4" type="text" value="11" /><br />
+         *       <input class="int4" type="text" value="11" /><br />
          *       <small>An integer from 0 to 10</small>
          *     </p>
          *   </div>
@@ -321,6 +321,49 @@
             max: "Please enter a number no greater than #{0}.",
             invalid: "Please enter a number."
         }));
+
+        /**
+         * @page Named Guards
+         * @section moneyUS
+         * @since 1.0.0
+         *
+         * <p>
+         *   Guard for a US dollar amount.  Optionally, an object parameter may be passed with
+         *   <code>min</code> and/or <code>max</code>.  Min will restrict the minimum value, while
+         *   max restricts the maximum.  An empty value is considered valid.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".money1").using("moneyUS");
+         *       $.guard(".money2").using("moneyUS", { min: -5.50 });
+         *       $.guard(".money3").using("moneyUS", { max: 42.02 });
+         *       $.guard(".money4").using("moneyUS", { min: 0, max: 10 });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="money1" type="text" value="not valid" /><br />
+         *       <small>US money of any value</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="money2" type="text" value="-$10.55" /><br />
+         *       <small>US money no smaller than -$5.50</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="money3" type="text" value="$64.32" /><br />
+         *       <small>US money no bigger than $42.02</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="money4" type="text" value="$11" /><br />
+         *       <small>US money from $0 to $10</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("moneyUS").using(this.aggregate(this.isAllValid, this.isValidMoneyUS)).message(this.minMaxMessage({
             minAndMax: "Please enter a dollar amount from #{0} to #{1}.",
             min: "Please enter a dollar amount no less than #{0}.",
