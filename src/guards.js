@@ -1320,9 +1320,6 @@
         return this;
     };
 
-    /**
-     * Return whether or not this guard is grouped.
-     */
     $.Guard.prototype.isGrouped = function() {
         if (this._grouped === undefined) {
             return this._guards.defaults.grouped;
@@ -1332,15 +1329,48 @@
     };
 
     /**
-     * Specify whether to group element guarding by passing all values
-     * and elements at once instead of one at a time.  When grouped,
-     * only 1 error message is added, and it is added after the last
-     * element.  This defaults to $.guards.defaults.grouped.  If an
-     * argument is passed, the value is used as the grouped value,
-     * otherwise invoking this method will set grouped to true.
+     * @page Guard Type
+     * @section grouped
+     * @since 1.0.0
      *
-     * Example: $.guard(".required").using("required").grouped();
-     * Example: $.guard(".required").using("required").grouped(true);
+     * <p>
+     *   Mark this guard as being grouped.  A grouped guard will guard all affected elements
+     *   at once, instead of individually.  Each guarded element with an error will still be marked
+     *   as an error, but only one error message will be added.  Custom guard functions will receive
+     *   all elements and their values at once instead of individually.  By default, a guard is
+     *   not considered grouped.  Name guards, however, carry their grouped status on, so a guard
+     *   using <a href="named_guards.html#oneRequired"><code>oneRequired</code></a>,
+     *   <a href="named_guards.html#different"><code>different</code></a>, and
+     *   <a href="named_guards.html#same"><code>same</code></a> will be grouped by default.
+     * </p>
+     *
+     * <p>
+     *   If no argument is given, the guard will be marked as grouped, otherwise the parameter is
+     *   exoected to be a boolean indicating whether the guard should be grouped.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".grouped1").using("oneRequired").grouped(false).message("No longer grouped.");
+     *       $.guard(".grouped2").grouped().using(function(values, elements) {
+     *         return $.inArray("test", values) >= 0;
+     *       }).message("One must be 'test'");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="grouped1" type="text" /><br />
+     *       <input class="grouped1" type="text" /><br />
+     *       <small>These are effectively guarded with 'required' now</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="grouped2" type="text" value="Something" /><br />
+     *       <input class="grouped2" type="text" value="Somewhere" /><br />
+     *       <small>One must be 'test'</small>
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.Guard.prototype.grouped = function() {
         if (arguments.length === 0) {
