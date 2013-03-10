@@ -448,6 +448,36 @@
          * </div>
          */
         this.name("phoneUS").using(this.aggregate(this.isAllValid, this.isValidPhoneUS)).message("Please enter a valid phone number.");
+
+        /**
+         * @page Named Guards
+         * @section required
+         * @since 1.0.0
+         *
+         * <p>
+         *   These guarded fields must have a value to pass.  Only whitespace is not considered a value.
+         *   If no named or custom guard is defined, this is the default guard used.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".required1").using("required");
+         *       $.guard(".required2");
+         *     </script>
+         *
+         *     <p>
+         *       <input class="required1" type="text" /><br />
+         *       <small>A value is required</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="required2" type="text" /><br />
+         *       <small>A value is required</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("required").using(this.aggregate(this.isAllValid, this.isPresent)).message("This field is required.");
         this.name("same").grouped().using(this.aggregate(this.passThrough, this.isSame)).message("These values must all match.");
         this.name("string").using(this.aggregate(this.isAllValid, this.isValidString)).message(this.minMaxMessage({
