@@ -423,6 +423,30 @@
          * </div>
          */
         this.name("oneRequired").grouped().using(this.aggregate(this.isAnyValid, this.isPresent)).message("Specify at least one.");
+
+        /**
+         * @page Named Guards
+         * @section phoneUS
+         * @since 1.0.0
+         *
+         * <p>
+         *   The guarded field is considered valid if no value is given, or if the value given appears
+         *   to be a valid US phone number.  The number must include an area code.  Whitespace is ignored.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".phone").using("phoneUS");
+         *     </script>
+         *
+         *     <p>
+         *       <input class="phone" type="text" value="555-1234" /><br />
+         *       <small>A valid US phone number like (555) 555-1234</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("phoneUS").using(this.aggregate(this.isAllValid, this.isValidPhoneUS)).message("Please enter a valid phone number.");
         this.name("required").using(this.aggregate(this.isAllValid, this.isPresent)).message("This field is required.");
         this.name("same").grouped().using(this.aggregate(this.passThrough, this.isSame)).message("These values must all match.");
