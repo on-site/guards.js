@@ -479,6 +479,31 @@
          * </div>
          */
         this.name("required").using(this.aggregate(this.isAllValid, this.isPresent)).message("This field is required.");
+
+        /**
+         * @page Named Guards
+         * @section same
+         * @since 1.0.0
+         *
+         * <p>
+         *   This is a grouped guard where every field must have the same value.  For example, this guard can
+         *   be used to implement a password confirmation field.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".same").using("same");
+         *     </script>
+         *
+         *     <p>
+         *       <input class="same" type="text" value="Same Required" /><br />
+         *       <input class="same" type="text" value="The Same Required" /><br />
+         *       <small>Each value must be the same</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         this.name("same").grouped().using(this.aggregate(this.passThrough, this.isSame)).message("These values must all match.");
         this.name("string").using(this.aggregate(this.isAllValid, this.isValidString)).message(this.minMaxMessage({
             minAndMax: "Please enter a string with length #{0} to #{1}.",
