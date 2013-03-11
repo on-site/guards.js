@@ -1248,30 +1248,55 @@
     };
 
     /**
-     * Guard inputs using a specified guard.  The guard may be either
-     * a string or a function.  When it is a string, it must match a
-     * named guard defined via $.guards.name(), or already defined in
-     * the $.guards.named hash.  The function is expected to have 2
-     * arguments.  The first is the value of the element being
-     * guarded, and the second is the actual element.  If grouped is
-     * true, it will be an array of all matched values and all matched
-     * elements (the order of values will match the order of
-     * elements).  Radio buttons are passed as separate values and
-     * elements, but the value of each will be the same.
-     * Specifically, the value of the checked radio button is the
-     * value used, unless none are checked, in which case
-     * $.guards.constants.notChecked will be used (which is predefined
-     * as an empty string).
+     * @page Guard Type
+     * @section using
+     * @since 1.0.0
      *
-     * Note that the message is implicitly set when this method is
-     * called.  If the guard is a string, the message will be set to
-     * $.guards.defaults.messages[guard].  If it is a function, it
-     * will be set to $.guards.defaults.messages["undefined"].
+     * <p>
+     *   Guard inputs with the specified name guard, or with a custom function.  If the first argument
+     *   provided is a string, it must correspond to a named guard.  This may be one of the
+     *   <a href="named_guards.html"><code>default named guards</code></a>, or a guard named via
+     *   <a href="guards_type.html#name"><code>$.guards.name(name)</code></a>.  Additional arguments
+     *   may be given as options to the named guard.  All attributes specified by the named guard
+     *   will be copied over when the <code>using</code> method is invoked.
+     * </p>
      *
-     * Example: $.guard(".required").using("required");
-     * Example: $.guard(".required").using(function(value, element) {
-     *   return $.inArray("invalid", values) == -1;
-     * });
+     * <p>
+     *   Alternatively, a function may be provided as the custom guard function.  This function is invoked
+     *   when guards are being tested with the value of the element guarded, and the element being
+     *   guarded.  If the guard is grouped, it will be an array of values with the corresponding array
+     *   of elements.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".using1").using("required");
+     *       $.guard(".using2").using(function(value, element) {
+     *         return value !== "invalid";
+     *       }).message("Custom guard.");
+     *       $.guard(".using3").grouped().using(function(values, elements) {
+     *         return $.inArray("test", values) >= 0;
+     *       }).message("One must be 'test'");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="using1" type="text" /><br />
+     *       <small>Required field</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="using2" type="text" value="invalid" /><br />
+     *       <small>Field must not be 'invalid'</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="using3" type="text" value="Something" /><br />
+     *       <input class="using3" type="text" value="Somewhere" /><br />
+     *       <small>One must be 'test'</small>
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.Guard.prototype.using = function(guard) {
         if (typeof(guard) === "string") {
