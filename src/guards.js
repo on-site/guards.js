@@ -6,6 +6,30 @@
     /*jshint devel:true, jquery:true */
     "use strict";
 
+    /**
+     * @page Global Functions
+     * @section guard
+     * @since 1.0.0
+     *
+     * <p>
+     *   Guard elements with the given selector when the form is guarded.  This is the way to add
+     *   new guards to form inputs.  It returns a <a href="guard_type.html"><code>Guards</code></a>
+     *   instance which has chainable methods to define the attributes of the guard.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".guarded").using("required").message("Please provide a value.");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="guarded" type="text" /><br />
+     *       <small>Required field</small>
+     *     </p>
+     *   </div>
+     * </div>
+     */
     $.guard = function(selector) {
         return $.guards.add(selector);
     };
@@ -562,6 +586,36 @@
         return context;
     };
 
+    /**
+     * @page Guards Type
+     * @section name
+     * @since 1.0.0
+     *
+     * <p>
+     *   Name a guard.  This behaves the same way as
+     *   <a href="global_functions.html#guard"><code>$.guard(selector)</code></a>, except it uses
+     *   the parameter to define a named guard with the given name, instead of defining a new
+     *   guard affecting the given selector.  Any attributes applied to it will be passed on to
+     *   any guards that utilize this named guard.  A named guard may be utilized by passing the
+     *   name on to the <a href="guard_type.html#using"><code>using</code></a> method.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guards.name("notTest").using(function(value, element) {
+     *         return value !== "test";
+     *       }).message("Must not be test.");
+     *       $.guard(".named").using("notTest");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="named" type="text" value="test" /><br />
+     *       <small>Anything except 'test'</small>
+     *     </p>
+     *   </div>
+     * </div>
+     */
     $.Guards.prototype.name = function(name) {
         var guard = new $.Guard(null, this, true);
         this.named[name] = guard;
