@@ -1493,13 +1493,27 @@
     };
 
     /**
-     * Set the error message to display on errors.  If using is called
-     * with a string, this is implicitly invoked using
-     * $.guards.defaults.messages[usingValue].  If using is called
-     * with a function, this is implicitly invoked using
-     * $.guards.defaults.messages["undefined"].
+     * @page Guard Type
+     * @section message
+     * @since 1.0.0
      *
-     * Example: $.guard(".required").using("required").message("Enter something!");
+     * <p>
+     *   Customize the error message displayed if the guard fails.  The
+     *   <a href="named_guards.html"><code>default named guards</code></a>
+     *   have messages already defined, but they may be changed with this method.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".message").using("required").message("This error message is customized.");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="message" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.Guard.prototype.message = function(message) {
         this._message = message;
