@@ -1528,6 +1528,38 @@
         return this._invalidClass;
     };
 
+    /**
+     * @page Guard Type
+     * @section invalidClass
+     * @since 1.0.0
+     *
+     * <p>
+     *   Change what class is added to invalid fields.  By default, the invalid class added is
+     *   "invalid", but that class will not be added if a different one is specified with this method.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <style>
+     *       .green-invalid { background-color: #66ff66; }
+     *       .blue-invalid { background-color: #6666ff; }
+     *     </style>
+     *
+     *     <script>
+     *       $.guard(".custom-invalid1").using("required").invalidClass("green-invalid");
+     *       $.guard(".custom-invalid2").using("required").invalidClass("blue-invalid");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="custom-invalid1" type="text" />
+     *     </p>
+     *
+     *     <p>
+     *       <input class="custom-invalid2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
     $.Guard.prototype.invalidClass = function(invalidClass) {
         this._invalidClass = invalidClass;
         return this;
