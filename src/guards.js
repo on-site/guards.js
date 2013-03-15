@@ -1469,10 +1469,26 @@
     };
 
     /**
-     * Set the type of tag to surround the error message with
-     * (defaults to $.guards.defaults.tag, which defaults to span).
+     * @page Guard Type
+     * @section tag
+     * @since 1.0.0
      *
-     * Example: $.guard(".required").using("required").tag("div");
+     * <p>
+     *   Change the tag type that surrounds the error message.  By default, a <code>span</code> tag is
+     *   used.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".custom-tag").using("required").tag("div");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="custom-tag" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.Guard.prototype.tag = function(tag) {
         this._tag = tag;
@@ -1535,7 +1551,8 @@
      *
      * <p>
      *   Change what class is added to invalid fields.  By default, the invalid class added is
-     *   "invalid", but that class will not be added if a different one is specified with this method.
+     *   <code>invalid</code>, but that class will not be added if a different one is specified
+     *   with this method.
      * </p>
      *
      * <div class="example">
