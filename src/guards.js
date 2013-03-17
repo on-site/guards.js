@@ -1625,33 +1625,69 @@
     };
 
     /**
-     * Set the target for where error messages should be appended to.
-     * By default, the error is placed after the error element, but
-     * when a target is specified, the error is appended within.  The
-     * target may be either a selector, function, element or set of
-     * elements, however, only the first element is used as the target
-     * location for errors.  If a function is specified, it will be
-     * called when there is a new error with the invalid element (or
-     * set of elements if it is a grouped guard) as the "this"
-     * reference.  The returned value should be a single element,
-     * though if an array of elements is returned (or a jQuery
-     * selected set of elements), only the first element will be used
-     * as the target.  Alternatively the function can take a single
-     * argument that specifies the error element to add to the DOM,
-     * and the function is expected to add the element and return
-     * false (indicating that it has taken care of adding the error
-     * element).
+     * @page Guard Type
+     * @section target
+     * @since 1.0.0
      *
-     * The default target is a function that appends the error after
-     * the last element and returns false.  The default can be changed
-     * via $.guards.defaults.target.
+     * <p>
+     *   Specify where the error will be placed in the DOM when this guard fails.  The argument can be
+     *   a jQuery selector, element, set of elements, jQuery selected set of elements, or a function.
+     *   If the argument is anything except a function, it will be passed to the jQuery function and
+     *   the first element will be retrieved and used as the place to append the error message.
+     *   If it is a function, the function may either insert the error message itself, or return the
+     *   location to place the error message.
+     * </p>
      *
-     * Example: $.guard(".required").using("required").target("#my-errors");
-     * Example: $.guard(".required").using("required").target(function() { return $(this).nextAll(".error:eq(0)"); });
-     * Example: $.guard(".required").using("required").target(function(errorElement) {
-     *            errorElement.appendTo($("#myErrors"));
-     *            return false;
-     *          });
+     * <p>
+     *   When provided a function, the function will be called when an error has happened.  The function's
+     *   <code>this</code> reference will be set to the error element (or set of elements in the case of
+     *   a grouped guard) that had the error.  The argument will be the error message element that will be
+     *   appended.  When <code>false</code> is returned, the function is expected to have inserted the
+     *   provided error message in the DOM.  Otherwise, the return value is expected to be a jQuery
+     *   selector, element, set of elements or jQuery selected set of elements of which the first will
+     *   have the error element appended to it.
+     * </p>
+     *
+     * <p>
+     *   The default behavior is to append the error message after the last error element that is guarded.
+     *   If the last element is a radio button or checkbox, it will be appended after the first sibling
+     *   of the radio button or checkbox, which is expected to be the label for the radio button or
+     *   checkbox.  If there is already a guard error message there, it will be appended after the last
+     *   guard error message (so guard messages show up in the proper order as they are specified).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".custom-target1").using("required").target("#custom-target-1-error");
+     *       $.guard(".custom-target2").using("required").target(function(errorMessage) {
+     *         return $(this).nextAll(".custom-target-error:first");
+     *       });
+     *       $.guard(".custom-target3").using("required").target(function(errorMessage) {
+     *         $(this).nextAll(".custom-target-error:first").append(errorMessage);
+     *         return false;
+     *       });
+     *     </script>
+     *
+     *     <p>
+     *       <input class="custom-target1" type="text" />
+     *       Error message targeted with selector:
+     *       <span id="custom-target-1-error"></span>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="custom-target2" type="text" />
+     *       Error message targeted with function:
+     *       <span class="custom-target-error"></span>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="custom-target3" type="text" />
+     *       Error message inserted manually:
+     *       <span class="custom-target-error"></span>
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.Guard.prototype.target = function(target) {
         this._target = target;
