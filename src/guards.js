@@ -1376,23 +1376,36 @@
     };
 
     /**
-     * Specify a precondition for this guard.  The precondition should
-     * be a function that accepts the element and element value as the
-     * parameters, like a custom guard function.  The precondition is
-     * executed before the guard when any given input is about to be
-     * guarded.  If the precondition returns false explicitly, the
-     * guard will not be executed and the field will be considered
-     * valid.  Any other return value means the precondition passed
-     * (even no return).  If the guard is grouped, the parameters will
-     * be the array of values and elements (like for a custom guard
-     * function).
+     * @page Guard Type
+     * @section precondition
+     * @since 1.0.0
      *
-     * // Only require this if #other_element is checked.
-     * Example: $.guard(".required").using("required").precondition(function(value, element) {
-     *   return $("#other_element").is(":checked");
-     * });
+     * <p>
+     *   Specify a precondition for this guard.  A parameter is required with the precondition
+     *   function.  This function accepts the element and element value as the parameters, like
+     *   a custom guard function.  The precondition is executed before the guard when any given
+     *   input is about to be guarded.  If the precondition returns false explicitly, the guard
+     *   will not be executed and the field will be considered valid.  Any other return value
+     *   means the precondition passed (even no return).  If the guard is grouped, the parameters
+     *   will be the array of values and elements (like for a custom guard function).
+     * </p>
      *
-     * @since 0.4
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".with-precondition").using("required").precondition(function(value, element) {
+     *         return $("#precondition-checkbox").is(":checked");
+     *       });
+     *     </script>
+     *
+     *     <p>
+     *       <input type="checkbox" id="precondition-checkbox" checked="checked" />
+     *         <label for="precondition-checkbox">Guard this field</label><br />
+     *       <input class="with-precondition" type="text" /><br />
+     *       <small>Guarded with <code>required</code> if the checkbox is checked</small>
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.Guard.prototype.precondition = function(fn) {
         this._precondition = fn;
