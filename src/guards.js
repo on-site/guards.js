@@ -1516,6 +1516,39 @@
         return this._messageClass;
     };
 
+    /**
+     * @page Guard Type
+     * @section messageClass
+     * @since 1.0.0
+     *
+     * <p>
+     *   Change what class is used for error messages added due to failed guards.  By default, the
+     *   error element has the class <code>error-message</code>, but that class will not be userd
+     *   if a different one is specified with this method.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <style>
+     *       .green-message { color: #00aa00; }
+     *       .blue-message { color: #0000aa; }
+     *     </style>
+     *
+     *     <script>
+     *       $.guard(".custom-message-class1").using("required").messageClass("green-message");
+     *       $.guard(".custom-message-class2").using("required").messageClass("blue-message");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="custom-message-class1" type="text" />
+     *     </p>
+     *
+     *     <p>
+     *       <input class="custom-message-class2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
     $.Guard.prototype.messageClass = function(messageClass) {
         this._messageClass = messageClass;
         return this.resetMessageFn();
@@ -1707,23 +1740,15 @@
         return this;
     };
 
-    /**
-     * Determine if this guard applies to the given element (or
-     * elements).
-     */
+    // Determine if the guard applies to given element(s)
     $.Guard.prototype.appliesTo = function(element) {
         return $(element).filter(this._selector).size() > 0;
     };
 
-    /**
-     * Using this guard, test the given element.  If this guard is
-     * grouped, the element is expected to actually be all field
-     * elements.  Returns false but doesn't apply the guard if there
-     * are already errors detected on the element(s).  Returns true if
-     * the selector defined for this guard doesn't apply to this
-     * element(s).  Otherwise, applies the guard and adds an error if
-     * it fails.
-     */
+    // Tests this guard against element(s).  Element(s) should be field elements.  Returns false
+    // but doesn't apply guard if there are already errors detected.  Returns true if the selector
+    // defined for this guard doesn't apply to this element(s).  Otherwise applies and adds an
+    // error if it fails.
     $.Guard.prototype.test = function(element) {
         var $elements = $(element).filter(this._selector);
 
@@ -1770,14 +1795,10 @@
         return result;
     };
 
-    /**
-     * Test this precondition, if there is one.  Returns true if there
-     * is no precondition, or if the precondition doesn't return
-     * false.  Returns false if the precondition throws an exception
-     * or if the precondition returned false.  No return of the
-     * precondition (or return value of undefined, null or 0) is
-     * considered passing.
-     */
+    // Test the precondition, if there is one.  Returns true if there is none, or if it
+    // doesn't return false.  Returns false if the precondition throws an exception or if
+    // the precondition returns false.  No return, undefined, null, 0 or anything else is
+    // considered passing.
     $.Guard.prototype.testPrecondition = function(values, elements) {
         var precondition = this.getPrecondition();
 
