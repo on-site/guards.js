@@ -573,6 +573,15 @@
         }));
     };
 
+    /**
+     * @page Guards Type
+     * @section version
+     * @since 1.0.0
+     *
+     * <p>
+     *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
+     * </p>
+     */
     $.Guards.prototype.version = "{{VERSION}}";
 
     $.Guards.prototype.parentContext = function(element) {
@@ -780,44 +789,54 @@
     };
 
     /**
-     * Add a style element to the document head which will style
-     * elements with errors and their error messages.  This will use
-     * $.guards.defaults.style.field and
-     * $.guards.defaults.style.message to determine what styling to
-     * use.  These defaults are initialized to a yellow background for
-     * the invalid fields, and red color with a small left margin for
-     * error messages.  The selectors used to style these are
-     * determined by $.guards.defaults.invalidClass and
-     * $.guards.defaults.messageClass.
+     * @page Guards Type
+     * @section style
+     * @since 1.0.0
      *
-     * There are 2 optional arguments allowed.  The first is a
-     * selector scope to use, and the second is overrides for styling.
-     * Either, both or neither arguments are allowed.
+     * <p>
+     *   Insert a style element to the document head that will style guard errors and invalid fields.
+     *   This will default to styling <code>.invalid-field</code> with a background color of
+     *   <code>#ffff66</code> and <code>.error-message</code> with a color of <code>#ff0000</code>
+     *   and a left margin of <code>10px</code>.
+     * </p>
      *
-     * With a changed selector scope, the selector for the styles is
-     * scoped to the given value.  This can be useful for different
-     * styling on different forms.  Note that the keys to the object
-     * in the "field" and "message" keys are used as css styles, and
-     * the values to those keys are the values for those styles.
+     * <p>
+     *   There are 2 optional arguments for this method.  The first is an optional css scope to restrict
+     *   the styling affects with.  The second is an object expected to contain a <code>field</code>
+     *   and/or <code>message</code> property with css styles desired for that aspect of the styling.
+     *   The <code>field</code> property will add styling for invalid fields while the <code>message</code>
+     *   property will add styling for error messages.  The properties of these objects may contain any
+     *   key that is a valid css attribute, with an appropriate value.
+     * </p>
      *
-     * The custom style overrides can be used to change the field,
-     * message or both styles.
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guards.style("#styled-fields", {
+     *         message: {
+     *           "color": "#ee0000",
+     *           "font-weight": "bold"
+     *         },
+     *         field: {
+     *           "background-color": "#ffe099"
+     *         }
+     *       });
      *
-     * Example: $.guards.style();
-     * Example: $.guards.style("#myForm");
-     * Example: $.guards.style({ field: { "color": "#ff0000" } });
-     * Example: $.guards.style({ message: { "color": "#ff6666" } });
-     * Example: $.guards.style("#myForm", { field: { "color": "#ff0000" }, message: { "color": "#ff6666" } });
+     *       $.guard(".styled-field").using("required");
+     *     </script>
+     *
+     *     <p id="styled-fields">
+     *       <input class="styled-field" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.Guards.prototype.style = function() {
         $("head").append(this.styleHtml.apply(this, arguments));
     };
 
-    /**
-     * Retrieve the style html as a string to use for the
-     * $.guards.style() function.  The documentation for that function
-     * applies to this as well.
-     */
+    // Retrieve the style html as a string to use for the $.guards.style() function.
+    // The documentation for that function applies to this as well.
     $.Guards.prototype.styleHtml = function() {
         var fieldStyle = {};
         var messageStyle = {};
