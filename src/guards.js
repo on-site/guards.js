@@ -1956,7 +1956,40 @@
     };
 
     /**
-     * Return the result of guarding the selected form.
+     * @page jQuery Methods
+     * @section guard
+     * @since 1.0.0
+     *
+     * <p>
+     *   Clear any guard errors present on the form fields within the selected form (or other
+     *   containing element around form elements), and then test each element in order against
+     *   each guard in the order the guards were defined.  If any of the fields had an error,
+     *   focus the first such field.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".guarded-field").using("required");
+     *       $(function() {
+     *         $("#invoke-guard").click(function() {
+     *           $("#guard-container").guard();
+     *           return false;
+     *         });
+     *       });
+     *     </script>
+     *
+     *     <div id="guard-container">
+     *       <p>
+     *         <input class="guarded-field" type="text" /><br />
+     *       </p>
+     *     </div>
+     *
+     *     <p>
+     *       <input id="invoke-guard" type="button" value="Test Guards" /><br />
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.fn.guard = function() {
         return $.guards.guard(this);
