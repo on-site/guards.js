@@ -1981,7 +1981,7 @@
      *
      *     <div id="guard-container">
      *       <p>
-     *         <input class="guarded-field" type="text" /><br />
+     *         <input class="guarded-field" type="text" />
      *       </p>
      *     </div>
      *
@@ -2094,7 +2094,37 @@
     };
 
     /**
-     * Clear errors attached to the selected elements.
+     * @page jQuery Methods
+     * @section clearErrors
+     * @since 1.0.0
+     *
+     * <p>
+     *   Clear any guard errors on the selected elements.
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $(function() {
+     *         $.guard(".field-to-clear").using("required").triggerError();
+     *         $("#clear-errors").click(function() {
+     *           $(".field-to-clear").clearErrors();
+     *           return false;
+     *         });
+     *       });
+     *     </script>
+     *
+     *     <div>
+     *       <p>
+     *         <input class="field-to-clear" type="text" />
+     *       </p>
+     *     </div>
+     *
+     *     <p>
+     *       <input id="clear-errors" type="button" value="Clear Errors" /><br />
+     *     </p>
+     *   </div>
+     * </div>
      */
     $.fn.clearErrors = function() {
         $.each(this.errors(), function(index, error) {
