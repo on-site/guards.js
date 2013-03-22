@@ -1986,7 +1986,7 @@
      *     </div>
      *
      *     <p>
-     *       <input id="invoke-guard" type="button" value="Test Guards" /><br />
+     *       <input id="invoke-guard" type="button" value="Test Guards" />
      *     </p>
      *   </div>
      * </div>
@@ -2121,7 +2121,7 @@
      *     </div>
      *
      *     <p>
-     *       <input id="clear-errors" type="button" value="Clear Errors" /><br />
+     *       <input id="clear-errors" type="button" value="Clear Errors" />
      *     </p>
      *   </div>
      * </div>
@@ -2252,6 +2252,45 @@
     };
 
     $.extend($.expr[":"], {
+        /**
+         * @page jQuery Methods
+         * @section :has-error
+         * @since 1.0.0
+         *
+         * <p>
+         *   This is a jQuery selector that can be used to select elements that currently have an error.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".field-to-select").using("required");
+         *       $(function() {
+         *         $("#select-errors").click(function() {
+         *           var count = $(".field-to-select:has-error").size();
+         *           $("#selected-error-count").text("Number of errors: " + count);
+         *           return false;
+         *         });
+         *       });
+         *     </script>
+         *
+         *     <div>
+         *       <p>
+         *         <input class="field-to-select" type="text" />
+         *       </p>
+         *
+         *       <p>
+         *         <input class="field-to-select" type="text" />
+         *       </p>
+         *     </div>
+         *
+         *     <p>
+         *       <input id="select-errors" type="button" value="Count errors" /><br />
+         *       <span id="selected-error-count"></span>
+         *     </p>
+         *   </div>
+         * </div>
+         */
         "has-error": function(x) {
             return !!(x.errors && x.errors.length > 0);
         },
