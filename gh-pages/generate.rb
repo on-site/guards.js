@@ -133,7 +133,7 @@ class DocumentationPage
 
   def content_html
     @content_html ||= "".tap do |content|
-      content << "<script>$.liveGuard(\".example\");</script>"
+      content << "<script>$.liveGuard(\".example:not(.not-auto-guarded)\");</script>"
       content << jsdocs.map(&:content_html).join("\n")
     end
   end

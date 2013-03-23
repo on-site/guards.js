@@ -2235,17 +2235,77 @@
     };
 
     /**
-     * Live guard the form(s) in the given selector.  This will bind
-     * live on change and blur events that will guard the elements
-     * when they change.  It will also guard the form when it is
-     * submitted.
+     * @page Global Functions
+     * @section liveGuard
+     * @since 1.0.0
+     *
+     * <p>
+     *   Enable live guards for a given selector.  This will turn on live submit, change and blur
+     *   events to guard the children of the selected forms/elements.  Since these are live events,
+     *   this function need not be called when the elements actually exist (so they need not be in
+     *   a DOM onready handler).
+     * </p>
+     *
+     * <div class="example not-auto-guarded">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".live-guarded").using("required");
+     *       $.liveGuard(".live-guard");
+     *     </script>
+     *
+     *     <form class="live-guard">
+     *       <p>
+     *         <input class="live-guarded" type="text" />
+     *       </p>
+     *
+     *       <p>
+     *         <input type="submit" />
+     *       </p>
+     *     </form>
+     *   </div>
+     * </div>
      */
     $.liveGuard = function(selector) {
         $.guards.liveGuard(selector);
     };
 
     /**
-     * Disable live guard events that were enabled via $.liveGuard.
+     * @page Global Functions
+     * @section disableLiveGuard
+     * @since 1.0.0
+     *
+     * <p>
+     *   Disable live guards that was previously enabled for the given selector.
+     * </p>
+     *
+     * <div class="example not-auto-guarded">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".live-guarded2").using("required");
+     *       $.liveGuard(".live-guard2");
+     *       $(function() {
+     *         $("#disable-live-guards").click(function() {
+     *           $.disableLiveGuard(".live-guard2");
+     *           return false;
+     *         });
+     *       });
+     *     </script>
+     *
+     *     <form class="live-guard2">
+     *       <p>
+     *         <input class="live-guarded2" type="text" />
+     *       </p>
+     *
+     *       <p>
+     *         <input type="submit" />
+     *       </p>
+     *
+     *       <p>
+     *         <input id="disable-live-guards" type="button" value="Disable Guards" />
+     *       </p>
+     *     </form>
+     *   </div>
+     * </div>
      */
     $.disableLiveGuard = function(selector) {
         $.guards.disableLiveGuard(selector);
