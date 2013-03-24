@@ -2219,9 +2219,35 @@
     };
 
     /**
-     * Enable guards for any form that matches the given selector.
-     * This uses live events to catch submit on forms matching the
-     * selector.
+     * @page Global Functions
+     * @section enableGuards
+     * @since 1.0.0
+     *
+     * <p>
+     *   Enable guards for a given selector.  This will turn on live submit events to guard
+     *   the children of the selected forms/elements.  Since these are live events, this
+     *   function need not be called when the elements actually exist (so they need not be in
+     *   a DOM onready handler).
+     * </p>
+     *
+     * <div class="example not-auto-guarded">
+     *   <div class="display">
+     *     <script>
+     *       $.guard("input.guardable").using("required");
+     *       $.enableGuards("form.guardable");
+     *     </script>
+     *
+     *     <form class="guardable">
+     *       <p>
+     *         <input class="guardable" type="text" />
+     *       </p>
+     *
+     *       <p>
+     *         <input type="submit" />
+     *       </p>
+     *     </form>
+     *   </div>
+     * </div>
      */
     $.enableGuards = function(selector) {
         $.guards.enableGuards(selector);
