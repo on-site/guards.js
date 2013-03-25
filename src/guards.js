@@ -2254,7 +2254,42 @@
     };
 
     /**
-     * Disable the live events set up via $.enableGuards.
+     * @page Global Functions
+     * @section disableGuards
+     * @since 1.0.0
+     *
+     * <p>
+     *   Disable guards that was previously enabled for the given selector.
+     * </p>
+     *
+     * <div class="example not-auto-guarded">
+     *   <div class="display">
+     *     <script>
+     *       $.guard("input.guardable2").using("required");
+     *       $.enableGuards("form.guardable2");
+     *       $(function() {
+     *         $("#disable-guards").click(function() {
+     *           $.disableGuards("form.guardable2");
+     *           return false;
+     *         });
+     *       });
+     *     </script>
+     *
+     *     <form class="guardable2">
+     *       <p>
+     *         <input class="guardable2" type="text" />
+     *       </p>
+     *
+     *       <p>
+     *         <input type="submit" />
+     *       </p>
+     *
+     *       <p>
+     *         <input id="disable-guards" type="button" value="Disable Guards" />
+     *       </p>
+     *     </form>
+     *   </div>
+     * </div>
      */
     $.disableGuards = function(selector) {
         $.guards.disableGuards(selector);
