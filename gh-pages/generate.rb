@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "erb"
 require "fileutils"
 
 OUTPUT_DIR = ARGV.first
@@ -138,6 +139,10 @@ class DocumentationPage
     end
   end
 
+  def navigation_html
+    page_group.navigation_html
+  end
+
   def prev_html
     ""
   end
@@ -169,15 +174,13 @@ class DocumentationPage
     File.join OUTPUT_DIR, file
   end
 
+  def get_binding
+    binding
+  end
+
   def generate
     puts "generating '#{get_file}'"
-    result = Page.template.clone
-    result.gsub! "{{title}}", title_html
-    result.gsub! "{{content}}", content_html
-    result.gsub! "{{wizard}}", wizard_html
-    result.gsub! "{{navigation}}", page_group.navigation_html
-    result.gsub! "{{prev}}", prev_html
-    result.gsub! "{{next}}", next_html
+    result = ERB.new(Page.template.clone).result get_binding
 
     File.open output_file, "w" do |f|
       f << result
@@ -307,15 +310,13 @@ class Page
     File.join OUTPUT_DIR, get_file
   end
 
+  def get_binding
+    binding
+  end
+
   def generate
     puts "generating '#{get_file}'"
-    result = Page.template.clone
-    result.gsub! "{{title}}", title_html
-    result.gsub! "{{content}}", content_html
-    result.gsub! "{{wizard}}", wizard_html
-    result.gsub! "{{navigation}}", page_group.navigation_html
-    result.gsub! "{{prev}}", prev_html
-    result.gsub! "{{next}}", next_html
+    result = ERB.new(Page.template.clone).result get_binding
 
     File.open output_file, "w" do |f|
       f << result
@@ -327,7 +328,11 @@ class Page
   end
 
   def content_html
-    @content_html ||= File.read(Page.input_file("_#{get_file}"))
+    @content_html ||= File.read(Page.input_file("_#{get_file}.erb"))
+  end
+
+  def navigation_html
+    page_group.navigation_html
   end
 
   def wizard_disabled?
@@ -383,7 +388,7 @@ class Page
     end
 
     def template
-      @template ||= File.read(input_file("_template.html"))
+      @template ||= File.read(input_file("_template.html.erb"))
     end
   end
 end

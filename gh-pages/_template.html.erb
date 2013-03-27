@@ -38,7 +38,7 @@
           <div class="logo"><a href="https://www.on-site.com"></a></div>
 
           <nav>
-            {{navigation}}
+            <%= navigation_html %>
           </nav>
 
           <div class="clear-both"></div>
@@ -62,15 +62,15 @@
       </div>
 
       <section class="content">
-        <div class="wizard-wrapper">{{wizard}}</div>
+        <div class="wizard-wrapper"><%= wizard_html %></div>
 
         <div class="wizard-content">
-          {{title}}
-          {{content}}
+          <%= title_html %>
+          <%= content_html %>
 
           <p class="paging">
-            {{prev}}
-            {{next}}
+            <%= prev_html %>
+            <%= next_html %>
           </p>
         </div>
 
@@ -83,7 +83,7 @@
         <div class="footer-art"></div>
 
         <nav>
-          {{navigation}}
+          <%= navigation_html %>
         </nav>
 
         <div class="footer-notes">
