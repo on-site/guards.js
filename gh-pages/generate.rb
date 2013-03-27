@@ -69,7 +69,18 @@ def define_pages
   page_group :name => "jQuery Plugin", :path => "http://plugins.jquery.com/guards/"
 end
 
+module Renderable
+  def get_binding
+    binding
+  end
+
+  def render
+    ERB.new(template).result get_binding
+  end
+end
+
 class JsDoc
+  include Renderable
   attr_accessor :page, :section, :since, :content
   attr_reader :doc
 
@@ -83,10 +94,11 @@ class JsDoc
   end
 
   def content_html
-    @content_html ||= "\n".tap do |result|
-      result << %{<h2 id="#{section_id}">#{section}</h2>} if section && !section.empty?
-      result << content
-    end
+    render
+  end
+
+  def template
+    JsDoc.template
   end
 
   private
@@ -102,9 +114,16 @@ class JsDoc
     self.since = remove_annotation "since"
     self.content = doc.gsub(/^\s*\/\*\*\s*^/, "").gsub(/^\s*\*\/\s*/, "").gsub(/^\s*\*/, "")
   end
+
+  class << self
+    def template
+      @template ||= File.read(Page.input_file("_jsdoc.html.erb"))
+    end
+  end
 end
 
 class DocumentationPage
+  include Renderable
   attr_accessor :index
   attr_reader :page_group
 
@@ -174,16 +193,15 @@ class DocumentationPage
     File.join OUTPUT_DIR, file
   end
 
-  def get_binding
-    binding
+  def template
+    Page.template
   end
 
   def generate
     puts "generating '#{get_file}'"
-    result = ERB.new(Page.template.clone).result get_binding
 
     File.open output_file, "w" do |f|
-      f << result
+      f << render
     end
   end
 
@@ -268,6 +286,7 @@ class PageGroup
 end
 
 class Page
+  include Renderable
   attr_reader :page_group
 
   def initialize(page_group)
@@ -310,16 +329,15 @@ class Page
     File.join OUTPUT_DIR, get_file
   end
 
-  def get_binding
-    binding
+  def template
+    Page.template
   end
 
   def generate
     puts "generating '#{get_file}'"
-    result = ERB.new(Page.template.clone).result get_binding
 
     File.open output_file, "w" do |f|
-      f << result
+      f << render
     end
   end
 
