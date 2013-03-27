@@ -328,7 +328,7 @@ class Page
   end
 
   def content_html
-    @content_html ||= File.read(Page.input_file("_#{get_file}.erb"))
+    @content_html ||= File.read(Page.input_file("#{get_file}.erb"))
   end
 
   def navigation_html
