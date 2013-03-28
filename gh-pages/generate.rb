@@ -81,7 +81,7 @@ end
 
 class JsDoc
   include Renderable
-  attr_accessor :page, :section, :since, :content
+  attr_accessor :page, :section, :signature, :since, :content
   attr_reader :doc
 
   def initialize(doc)
@@ -112,6 +112,7 @@ class JsDoc
     self.page = remove_annotation "page"
     self.section = remove_annotation "section"
     self.since = remove_annotation "since"
+    self.signature = remove_annotation "signature"
     self.content = doc.gsub(/^\s*\/\*\*\s*^/, "").gsub(/^\s*\*\/\s*/, "").gsub(/^\s*\*/, "")
   end
 
