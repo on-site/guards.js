@@ -9,6 +9,7 @@
     /**
      * @page Global Functions
      * @section guard
+     * @signature jQuery.guard(selector)
      * @since 1.0.0
      *
      * <p>
@@ -576,6 +577,7 @@
     /**
      * @page Guards Type
      * @section version
+     * @signature jQuery.guards.version
      * @since 1.0.0
      *
      * <p>
@@ -598,6 +600,7 @@
     /**
      * @page Guards Type
      * @section name
+     * @signature jQuery.guards.name(guardName)
      * @since 1.0.0
      *
      * <p>
