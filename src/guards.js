@@ -794,6 +794,7 @@
     /**
      * @page Guards Type
      * @section style
+     * @signature jQuery.guards.style([customStyling])
      * @since 1.0.0
      *
      * <p>
@@ -1326,6 +1327,7 @@
     /**
      * @page Guard Type
      * @section using
+     * @signature guard.using(name | customFunction)
      * @since 1.0.0
      *
      * <p>
@@ -1400,6 +1402,7 @@
     /**
      * @page Guard Type
      * @section precondition
+     * @signature guard.precondition(preconditionFunction)
      * @since 1.0.0
      *
      * <p>
@@ -1445,6 +1448,7 @@
     /**
      * @page Guard Type
      * @section grouped
+     * @signature guard.grouped([true | false])
      * @since 1.0.0
      *
      * <p>
@@ -1506,6 +1510,7 @@
     /**
      * @page Guard Type
      * @section tag
+     * @signature guard.tag(htmlTag)
      * @since 1.0.0
      *
      * <p>
@@ -1541,6 +1546,7 @@
     /**
      * @page Guard Type
      * @section messageClass
+     * @signature guard.messageClass(cssClass)
      * @since 1.0.0
      *
      * <p>
@@ -1579,6 +1585,7 @@
     /**
      * @page Guard Type
      * @section message
+     * @signature guard.message(errorMessage)
      * @since 1.0.0
      *
      * <p>
