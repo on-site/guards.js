@@ -1622,6 +1622,7 @@
     /**
      * @page Guard Type
      * @section invalidClass
+     * @signature guard.invalidClass(cssClass)
      * @since 1.0.0
      *
      * <p>
@@ -1702,6 +1703,7 @@
     /**
      * @page Guard Type
      * @section target
+     * @signature guard.target(selector | targetingFunction)
      * @since 1.0.0
      *
      * <p>
