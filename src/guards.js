@@ -1848,6 +1848,7 @@
     /**
      * @page Guard Type
      * @section triggerError
+     * @signature guard.triggerError([selector])
      * @since 1.0.0
      *
      * <p>
@@ -1970,6 +1971,7 @@
     /**
      * @page jQuery Methods
      * @section guard
+     * @signature selected.guard()
      * @since 1.0.0
      *
      * <p>
@@ -2108,6 +2110,7 @@
     /**
      * @page jQuery Methods
      * @section clearErrors
+     * @signature selected.clearErrors()
      * @since 1.0.0
      *
      * <p>
@@ -2233,6 +2236,7 @@
     /**
      * @page Global Functions
      * @section enableGuards
+     * @signature jQuery.enableGuards(selector)
      * @since 1.0.0
      *
      * <p>
@@ -2268,6 +2272,7 @@
     /**
      * @page Global Functions
      * @section disableGuards
+     * @signature jQuery.disableGuards(selector)
      * @since 1.0.0
      *
      * <p>
@@ -2310,6 +2315,7 @@
     /**
      * @page Global Functions
      * @section liveGuard
+     * @signature jQuery.liveGuard(selector)
      * @since 1.0.0
      *
      * <p>
@@ -2345,6 +2351,7 @@
     /**
      * @page Global Functions
      * @section disableLiveGuard
+     * @signature jQuery.disableLiveGuard(selector)
      * @since 1.0.0
      *
      * <p>
@@ -2388,6 +2395,7 @@
         /**
          * @page jQuery Methods
          * @section :has-error
+         * @signature jQuery("selector:has-error")
          * @since 1.0.0
          *
          * <p>
