@@ -1,7 +1,75 @@
 <h2>Grouping inputs for one guard</h2>
 
-<h2>The oneRequired guard</h2>
+<p>
+  Sometimes it doesn't make sense to guard just a single field.  For
+  example, maybe you have a form that allows a user to enter their
+  preferred method of contact, which can be an email address or phone
+  number.  You could use the <code>oneRequired</code> guard to ensure
+  the user provides at least one.  Or perhaps you have some unique
+  values that the user must distribute amongst several inputs.  You
+  could use the <code>different</code> guard to ensure no input has
+  the same value.  Related to the <code>different</code> guard is
+  the <code>same</code> guard, which requires all inputs have the same
+  value.
+</p>
 
-<h2>The same and different guards</h2>
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard(".phone").using("phoneUS");
+      $.guard(".email").using("email");
+      $.guard(".email,.phone").using("oneRequired");
+      $.guard(".color").using("different");
+      $.liveGuard("#form1");
+    </script>
+
+    <form id="form1">
+      <h2>Enter at least an email or phone number:</h2>
+
+      <p>
+        <label for="email">Email Address:</label><br />
+        <input type="text" id="email" class="required email" name="email" /><br />
+        <small>example: john@email.com</small>
+      </p>
+
+      <p>
+        <label for="phone">Phone Number:</label><br />
+        <input type="text" id="phone" class="required phone" name="phone" /><br />
+        <small>example: (555) 555-1234</small>
+      </p>
+
+      <h2>Distribute the colors evenly:</h2>
+
+      <p>
+        <select name="color1" class="color">
+          <option value="red">Red</option>
+          <option value="green">Green</option>
+          <option value="blue">Blue</option>
+        </select>
+      </p>
+
+      <p>
+        <select name="color2" class="color">
+          <option value="red">Red</option>
+          <option value="green">Green</option>
+          <option value="blue">Blue</option>
+        </select>
+      </p>
+
+      <p>
+        <select name="color3" class="color">
+          <option value="red">Red</option>
+          <option value="green">Green</option>
+          <option value="blue">Blue</option>
+        </select>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
 
 <h2>Custom grouped guards</h2>
+
+<p>
+</p>
