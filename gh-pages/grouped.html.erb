@@ -72,4 +72,34 @@
 <h2>Custom grouped guards</h2>
 
 <p>
+  Like normal guards, grouped guards can be customized with an
+  arbitrary function.  Instead of accepting a single value and
+  element, custom grouped guard functions accept an array of values
+  and elements, corresponding to all elements being guarded.  The
+  function will be called once when the form is guarded.  The form
+  below demonstrates a custom grouped guard.
 </p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("input[type='text']").grouped().using(function(values, elements) {
+        if ($.inArray("foo", values) >= 0) {
+          // If "foo" is provided, "bar" must also be provided.
+          return $.inArray("bar", values) >= 0;
+        }
+
+        return true;
+      }).message("Include 'bar' if 'foo' is provided!");
+      $.liveGuard("#form2");
+    </script>
+
+    <form id="form1">
+      <h2>Provide 'bar' if 'foo' is provided:</h2>
+
+      <p><input type="text" name="inputs[]" /></p>
+      <p><input type="text" name="inputs[]" /></p>
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
