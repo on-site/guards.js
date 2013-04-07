@@ -23,7 +23,6 @@ def define_pages
     end
 
     page do
-      pending!
       title "Grouped Guards"
       file "grouped.html"
     end
