@@ -28,7 +28,6 @@ def define_pages
     end
 
     page do
-      pending!
       title "Preconditions"
     end
 

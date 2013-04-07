@@ -1,1 +1,57 @@
 <h2>Defining preconditions</h2>
+
+<p>
+  Sometimes guarding a form is not so black and white.  For example,
+  you may want to have a particular guard only apply under certain
+  circumstances.  Perhaps a guard only applies if a checkbox has been
+  checked, or if any of a set of fields have values.  Under these
+  circumstances, you need to use the <code>precondition</code> method.
+  This will allow you to define a precondition for the guard, which
+  blocks the guard from being evaluated if the precondition returns
+  <code>false</code>.  Any other return value (including no return)
+  will be treated as though the guard is ok to be executed.  See the
+  example below to get an idea how this can be used.
+</p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("input[type='text']").using("required").grouped()
+          .target("#error").message("Provide all or nothing.")
+          .precondition(function() {
+        var elements = $("input[type='text']").toArray();
+
+        for (var i = 0; i < elements.length; i++) {
+          if ($(elements[i]).val().length > 0) {
+            return;
+          }
+        }
+
+        // If no element has a value, the precondition fails
+        return false;
+      });
+      $.liveGuard("form");
+    </script>
+
+    <form>
+      <h2>Leave blank to provide no address:</h2>
+
+      <p>
+        <label for="street">Street:</label><br />
+        <input type="text" id="street" name="street" size="50" />
+      </p>
+
+      <p>
+        <label for="city">City, State Zip:</label><br />
+        <input type="text" id="city" name="city" size="27" />,
+        <input type="text" name="state" size="2" />
+        <input type="text" name="zip" size="15" />
+      </p>
+
+      <p id="error">
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
