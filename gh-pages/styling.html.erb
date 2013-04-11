@@ -11,6 +11,26 @@
   classes can be used to style the guarded fields.
 </p>
 
+<div class="example">
+  <div class="display">
+    <style>
+      #css-styled .invalid-field { background-color: #ffbbbb; }
+      #css-styled .error-message { color: #ff0000; }
+    </style>
+
+    <script>
+      $(function() {
+        $.guard("#css-styled input").using("required").triggerError();
+        $.liveGuard("#css-styled");
+      });
+    </script>
+
+    <form id="css-styled">
+      <input type="text" name="field1" />
+    </form>
+  </div>
+</div>
+
 <h2>Programmatic styling</h2>
 
 <p>
@@ -24,3 +44,19 @@
   specific section of your page, if you so wish.  See below for an
   example of programmatic styling.
 </p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $(function() {
+        $.style("#js-styled");
+        $.guard("#js-styled input").using("required").triggerError();
+        $.liveGuard("#js-styled");
+      });
+    </script>
+
+    <form id="js-styled">
+      <input type="text" name="field1" />
+    </form>
+  </div>
+</div>
