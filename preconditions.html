@@ -41,9 +41,9 @@
             
 <ul>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
-  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="index.html">Demo</a></li>
   <li><a class="transition-background" href="documentation.html">Documentation</a></li>
-  <li class="current"><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
   <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
 </ul>
@@ -71,33 +71,83 @@
       </div>
 
       <section class="content">
-        <div class="wizard-wrapper"></div>
+        <div class="wizard-wrapper">
+<div class="wizard">
+  <ol>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="options.html">Options</a></li>
+    <li><a href="customization.html">Customization</a></li>
+    <li><a href="grouped.html">Grouped Guards</a></li>
+    <li class="current"><a href="preconditions.html">Preconditions</a></li>
+    <li><a href="styling.html">Styling</a></li>
+  </ol>
+</div>
+</div>
 
         <div class="wizard-content">
-          <h1>Downloads</h1>
-          <p>
-  The following are the available guards.js releases.
-</p>
+          <h1>Preconditions</h1>
+          <h2>Defining preconditions</h2>
 
 <p>
-  <ul>
-    <li>0.7.2: <a href="https://raw.github.com/on-site/guards.js/0.7.2/downloads/guards-0.7.2.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.2/downloads/guards-0.7.2.js">development</a></li>
-    <li>0.7.1: <a href="https://raw.github.com/on-site/guards.js/0.7.1/downloads/guards-0.7.1.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.1/downloads/guards-0.7.1.js">development</a></li>
-    <li>0.7.0: <a href="https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.js">development</a></li>
-    <li>0.6.5: <a href="https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.js">development</a></li>
-    <li>0.6.3: <a href="https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.js">development</a></li>
-  </ul>
+  Sometimes guarding a form is not so black and white.  For example,
+  you may want to have a particular guard only apply under certain
+  circumstances.  Perhaps a guard only applies if a checkbox has been
+  checked, or if any of a set of fields have values.  Under these
+  circumstances, you need to use the <code>precondition</code> method.
+  This will allow you to define a precondition for the guard, which
+  blocks the guard from being evaluated if the precondition returns
+  <code>false</code>.  Any other return value (including no return)
+  will be treated as though the guard is ok to be executed.  See the
+  example below to get an idea how this can be used.
 </p>
 
-<p>
-  If you wish to download anything older than 0.6.3, visit the old
-  GitHub <a href="https://github.com/on-site/guards.js/downloads">downloads page</a>
-</p>
+<div class="example">
+  <div class="display">
+    <script>
+      $.guard("input[type='text']").using("required").grouped()
+          .target("#error").message("Provide all or nothing.")
+          .precondition(function() {
+        var elements = $("input[type='text']").toArray();
+
+        for (var i = 0; i < elements.length; i++) {
+          if ($(elements[i]).val().length > 0) {
+            return;
+          }
+        }
+
+        // If no element has a value, the precondition fails
+        return false;
+      });
+      $.liveGuard("form");
+    </script>
+
+    <form>
+      <h2>Leave blank to provide no address:</h2>
+
+      <p>
+        <label for="street">Street:</label><br />
+        <input type="text" id="street" name="street" size="50" />
+      </p>
+
+      <p>
+        <label for="city">City, State Zip:</label><br />
+        <input type="text" id="city" name="city" size="27" />,
+        <input type="text" name="state" size="2" />
+        <input type="text" name="zip" size="15" />
+      </p>
+
+      <p id="error">
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
 
 
           <p class="paging">
-            
-            
+            <a href="grouped.html">previous</a>
+            <a href="styling.html">next</a>
           </p>
         </div>
 
@@ -113,9 +163,9 @@
           
 <ul>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
-  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="index.html">Demo</a></li>
   <li><a class="transition-background" href="documentation.html">Documentation</a></li>
-  <li class="current"><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
   <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
 </ul>

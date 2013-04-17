@@ -1,0 +1,533 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <title>guards.js by On-Site.com</title>
+    <link rel="stylesheet" href="stylesheets/styles.css" />
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css" />
+    <link rel="stylesheet" href="stylesheets/additional-styles.css" />
+    <link rel="stylesheet" href="stylesheets/prettify-sunburst.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
+    <script src="javascripts/prettify.js"></script>
+    <script src="javascripts/lang-css.js"></script>
+    <script src="javascripts/show-source.js"></script>
+    <script src="javascripts/animations.js"></script>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-39052097-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="top-bar-wrapper">
+        <div class="top-bar">
+          <div class="logo"><a href="https://www.on-site.com"></a></div>
+
+          <nav>
+            
+<ul>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
+  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="documentation.html">Documentation</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
+  <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
+</ul>
+
+          </nav>
+
+          <div class="clear-both"></div>
+        </div>
+      </div>
+
+      <div class="header-main-wrapper">
+        <header class="header-main">
+          <div class="header-art">
+            <div class="bird"></div>
+            <div class="shadow"></div>
+            <div class="overlapping-leaves"></div>
+          </div>
+
+          <h1>guards.js</h1>
+          <aside>Guard your forms with class (or any other selectors).</aside>
+          <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
+        </header>
+
+        <div class="white-fence"></div>
+      </div>
+
+      <section class="content">
+        <div class="wizard-wrapper">
+<div class="wizard">
+  <ol>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="global_functions.html">Global Functions</a></li>
+    <li><a href="named_guards.html">Named Guards</a></li>
+    <li><a href="guards_type.html">Guards Type</a></li>
+    <li class="current"><a href="guard_type.html">Guard Type</a></li>
+    <li><a href="jquery_methods.html">jQuery Methods</a></li>
+  </ol>
+</div>
+</div>
+
+        <div class="wizard-content">
+          <h1>Guard Type</h1>
+          <script>$.liveGuard(".example:not(.not-auto-guarded)");</script><p>
+  <h2 id="using" class="jsdoc-header">using</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.using(name | customFunction)</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Guard inputs with the specified name guard, or with a custom function.  If the first argument
+   provided is a string, it must correspond to a named guard.  This may be one of the
+   <a href="named_guards.html"><code>default named guards</code></a>, or a guard named via
+   <a href="guards_type.html#name"><code>$.guards.name(name)</code></a>.  Additional arguments
+   may be given as options to the named guard.  All attributes specified by the named guard
+   will be copied over when the <code>using</code> method is invoked.
+ </p>
+
+ <p>
+   Alternatively, a function may be provided as the custom guard function.  This function is invoked
+   when guards are being tested with the value of the element guarded, and the element being
+   guarded.  If the guard is grouped, it will be an array of values with the corresponding array
+   of elements.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".using1").using("required");
+       $.guard(".using2").using(function(value, element) {
+         return value !== "invalid";
+       }).message("Custom guard.");
+       $.guard(".using3").grouped().using(function(values, elements) {
+         return $.inArray("test", values) >= 0;
+       }).message("One must be 'test'");
+     </script>
+
+     <p>
+       <input class="using1" type="text" /><br />
+       <small>Required field</small>
+     </p>
+
+     <p>
+       <input class="using2" type="text" value="invalid" /><br />
+       <small>Field must not be 'invalid'</small>
+     </p>
+
+     <p>
+       <input class="using3" type="text" value="Something" /><br />
+       <input class="using3" type="text" value="Somewhere" /><br />
+       <small>One must be 'test'</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="precondition" class="jsdoc-header">precondition</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.precondition(preconditionFunction)</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Specify a precondition for this guard.  A parameter is required with the precondition
+   function.  This function accepts the element and element value as the parameters, like
+   a custom guard function.  The precondition is executed before the guard when any given
+   input is about to be guarded.  If the precondition returns false explicitly, the guard
+   will not be executed and the field will be considered valid.  Any other return value
+   means the precondition passed (even no return).  If the guard is grouped, the parameters
+   will be the array of values and elements (like for a custom guard function).
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".with-precondition").using("required").precondition(function(value, element) {
+         return $("#precondition-checkbox").is(":checked");
+       });
+     </script>
+
+     <p>
+       <input type="checkbox" id="precondition-checkbox" checked="checked" />
+         <label for="precondition-checkbox">Guard this field</label><br />
+       <input class="with-precondition" type="text" /><br />
+       <small>Guarded with <code>required</code> if the checkbox is checked</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="grouped" class="jsdoc-header">grouped</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.grouped([true | false])</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Mark this guard as being grouped.  A grouped guard will guard all affected elements
+   at once, instead of individually.  Each guarded element with an error will still be marked
+   as an error, but only one error message will be added.  Custom guard functions will receive
+   all elements and their values at once instead of individually.  By default, a guard is
+   not considered grouped.  Name guards, however, carry their grouped status on, so a guard
+   using <a href="named_guards.html#oneRequired"><code>oneRequired</code></a>,
+   <a href="named_guards.html#different"><code>different</code></a>, and
+   <a href="named_guards.html#same"><code>same</code></a> will be grouped by default.
+ </p>
+
+ <p>
+   If no argument is given, the guard will be marked as grouped, otherwise the parameter is
+   exoected to be a boolean indicating whether the guard should be grouped.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".grouped1").using("oneRequired").grouped(false).message("No longer grouped.");
+       $.guard(".grouped2").grouped().using(function(values, elements) {
+         return $.inArray("test", values) >= 0;
+       }).message("One must be 'test'");
+     </script>
+
+     <p>
+       <input class="grouped1" type="text" /><br />
+       <input class="grouped1" type="text" /><br />
+       <small>These are effectively guarded with 'required' now</small>
+     </p>
+
+     <p>
+       <input class="grouped2" type="text" value="Something" /><br />
+       <input class="grouped2" type="text" value="Somewhere" /><br />
+       <small>One must be 'test'</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="tag" class="jsdoc-header">tag</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.tag(htmlTag)</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Change the tag type that surrounds the error message.  By default, a <code>span</code> tag is
+   used.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".custom-tag").using("required").tag("div");
+     </script>
+
+     <p>
+       <input class="custom-tag" type="text" />
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="messageClass" class="jsdoc-header">messageClass</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.messageClass(cssClass)</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Change what class is used for error messages added due to failed guards.  By default, the
+   error element has the class <code>error-message</code>, but that class will not be userd
+   if a different one is specified with this method.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <style>
+       .green-message { color: #00aa00; }
+       .blue-message { color: #0000aa; }
+     </style>
+
+     <script>
+       $.guard(".custom-message-class1").using("required").messageClass("green-message");
+       $.guard(".custom-message-class2").using("required").messageClass("blue-message");
+     </script>
+
+     <p>
+       <input class="custom-message-class1" type="text" />
+     </p>
+
+     <p>
+       <input class="custom-message-class2" type="text" />
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="message" class="jsdoc-header">message</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.message(errorMessage)</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Customize the error message displayed if the guard fails.  The
+   <a href="named_guards.html"><code>default named guards</code></a>
+   have messages already defined, but they may be changed with this method.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".message").using("required").message("This error message is customized.");
+     </script>
+
+     <p>
+       <input class="message" type="text" />
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="invalidClass" class="jsdoc-header">invalidClass</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.invalidClass(cssClass)</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Change what class is added to invalid fields.  By default, the invalid class added is
+   <code>invalid</code>, but that class will not be added if a different one is specified
+   with this method.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <style>
+       .green-invalid { background-color: #66ff66; }
+       .blue-invalid { background-color: #6666ff; }
+     </style>
+
+     <script>
+       $.guard(".custom-invalid1").using("required").invalidClass("green-invalid");
+       $.guard(".custom-invalid2").using("required").invalidClass("blue-invalid");
+     </script>
+
+     <p>
+       <input class="custom-invalid1" type="text" />
+     </p>
+
+     <p>
+       <input class="custom-invalid2" type="text" />
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="target" class="jsdoc-header">target</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.target(selector | targetingFunction)</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Specify where the error will be placed in the DOM when this guard fails.  The argument can be
+   a jQuery selector, element, set of elements, jQuery selected set of elements, or a function.
+   If the argument is anything except a function, it will be passed to the jQuery function and
+   the first element will be retrieved and used as the place to append the error message.
+   If it is a function, the function may either insert the error message itself, or return the
+   location to place the error message.
+ </p>
+
+ <p>
+   When provided a function, the function will be called when an error has happened.  The function's
+   <code>this</code> reference will be set to the error element (or set of elements in the case of
+   a grouped guard) that had the error.  The argument will be the error message element that will be
+   appended.  When <code>false</code> is returned, the function is expected to have inserted the
+   provided error message in the DOM.  Otherwise, the return value is expected to be a jQuery
+   selector, element, set of elements or jQuery selected set of elements of which the first will
+   have the error element appended to it.
+ </p>
+
+ <p>
+   The default behavior is to append the error message after the last error element that is guarded.
+   If the last element is a radio button or checkbox, it will be appended after the first sibling
+   of the radio button or checkbox, which is expected to be the label for the radio button or
+   checkbox.  If there is already a guard error message there, it will be appended after the last
+   guard error message (so guard messages show up in the proper order as they are specified).
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".custom-target1").using("required").target("#custom-target-1-error");
+       $.guard(".custom-target2").using("required").target(function(errorMessage) {
+         return $(this).nextAll(".custom-target-error:first");
+       });
+       $.guard(".custom-target3").using("required").target(function(errorMessage) {
+         $(this).nextAll(".custom-target-error:first").append(errorMessage);
+         return false;
+       });
+     </script>
+
+     <p>
+       <input class="custom-target1" type="text" />
+       Error message targeted with selector:
+       <span id="custom-target-1-error"></span>
+     </p>
+
+     <p>
+       <input class="custom-target2" type="text" />
+       Error message targeted with function:
+       <span class="custom-target-error"></span>
+     </p>
+
+     <p>
+       <input class="custom-target3" type="text" />
+       Error message inserted manually:
+       <span class="custom-target-error"></span>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="triggerError" class="jsdoc-header">triggerError</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: guard.triggerError([selector])</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Exlicitly trigger an error for this guard on all elements provided to this function.
+   The argument provided is wrapped as a jQuery object, so it may be a selector, jQuery
+   object, element, or array of elements (or anything valid for a jQuery object).  Note
+   that the elements provided will have the guard applied, regardless of whether they
+   match the guard selector.
+ </p>
+
+ <p>
+   This method may alternatively be invoked with no arguments.  If this is done, the
+   selector used with the guard is used to select the elents to trigger the guard error.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       var guard1 = $.guard(".nothingToSelect").using("never").message("Error #1");
+       var guard2 = $.guard(".triggerError2").using("never").message("Error #2");
+       $(function() {
+         guard1.triggerError(".triggerError1");
+         guard2.triggerError();
+       });
+     </script>
+
+     <p>
+       <input class="triggerError1" type="text" /><br />
+       <small>Triggered with a different selector</small>
+     </p>
+
+     <p>
+       <input class="triggerError2" type="text" /><br />
+       <small>Triggered using the guard's selector</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+
+          <p class="paging">
+            
+            
+          </p>
+        </div>
+
+        <div class="clear-both"></div>
+      </section>
+    </div>
+
+    <div class="footer-main-wrapper">
+      <footer class="footer-main">
+        <div class="footer-art"></div>
+
+        <nav>
+          
+<ul>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
+  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="documentation.html">Documentation</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
+  <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
+</ul>
+
+        </nav>
+
+        <div class="footer-notes">
+          <small>This project is maintained by <a href="https://github.com/on-site">On-Site.com</a></small>
+          <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://www.on-site.com">RanJo</a></small>
+        </div>
+      </footer>
+    </div>
+
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>

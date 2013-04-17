@@ -41,9 +41,9 @@
             
 <ul>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
-  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="index.html">Demo</a></li>
   <li><a class="transition-background" href="documentation.html">Documentation</a></li>
-  <li class="current"><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
   <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
 </ul>
@@ -71,32 +71,87 @@
       </div>
 
       <section class="content">
-        <div class="wizard-wrapper"></div>
+        <div class="wizard-wrapper">
+<div class="wizard">
+  <ol>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="options.html">Options</a></li>
+    <li><a href="customization.html">Customization</a></li>
+    <li><a href="grouped.html">Grouped Guards</a></li>
+    <li><a href="preconditions.html">Preconditions</a></li>
+    <li class="current"><a href="styling.html">Styling</a></li>
+  </ol>
+</div>
+</div>
 
         <div class="wizard-content">
-          <h1>Downloads</h1>
-          <p>
-  The following are the available guards.js releases.
-</p>
+          <h1>Styling</h1>
+          <h2>How to style guards</h2>
 
 <p>
-  <ul>
-    <li>0.7.2: <a href="https://raw.github.com/on-site/guards.js/0.7.2/downloads/guards-0.7.2.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.2/downloads/guards-0.7.2.js">development</a></li>
-    <li>0.7.1: <a href="https://raw.github.com/on-site/guards.js/0.7.1/downloads/guards-0.7.1.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.1/downloads/guards-0.7.1.js">development</a></li>
-    <li>0.7.0: <a href="https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.js">development</a></li>
-    <li>0.6.5: <a href="https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.js">development</a></li>
-    <li>0.6.3: <a href="https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.js">development</a></li>
-  </ul>
+  After you have your forms guarded properly, the next step is to
+  style the error messages and invalid fields.  This is made easier
+  with classes added to the relevant fields.  An error message for a
+  field that has a guard error will (by default) have the
+  class <code>error-message</code>.  The field that triggered the
+  guard error will (by default) have the
+  class <code>invalid-field</code>.  Below is an example of how these
+  classes can be used to style the guarded fields.
 </p>
 
+<div class="example">
+  <div class="display">
+    <style>
+      #css-styled .invalid-field { background-color: #ffbbbb; }
+      #css-styled .error-message { color: #ff0000; }
+    </style>
+
+    <script>
+      $(function() {
+        $.guard("#css-styled input").using("required").triggerError();
+        $.liveGuard("#css-styled");
+      });
+    </script>
+
+    <form id="css-styled">
+      <input type="text" name="field1" />
+    </form>
+  </div>
+</div>
+
+<h2>Programmatic styling</h2>
+
 <p>
-  If you wish to download anything older than 0.6.3, visit the old
-  GitHub <a href="https://github.com/on-site/guards.js/downloads">downloads page</a>
+  If you don't wish to do your styling via inline or external file css
+  declarations, guards has you covered!  You can add styling to your
+  page via the <code>style</code> method.  This method merely appends
+  a <code>style</code> block into your document which adds some
+  default (or configurable) styles for elements with errors and the
+  related error messages.  This programmatic styling can also be
+  scoped to specific css selectors, to ensure it is targeted to just a
+  specific section of your page, if you so wish.  See below for an
+  example of programmatic styling.
 </p>
+
+<div class="example">
+  <div class="display">
+    <script>
+      $(function() {
+        $.style("#js-styled");
+        $.guard("#js-styled input").using("required").triggerError();
+        $.liveGuard("#js-styled");
+      });
+    </script>
+
+    <form id="js-styled">
+      <input type="text" name="field1" />
+    </form>
+  </div>
+</div>
 
 
           <p class="paging">
-            
+            <a href="preconditions.html">previous</a>
             
           </p>
         </div>
@@ -113,9 +168,9 @@
           
 <ul>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
-  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="index.html">Demo</a></li>
   <li><a class="transition-background" href="documentation.html">Documentation</a></li>
-  <li class="current"><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
   <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
 </ul>

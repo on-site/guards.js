@@ -1,0 +1,606 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <title>guards.js by On-Site.com</title>
+    <link rel="stylesheet" href="stylesheets/styles.css" />
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css" />
+    <link rel="stylesheet" href="stylesheets/additional-styles.css" />
+    <link rel="stylesheet" href="stylesheets/prettify-sunburst.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
+    <script src="javascripts/prettify.js"></script>
+    <script src="javascripts/lang-css.js"></script>
+    <script src="javascripts/show-source.js"></script>
+    <script src="javascripts/animations.js"></script>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-39052097-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="top-bar-wrapper">
+        <div class="top-bar">
+          <div class="logo"><a href="https://www.on-site.com"></a></div>
+
+          <nav>
+            
+<ul>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
+  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="documentation.html">Documentation</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
+  <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
+</ul>
+
+          </nav>
+
+          <div class="clear-both"></div>
+        </div>
+      </div>
+
+      <div class="header-main-wrapper">
+        <header class="header-main">
+          <div class="header-art">
+            <div class="bird"></div>
+            <div class="shadow"></div>
+            <div class="overlapping-leaves"></div>
+          </div>
+
+          <h1>guards.js</h1>
+          <aside>Guard your forms with class (or any other selectors).</aside>
+          <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
+        </header>
+
+        <div class="white-fence"></div>
+      </div>
+
+      <section class="content">
+        <div class="wizard-wrapper">
+<div class="wizard">
+  <ol>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="global_functions.html">Global Functions</a></li>
+    <li class="current"><a href="named_guards.html">Named Guards</a></li>
+    <li><a href="guards_type.html">Guards Type</a></li>
+    <li><a href="guard_type.html">Guard Type</a></li>
+    <li><a href="jquery_methods.html">jQuery Methods</a></li>
+  </ol>
+</div>
+</div>
+
+        <div class="wizard-content">
+          <h1>Named Guards</h1>
+          <script>$.liveGuard(".example:not(.not-auto-guarded)");</script><p>
+  <h2 id="allow" class="jsdoc-header">allow</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Only values found in the given list are considered valid.  Anything else triggers a failure.
+   This guard <strong>requires</strong> an array parameter of the valid values.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".primary-color").using("allow", ["red", "yellow", "blue"]);
+     </script>
+
+     <p>
+       <input class="primary-color" type="text" /><br />
+       <small>Allowed values: red, yellow, blue</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="always" class="jsdoc-header">always</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Always fail, no matter what.  For this guard to pass, either the guard must be removed, or
+   the element(s) guarded must be removed.  No parameters are accepted.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".always").using("always");
+     </script>
+
+     <p>
+       <input class="always" type="text" /><br />
+       <small>Always fails, no matter what</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="different" class="jsdoc-header">different</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   This is a grouped guard where every field must have a different value.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".unique").using("different");
+     </script>
+
+     <p>
+       <input class="unique" type="text" value="Unique Required" /><br />
+       <input class="unique" type="text" value="Unique Required" /><br />
+       <small>Each value must be unique</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="disallow" class="jsdoc-header">disallow</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Guard against specific values.  This guard <strong>requires</strong> an array parameter
+   of the invalid values.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".not-primary-color").using("disallow", ["red", "yellow", "blue"]);
+     </script>
+
+     <p>
+       <input class="not-primary-color" type="text" value="red" /><br />
+       <small>Disallowed values: red, yellow, blue</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="email" class="jsdoc-header">email</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Guard for a valid email address.  An empty value is ignored, so only once a value exists will
+   this guard start checking for an email address.  An optional argument of
+   <code>{ allowDisplay: true }</code> is allowed that may specify whether display emails of the
+   form <code>John Doe &lt;john@example.com&gt;</code> are allowed.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".email1").using("email");
+       $.guard(".email2").using("email", { allowDisplay: true });
+     </script>
+
+     <p>
+       <input class="email1" type="text" value="invalid" /><br />
+       <small>Email address of the form "john@example.com"</small>
+     </p>
+
+     <p>
+       <input class="email2" type="text" value="Still &lt;invalid&gt;" /><br />
+       <small>Email address of the form "John Doe &lt;john@example.com&gt;"</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="float" class="jsdoc-header">float</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Guard for a floating point number.  Optionally, an object parameter may be passed with
+   <code>min</code> and/or <code>max</code>.  Min will restrict the minimum value, while
+   max restricts the maximum.  An empty value is considered valid.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".float1").using("float");
+       $.guard(".float2").using("float", { min: -5.5 });
+       $.guard(".float3").using("float", { max: 42.0 });
+       $.guard(".float4").using("float", { min: 0.0, max: 10.0 });
+     </script>
+
+     <p>
+       <input class="float1" type="text" value="not valid" /><br />
+       <small>A number of any value</small>
+     </p>
+
+     <p>
+       <input class="float2" type="text" value="-10.5" /><br />
+       <small>A number no smaller than -5.5</small>
+     </p>
+
+     <p>
+       <input class="float3" type="text" value="64.32" /><br />
+       <small>A number no bigger than 42</small>
+     </p>
+
+     <p>
+       <input class="float4" type="text" value="11" /><br />
+       <small>A number from 0 to 10</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="int" class="jsdoc-header">int</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Guard for an integer number.  Optionally, an object parameter may be passed with
+   <code>min</code> and/or <code>max</code>.  Min will restrict the minimum value, while
+   max restricts the maximum.  An empty value is considered valid.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".int1").using("int");
+       $.guard(".int2").using("int", { min: -5 });
+       $.guard(".int3").using("int", { max: 42 });
+       $.guard(".int4").using("int", { min: 0, max: 10 });
+     </script>
+
+     <p>
+       <input class="int1" type="text" value="not valid" /><br />
+       <small>An integer of any value</small>
+     </p>
+
+     <p>
+       <input class="int2" type="text" value="-10.5" /><br />
+       <small>An integer no smaller than -5</small>
+     </p>
+
+     <p>
+       <input class="int3" type="text" value="64.32" /><br />
+       <small>An integer no bigger than 42</small>
+     </p>
+
+     <p>
+       <input class="int4" type="text" value="11" /><br />
+       <small>An integer from 0 to 10</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="moneyUS" class="jsdoc-header">moneyUS</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Guard for a US dollar amount.  Optionally, an object parameter may be passed with
+   <code>min</code> and/or <code>max</code>.  Min will restrict the minimum value, while
+   max restricts the maximum.  An empty value is considered valid.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".money1").using("moneyUS");
+       $.guard(".money2").using("moneyUS", { min: -5.50 });
+       $.guard(".money3").using("moneyUS", { max: 42.02 });
+       $.guard(".money4").using("moneyUS", { min: 0, max: 10 });
+     </script>
+
+     <p>
+       <input class="money1" type="text" value="not valid" /><br />
+       <small>US money of any value</small>
+     </p>
+
+     <p>
+       <input class="money2" type="text" value="-$10.55" /><br />
+       <small>US money no smaller than -$5.50</small>
+     </p>
+
+     <p>
+       <input class="money3" type="text" value="$64.32" /><br />
+       <small>US money no bigger than $42.02</small>
+     </p>
+
+     <p>
+       <input class="money4" type="text" value="$11" /><br />
+       <small>US money from $0 to $10</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="never" class="jsdoc-header">never</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Never fail, no matter what.  For this guard to fail, it must be manually triggered via
+   <a href="guard_type.html#triggerError"><code>guard.triggerError(selector)</code></a>.
+   This guard can be useful for marking a field as having an error immediately when the page
+   loads (such as for a server detected error).
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       var guard = $.guard(".never").using("never");
+       $(function() { guard.triggerError(".never"); });
+     </script>
+
+     <p>
+       <input class="never" type="text" /><br />
+       <small>Never fails, except manually</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="oneRequired" class="jsdoc-header">oneRequired</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   This is a grouped guard where a single field of all the selected fields must have a value.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".oneRequired").using("oneRequired");
+     </script>
+
+     <p>
+       <input class="oneRequired" type="text" value="" /><br />
+       <input class="oneRequired" type="text" value="" /><br />
+       <small>One value is required</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="phoneUS" class="jsdoc-header">phoneUS</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   The guarded field is considered valid if no value is given, or if the value given appears
+   to be a valid US phone number.  The number must include an area code.  Whitespace is ignored.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".phone").using("phoneUS");
+     </script>
+
+     <p>
+       <input class="phone" type="text" value="555-1234" /><br />
+       <small>A valid US phone number like (555) 555-1234</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="required" class="jsdoc-header">required</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   These guarded fields must have a value to pass.  Only whitespace is not considered a value.
+   If no named or custom guard is defined, this is the default guard used.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".required1").using("required");
+       $.guard(".required2");
+     </script>
+
+     <p>
+       <input class="required1" type="text" /><br />
+       <small>A value is required</small>
+     </p>
+
+     <p>
+       <input class="required2" type="text" /><br />
+       <small>A value is required</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="same" class="jsdoc-header">same</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   This is a grouped guard where every field must have the same value.  For example, this guard can
+   be used to implement a password confirmation field.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".same").using("same");
+     </script>
+
+     <p>
+       <input class="same" type="text" value="Same Required" /><br />
+       <input class="same" type="text" value="The Same Required" /><br />
+       <small>Each value must be the same</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="string" class="jsdoc-header">string</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Validate the length of the string provided.  This requires an object parameter with
+   <code>min</code> and/or <code>max</code>.  Min will restrict the minimum length, while
+   max restricts the maximum length.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".string1").using("string", { min: 3 });
+       $.guard(".string2").using("string", { max: 7 });
+       $.guard(".string3").using("string", { min: 2, max: 4 });
+     </script>
+
+     <p>
+       <input class="string1" type="text" value="I" /><br />
+       <small>A string with at lease 3 characters</small>
+     </p>
+
+     <p>
+       <input class="string2" type="text" value="Hello World" /><br />
+       <small>A string with no more than 7 characters</small>
+     </p>
+
+     <p>
+       <input class="string3" type="text" value="Goodnight Moon" /><br />
+       <small>A string with at least 2 characters and no more than 5</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+
+          <p class="paging">
+            
+            
+          </p>
+        </div>
+
+        <div class="clear-both"></div>
+      </section>
+    </div>
+
+    <div class="footer-main-wrapper">
+      <footer class="footer-main">
+        <div class="footer-art"></div>
+
+        <nav>
+          
+<ul>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
+  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="documentation.html">Documentation</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
+  <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
+</ul>
+
+        </nav>
+
+        <div class="footer-notes">
+          <small>This project is maintained by <a href="https://github.com/on-site">On-Site.com</a></small>
+          <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://www.on-site.com">RanJo</a></small>
+        </div>
+      </footer>
+    </div>
+
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>

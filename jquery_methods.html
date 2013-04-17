@@ -42,8 +42,8 @@
 <ul>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
   <li><a class="transition-background" href="index.html">Demo</a></li>
-  <li><a class="transition-background" href="documentation.html">Documentation</a></li>
-  <li class="current"><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li class="current"><a class="transition-background" href="documentation.html">Documentation</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
   <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
 </ul>
@@ -71,28 +71,149 @@
       </div>
 
       <section class="content">
-        <div class="wizard-wrapper"></div>
+        <div class="wizard-wrapper">
+<div class="wizard">
+  <ol>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="global_functions.html">Global Functions</a></li>
+    <li><a href="named_guards.html">Named Guards</a></li>
+    <li><a href="guards_type.html">Guards Type</a></li>
+    <li><a href="guard_type.html">Guard Type</a></li>
+    <li class="current"><a href="jquery_methods.html">jQuery Methods</a></li>
+  </ol>
+</div>
+</div>
 
         <div class="wizard-content">
-          <h1>Downloads</h1>
-          <p>
-  The following are the available guards.js releases.
+          <h1>jQuery Methods</h1>
+          <script>$.liveGuard(".example:not(.not-auto-guarded)");</script><p>
+  <h2 id="guard" class="jsdoc-header">guard</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: selected.guard()</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
 </p>
 
-<p>
-  <ul>
-    <li>0.7.2: <a href="https://raw.github.com/on-site/guards.js/0.7.2/downloads/guards-0.7.2.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.2/downloads/guards-0.7.2.js">development</a></li>
-    <li>0.7.1: <a href="https://raw.github.com/on-site/guards.js/0.7.1/downloads/guards-0.7.1.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.1/downloads/guards-0.7.1.js">development</a></li>
-    <li>0.7.0: <a href="https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.7.0/downloads/guards-0.7.0.js">development</a></li>
-    <li>0.6.5: <a href="https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.6.5/downloads/guards-0.6.5.js">development</a></li>
-    <li>0.6.3: <a href="https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.min.js">production minified</a>, <a href="https://raw.github.com/on-site/guards.js/0.6.3/downloads/guards-0.6.3.js">development</a></li>
-  </ul>
-</p>
+<div class="jsdoc-content">
+  
+ <p>
+   Clear any guard errors present on the form fields within the selected form (or other
+   containing element around form elements), and then test each element in order against
+   each guard in the order the guards were defined.  If any of the fields had an error,
+   focus the first such field.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".guarded-field").using("required");
+       $(function() {
+         $("#invoke-guard").click(function() {
+           $("#guard-container").guard();
+           return false;
+         });
+       });
+     </script>
+
+     <div id="guard-container">
+       <p>
+         <input class="guarded-field" type="text" />
+       </p>
+     </div>
+
+     <p>
+       <input id="invoke-guard" type="button" value="Test Guards" />
+     </p>
+   </div>
+ </div>
+
+</div>
 
 <p>
-  If you wish to download anything older than 0.6.3, visit the old
-  GitHub <a href="https://github.com/on-site/guards.js/downloads">downloads page</a>
+  <h2 id="clearErrors" class="jsdoc-header">clearErrors</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: selected.clearErrors()</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
 </p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Clear any guard errors on the selected elements.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $(function() {
+         $.guard(".field-to-clear").using("required").triggerError();
+         $("#clear-errors").click(function() {
+           $(".field-to-clear").clearErrors();
+           return false;
+         });
+       });
+     </script>
+
+     <div>
+       <p>
+         <input class="field-to-clear" type="text" />
+       </p>
+     </div>
+
+     <p>
+       <input id="clear-errors" type="button" value="Clear Errors" />
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="_has_error" class="jsdoc-header">:has-error</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: jQuery("selector:has-error")</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   This is a jQuery selector that can be used to select elements that currently have an error.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".field-to-select").using("required");
+       $(function() {
+         $("#select-errors").click(function() {
+           var count = $(".field-to-select:has-error").size();
+           $("#selected-error-count").text("Number of errors: " + count);
+           return false;
+         });
+       });
+     </script>
+
+     <div>
+       <p>
+         <input class="field-to-select" type="text" />
+       </p>
+
+       <p>
+         <input class="field-to-select" type="text" />
+       </p>
+     </div>
+
+     <p>
+       <input id="select-errors" type="button" value="Count errors" /><br />
+       <span id="selected-error-count"></span>
+     </p>
+   </div>
+ </div>
+
+</div>
 
 
           <p class="paging">
@@ -114,8 +235,8 @@
 <ul>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
   <li><a class="transition-background" href="index.html">Demo</a></li>
-  <li><a class="transition-background" href="documentation.html">Documentation</a></li>
-  <li class="current"><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li class="current"><a class="transition-background" href="documentation.html">Documentation</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
   <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
   <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
 </ul>

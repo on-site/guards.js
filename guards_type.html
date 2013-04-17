@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <title>guards.js by On-Site.com</title>
+    <link rel="stylesheet" href="stylesheets/styles.css" />
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css" />
+    <link rel="stylesheet" href="stylesheets/additional-styles.css" />
+    <link rel="stylesheet" href="stylesheets/prettify-sunburst.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://raw.github.com/on-site/guards.js/master/src/guards.js"></script>
+    <script src="javascripts/prettify.js"></script>
+    <script src="javascripts/lang-css.js"></script>
+    <script src="javascripts/show-source.js"></script>
+    <script src="javascripts/animations.js"></script>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-39052097-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="top-bar-wrapper">
+        <div class="top-bar">
+          <div class="logo"><a href="https://www.on-site.com"></a></div>
+
+          <nav>
+            
+<ul>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
+  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="documentation.html">Documentation</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
+  <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
+</ul>
+
+          </nav>
+
+          <div class="clear-both"></div>
+        </div>
+      </div>
+
+      <div class="header-main-wrapper">
+        <header class="header-main">
+          <div class="header-art">
+            <div class="bird"></div>
+            <div class="shadow"></div>
+            <div class="overlapping-leaves"></div>
+          </div>
+
+          <h1>guards.js</h1>
+          <aside>Guard your forms with class (or any other selectors).</aside>
+          <p class="view"><a href="https://github.com/on-site/guards.js">View the Project on GitHub <small>on-site/guards.js</small></a></p>
+        </header>
+
+        <div class="white-fence"></div>
+      </div>
+
+      <section class="content">
+        <div class="wizard-wrapper">
+<div class="wizard">
+  <ol>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="global_functions.html">Global Functions</a></li>
+    <li><a href="named_guards.html">Named Guards</a></li>
+    <li class="current"><a href="guards_type.html">Guards Type</a></li>
+    <li><a href="guard_type.html">Guard Type</a></li>
+    <li><a href="jquery_methods.html">jQuery Methods</a></li>
+  </ol>
+</div>
+</div>
+
+        <div class="wizard-content">
+          <h1>Guards Type</h1>
+          <script>$.liveGuard(".example:not(.not-auto-guarded)");</script><p>
+  <h2 id="version" class="jsdoc-header">version</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: jQuery.guards.version</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   This version of guards.js library as a string, like <code>"1.0.0"</code>.
+ </p>
+
+</div>
+
+<p>
+  <h2 id="name" class="jsdoc-header">name</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: jQuery.guards.name(guardName)</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Name a guard.  This behaves the same way as
+   <a href="global_functions.html#guard"><code>$.guard(selector)</code></a>, except it uses
+   the parameter to define a named guard with the given name, instead of defining a new
+   guard affecting the given selector.  Any attributes applied to it will be passed on to
+   any guards that utilize this named guard.  A named guard may be utilized by passing the
+   name on to the <a href="guard_type.html#using"><code>using</code></a> method.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guards.name("notTest").using(function(value, element) {
+         return value !== "test";
+       }).message("Must not be test.");
+       $.guard(".named").using("notTest");
+     </script>
+
+     <p>
+       <input class="named" type="text" value="test" /><br />
+       <small>Anything except 'test'</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="style" class="jsdoc-header">style</h2>
+  
+    <h3 class="jsdoc-method-signature">signature: jQuery.guards.style([customStyling])</h3>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Insert a style element to the document head that will style guard errors and invalid fields.
+   This will default to styling <code>.invalid-field</code> with a background color of
+   <code>#ffff66</code> and <code>.error-message</code> with a color of <code>#ff0000</code>
+   and a left margin of <code>10px</code>.
+ </p>
+
+ <p>
+   There are 2 optional arguments for this method.  The first is an optional css scope to restrict
+   the styling affects with.  The second is an object expected to contain a <code>field</code>
+   and/or <code>message</code> property with css styles desired for that aspect of the styling.
+   The <code>field</code> property will add styling for invalid fields while the <code>message</code>
+   property will add styling for error messages.  The properties of these objects may contain any
+   key that is a valid css attribute, with an appropriate value.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guards.style("#styled-fields", {
+         message: {
+           "color": "#ee0000",
+           "font-weight": "bold"
+         },
+         field: {
+           "background-color": "#ffe099"
+         }
+       });
+
+       $.guard(".styled-field").using("required");
+     </script>
+
+     <p id="styled-fields">
+       <input class="styled-field" type="text" />
+     </p>
+   </div>
+ </div>
+
+</div>
+
+
+          <p class="paging">
+            
+            
+          </p>
+        </div>
+
+        <div class="clear-both"></div>
+      </section>
+    </div>
+
+    <div class="footer-main-wrapper">
+      <footer class="footer-main">
+        <div class="footer-art"></div>
+
+        <nav>
+          
+<ul>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js">Repository</a></li>
+  <li><a class="transition-background" href="index.html">Demo</a></li>
+  <li class="current"><a class="transition-background" href="documentation.html">Documentation</a></li>
+  <li><a class="transition-background" href="downloads.html">Downloads</a></li>
+  <li><a class="transition-background" href="https://github.com/on-site/guards.js/issues">Report Bugs</a></li>
+  <li><a class="transition-background" href="http://plugins.jquery.com/guards/">jQuery Plugin</a></li>
+</ul>
+
+        </nav>
+
+        <div class="footer-notes">
+          <small>This project is maintained by <a href="https://github.com/on-site">On-Site.com</a></small>
+          <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://www.on-site.com">RanJo</a></small>
+        </div>
+      </footer>
+    </div>
+
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>
