@@ -14,7 +14,7 @@ def check_version!(version)
   die "Please use a version like '1.2.3' (with major.minor.patch)" unless version =~ /\d+\.\d+\.\d+/
 end
 
-def tag
+def check_tag_and_gem_preconditions!
   version = get_version
   check_version! version
 
@@ -26,8 +26,19 @@ def tag
 
   %x[git log --exit-code HEAD ^origin/master]
   die "You have local commits, please push first." unless $?.exitstatus == 0
+end
 
+def tag
+  check_tag_and_gem_preconditions!
+  version = get_version
   system "git tag #{version} && git push --tags"
+end
+
+def gem
+  check_tag_and_gem_preconditions!
+  version = get_version
+  system "cd gem && gem build guardsjs-rails.gemspec"
+  system_exec "cd gem && gem push guardsjs-rails-#{version}.gem"
 end
 
 def get_version
@@ -68,6 +79,7 @@ def update_downloads!
 
   system "rm downloads/guards-*.js" if File.directory?("downloads")
   system "mkdir downloads" unless File.directory?("downloads")
+  system "cp guards.js gem/vendor/assets/javascripts/guards.js"
   system "mv guards.js downloads/guards-#{version}.js"
 
   File.open "downloads/guards-#{version}.min.js", "w" do |f|
@@ -99,12 +111,23 @@ def update_downloads_page!
   end
 end
 
+def update_gem!
+  version = get_version
+  contents = File.read "gem/lib/guardsjs-rails/version.rb"
+  contents.gsub! /VERSION = "[^"]*"/, %{VERSION = "#{version}"}
+
+  File.open "gem/lib/guardsjs-rails/version.rb", "w" do |f|
+    f << contents
+  end
+end
+
 def prepare(version)
   check_version! version
   update_version! version
   update_downloads!
   update_manifest!
   update_downloads_page!
+  update_gem!
 end
 
 die "usage: package.rb tag
@@ -112,6 +135,8 @@ die "usage: package.rb tag
 
 if ARGS.first == "tag"
   tag
+elsif ARGS.first == "gem"
+  gem
 else
   prepare ARGS.first
 end
