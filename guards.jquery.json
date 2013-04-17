@@ -19,7 +19,7 @@
   "description": "Guard your forms with class (or any other selector).",
   "keywords": ["validation"],
   "homepage": "http://guardsjs.com/",
-  "docs": "https://github.com/on-site/guards.js#summary",
+  "docs": "http://guardsjs.com/documentation.html",
   "demo": "http://guardsjs.com/",
   "download": "http://guardsjs.com/downloads.html",
   "bugs": "https://github.com/on-site/guards.js/issues"
