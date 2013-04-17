@@ -1,5 +1,5 @@
 module GuardsJS
   module Rails
-    VERSION = "0.7.2"
+    VERSION = "1.0.0"
   end
 end
