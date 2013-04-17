@@ -100,13 +100,13 @@ end
 
 def update_downloads_page!
   version = get_version
-  contents = File.read "gh-pages/_downloads.html"
+  contents = File.read "gh-pages/downloads.html.erb"
   return if contents =~ /<li>#{Regexp.quote version}: /
   contents.sub! /^  <ul>\n/, "  <ul>
     <li>#{version}: <a href=\"https://raw.github.com/on-site/guards.js/#{version}/downloads/guards-#{version}.min.js\">production minified</a>, <a href=\"https://raw.github.com/on-site/guards.js/#{version}/downloads/guards-#{version}.js\">development</a></li>
 "
 
-  File.open "gh-pages/_downloads.html", "w" do |f|
+  File.open "gh-pages/downloads.html.erb", "w" do |f|
     f << contents
   end
 end
