@@ -38,7 +38,7 @@ def gem
   check_tag_and_gem_preconditions!
   version = get_version
   system "cd gem && gem build guardsjs-rails.gemspec"
-  system_exec "cd gem && gem push guardsjs-rails-#{version}.gem"
+  system "cd gem && gem push guardsjs-rails-#{version}.gem"
 end
 
 def get_version
