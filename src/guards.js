@@ -218,6 +218,59 @@
 
         /**
          * @page Named Guards
+         * @section dateUS
+         * @since 1.1.0
+         *
+         * <p>
+         *   Guard for a US date.  Month and day value validations
+         *   exist, though may not conver all invalid dates (so,
+         *   13/32/2013 is invalid, but 2/31/2013 might not properly
+         *   fail at this point in time).  An empty value is
+         *   considered valid.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".date").using("dateUS");
+         *     </script>
+         *
+         *     <p>
+         *       <input class="date" type="text" value="not valid" /><br />
+         *       <small>US date of any value</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
+        this.name("dateUS").using(this.aggregate(this.isAllValid, this.isValidDateUS)).message("Please use: dd/mm/yyyy.")
+
+        /**
+         * @page Named Guards
+         * @section timeUS
+         * @since 1.1.0
+         *
+         * <p>
+         *   Guard for a US time.  Military time is not currently
+         *   supported.  An empty value is considered valid.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".time").using("timeUS");
+         *     </script>
+         *
+         *     <p>
+         *       <input class="time" type="text" value="not valid" /><br />
+         *       <small>US time of any value</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
+        this.name("timeUS").using(this.aggregate(this.isAllValid, this.isValidTimeUS)).message("Please use: hh:mm&nbsp;am/pm.")
+
+        /**
+         * @page Named Guards
          * @section email
          * @since 1.0.0
          *
@@ -590,7 +643,7 @@
         var $element = $(element);
         var context = $element.parents("form:first");
 
-        if (context.size() == 0) {
+        if (context.size() === 0) {
             context = $element.parents("*:last");
         }
 
@@ -1136,6 +1189,32 @@
 
         value = parseFloat(value.replace(/[\$,]/g, ""));
         return this.isInRange(value, options);
+    };
+
+    /**
+     * Validates for a valid US date.
+     */
+    $.Guards.prototype.isValidDateUS = function(value, options) {
+        value = $.trim(value);
+
+        if (value === "") {
+            return true;
+        }
+
+        return /^(0?[1-9]|1[0-2])\/(0?[1-9]|[1-2]\d|3[0-1])\/(\d{3}\d+)$/.test(value);
+    };
+
+    /**
+     * Validates for a valid US time.
+     */
+    $.Guards.prototype.isValidTimeUS = function(value, options) {
+        value = $.trim(value);
+
+        if (value === "") {
+            return true;
+        }
+
+        return /^(0?[1-9]|1[0-2]):([0-5]\d)\s*(a|p)m$/i.test(value);
     };
 
     /**
@@ -1937,26 +2016,49 @@
      * Clear this error and any errors linked with it (grouped guards
      * and radio buttons cause all elements involved to be linked).
      */
-    $.GuardError.prototype.clear = function() {
+    $.GuardError.prototype.clear = function(forLinked) {
         if (this._cleared) {
             return;
         }
 
+        var selected = [];
+        var $selected;
+
+        if (!forLinked) {
+            for (var i = 0; i < this._linked.length; i++) {
+                selected.push(this._linked[i]._element);
+            }
+
+            $selected = $(selected);
+            var clearGuardErrorPrevented = this._guard.sendEvent("clearGuardError", $selected, false, this._errorElement).isDefaultPrevented();
+            var clearGuardFormErrorPrevented = this._guard.sendEvent("clearGuardFormError", $selected, true, this._errorElement).isDefaultPrevented();
+
+            if (clearGuardErrorPrevented || clearGuardFormErrorPrevented) {
+                return;
+            }
+        }
+
         this._errorElement.remove();
         var index = $.inArray(this, this._element.errors);
+        var $element = $(this._element);
 
         if (index >= 0) {
             this._element.errors.splice(index, 1);
         }
 
-        if (!$(this._element).hasErrorsWithInvalidClass(this._guard.getInvalidClass())) {
-            $(this._element).removeClass(this._guard.getInvalidClass());
+        if (!$element.hasErrorsWithInvalidClass(this._guard.getInvalidClass())) {
+            $element.removeClass(this._guard.getInvalidClass());
         }
 
         this._cleared = true;
 
         while (this._linked.length > 0) {
-            this._linked.shift().clear();
+            this._linked.shift().clear(true);
+        }
+
+        if (!forLinked) {
+            this._guard.sendEvent("afterClearGuardError", $selected, false);
+            this._guard.sendEvent("afterClearGuardFormError", $selected, true);
         }
     };
 
@@ -2436,7 +2538,8 @@
             return !!(x.errors && x.errors.length > 0);
         },
         "guardable": function(x) {
-            return x.tagName.toLowerCase() === "input" || x.tagName.toLowerCase() === "textarea" || x.tagName.toLowerCase() === "select";
+            var tagName = x.tagName.toLowerCase();
+            return tagName === "input" || tagName === "textarea" || tagName === "select" || tagName === "button";
         }
     });
 
