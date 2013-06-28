@@ -199,6 +199,65 @@
 </div>
 
 <p>
+  <h2 id="dateUS" class="jsdoc-header">dateUS</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.1.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Guard for a US date.  Month and day value validations
+   exist, though may not conver all invalid dates (so,
+   13/32/2013 is invalid, but 2/31/2013 might not properly
+   fail at this point in time).  An empty value is
+   considered valid.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".date").using("dateUS");
+     </script>
+
+     <p>
+       <input class="date" type="text" value="not valid" /><br />
+       <small>US date of any value</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
+  <h2 id="timeUS" class="jsdoc-header">timeUS</h2>
+  
+  <h4 class="jsdoc-since"><small>available since: 1.1.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+ <p>
+   Guard for a US time.  Military time is not currently
+   supported.  An empty value is considered valid.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".time").using("timeUS");
+     </script>
+
+     <p>
+       <input class="time" type="text" value="not valid" /><br />
+       <small>US time of any value</small>
+     </p>
+   </div>
+ </div>
+
+</div>
+
+<p>
   <h2 id="email" class="jsdoc-header">email</h2>
   
   <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
