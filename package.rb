@@ -162,9 +162,15 @@ def bootstrap
   system "cd gems/bootstrap-guardsjs-rails && gem push bootstrap-guardsjs-rails-#{version}.gem"
 end
 
+def bootstrap_tag
+  require File.expand_path("../gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version", __FILE__)
+  system "git tag bootstrap-#{BootstrapGuardsJS::Rails::VERSION} && git push --tags"
+end
+
 die "usage: package.rb tag
        package.rb gem
        package.rb bootstrap
+       package.rb bootstrap-tag
        package.rb <version>" if ARGS.length != 1
 
 if ARGS.first == "tag"
@@ -173,6 +179,8 @@ elsif ARGS.first == "gem"
   gem
 elsif ARGS.first == "bootstrap"
   bootstrap
+elsif ARGS.first == "bootstrap-tag"
+  bootstrap_tag
 else
   prepare ARGS.first
 end
