@@ -37,8 +37,8 @@ end
 def gem
   check_tag_and_gem_preconditions!
   version = get_version
-  system "cd gem && gem build guardsjs-rails.gemspec"
-  system "cd gem && gem push guardsjs-rails-#{version}.gem"
+  system "cd gems/guardsjs-rails && gem build guardsjs-rails.gemspec"
+  system "cd gems/guardsjs-rails && gem push guardsjs-rails-#{version}.gem"
 end
 
 def get_version
@@ -79,7 +79,7 @@ def update_downloads!
 
   system "rm downloads/guards-*.js" if File.directory?("downloads")
   system "mkdir downloads" unless File.directory?("downloads")
-  system "cp guards.js gem/vendor/assets/javascripts/guards.js"
+  system "cp guards.js gems/guardsjs-rails/vendor/assets/javascripts/guards.js"
   system "mv guards.js downloads/guards-#{version}.js"
 
   File.open "downloads/guards-#{version}.min.js", "w" do |f|
@@ -113,10 +113,10 @@ end
 
 def update_gem!
   version = get_version
-  contents = File.read "gem/lib/guardsjs-rails/version.rb"
+  contents = File.read "gems/guardsjs-rails/lib/guardsjs-rails/version.rb"
   contents.gsub! /VERSION = "[^"]*"/, %{VERSION = "#{version}"}
 
-  File.open "gem/lib/guardsjs-rails/version.rb", "w" do |f|
+  File.open "gems/guardsjs-rails/lib/guardsjs-rails/version.rb", "w" do |f|
     f << contents
   end
 end
