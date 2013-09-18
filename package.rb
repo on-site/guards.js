@@ -136,7 +136,6 @@ def get_bootstrap_gem_version
   print "What is the next version of bootstrap? "
   version = STDIN.gets.strip
   check_version! version
-  version = get_version
   contents = File.read "gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version.rb"
   contents.gsub! /VERSION = "[^"]*"/, %{VERSION = "#{version}"}
 
