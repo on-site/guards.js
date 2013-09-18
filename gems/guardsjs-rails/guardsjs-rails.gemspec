@@ -9,6 +9,7 @@ Gem::Specification.new do |gem|
   gem.description   = "This gem wraps the guards.js jQuery validation library as a Rails asset gem."
   gem.summary       = "Rails asset gem for guards.js."
   gem.homepage      = "http://guardsjs.com/"
+  gem.license       = "MIT"
   gem.files         = FileList["lib/**/*", "vendor/**/*"]
   gem.require_paths = ["lib"]
   gem.add_dependency "railties", ">= 3.0", "< 5.0"

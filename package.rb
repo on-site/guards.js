@@ -11,13 +11,10 @@ def die(msg)
 end
 
 def check_version!(version)
-  die "Please use a version like '1.2.3' (with major.minor.patch)" unless version =~ /\d+\.\d+\.\d+/
+  die "Please use a version like '1.2.3' (with major.minor.patch)" unless version =~ /^\d+\.\d+\.\d+$/
 end
 
-def check_tag_and_gem_preconditions!
-  version = get_version
-  check_version! version
-
+def check_source_control!
   %x[git diff --exit-code]
   die "You have local changes, please commit first." unless $?.exitstatus == 0
 
@@ -26,6 +23,12 @@ def check_tag_and_gem_preconditions!
 
   %x[git log --exit-code HEAD ^origin/master]
   die "You have local commits, please push first." unless $?.exitstatus == 0
+end
+
+def check_tag_and_gem_preconditions!
+  version = get_version
+  check_version! version
+  check_source_control!
 end
 
 def tag
@@ -121,6 +124,29 @@ def update_gem!
   end
 end
 
+def get_bootstrap_gem_version
+  require File.expand_path("../gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version", __FILE__)
+  print "Is '#{BootstrapGuardsJS::Rails::VERSION}' the next version of bootstrap? "
+  answer = STDIN.gets.strip.downcase
+
+  if ["y", "yes"].include? answer
+    return BootstrapGuardsJS::Rails::VERSION
+  end
+
+  print "What is the next version of bootstrap? "
+  version = STDIN.gets.strip
+  check_version! version
+  version = get_version
+  contents = File.read "gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version.rb"
+  contents.gsub! /VERSION = "[^"]*"/, %{VERSION = "#{version}"}
+
+  File.open "gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version.rb", "w" do |f|
+    f << contents
+  end
+
+  die "The version has been updated, please commit and run ./package bootstrap again to push."
+end
+
 def prepare(version)
   check_version! version
   update_version! version
@@ -130,13 +156,24 @@ def prepare(version)
   update_gem!
 end
 
+def bootstrap
+  version = get_bootstrap_gem_version
+  check_source_control!
+  system "cd gems/bootstrap-guardsjs-rails && gem build bootstrap-guardsjs-rails.gemspec"
+  system "cd gems/bootstrap-guardsjs-rails && gem push bootstrap-guardsjs-rails-#{version}.gem"
+end
+
 die "usage: package.rb tag
+       package.rb gem
+       package.rb bootstrap
        package.rb <version>" if ARGS.length != 1
 
 if ARGS.first == "tag"
   tag
 elsif ARGS.first == "gem"
   gem
+elsif ARGS.first == "bootstrap"
+  bootstrap
 else
   prepare ARGS.first
 end
