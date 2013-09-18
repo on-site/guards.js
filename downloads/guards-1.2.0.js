@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v1.1.0
+ * Guards JavaScript jQuery Plugin v1.2.0
  * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2013, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Fri Jun 28 00:51:31 2013 -0700
+ * Date: Wed Sep 18 02:45:55 2013 -0700
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "1.1.0";
+    $.guard.version = "1.2.0";
 
     $.Guards = function() {
         var self = this;
@@ -542,6 +542,30 @@
 
         /**
          * @page Named Guards
+         * @section regex
+         * @since 1.2.0
+         *
+         * <p>
+         *   These guarded fields must match the provided regex to pass.  An empty value is considered valid.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".regex1").using("regex", /^abc\d{1,3}$/);
+         *     </script>
+         *
+         *     <p>
+         *       <input class="regex1" type="text" /><br />
+         *       <small>abc with 1-3 digits is required, like 'abc123'</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
+        this.name("regex").using(this.aggregate(this.isAllValid, this.matchesRegex)).message("Please enter valid input.");
+
+        /**
+         * @page Named Guards
          * @section required
          * @since 1.0.0
          *
@@ -650,7 +674,7 @@
      *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
      * </p>
      */
-    $.Guards.prototype.version = "1.1.0";
+    $.Guards.prototype.version = "1.2.0";
 
     $.Guards.prototype.parentContext = function(element) {
         var $element = $(element);
@@ -1266,6 +1290,17 @@
     $.Guards.prototype.isValidString = function(value, options) {
         value = $.trim(value);
         return this.isValidInt("" + value.length, options);
+    };
+
+    /**
+     * Validates the given value matches the given regex.
+     */
+    $.Guards.prototype.matchesRegex = function(value, regex) {
+        if ($.type(regex) != "regexp") {
+            throw new Error("The regex must be provided as an option!");
+        }
+
+        return value === "" || regex.test(value);
     };
 
     /**
