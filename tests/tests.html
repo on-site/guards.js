@@ -233,13 +233,19 @@
             });
           }
 
-          function testWithRecentJQuery(name, fn) {
-            var isOld = ["1.4.0"].indexOf(QUnit.config.jquery) >= 0;
+          function isOldJquery(oldVersions) {
+            return oldVersions.indexOf(QUnit.config.jquery) >= 0;
+          }
 
-            if (isOld) {
-              test(name, function() {
-                ok(!isOld, "jQuery is too old for this test.");
-              });
+          function jqueryTooOld(name) {
+            test(name, function() {
+              ok(false, "jQuery is too old for this test.");
+            });
+          }
+
+          function testWithRecentJQuery(name, fn) {
+            if (isOldJquery(["1.4.0"])) {
+              jqueryTooOld(name);
             } else {
               test(name, fn);
             }
@@ -1550,6 +1556,38 @@
           successTest("14085552345");
           successTest("1-408-555-2345");
           successTest("1 (408) 555-2345");
+
+          module("regex guard", { setup: function() {
+            resetGuards();
+            $.guard("#form1-1").using("regex", /^abc\d{1,3}$/);
+          } });
+
+          if (isOldJquery(["1.4.0", "1.4.2"])) {
+            jqueryTooOld("jQuery is too old to run the regex guard tests.");
+          } else {
+            successTest("");
+
+            failureTest("  ", {
+              errorMessages: "Please enter valid input."
+            });
+
+            failureTest("xyz123", {
+              errorMessages: "Please enter valid input."
+            });
+
+            failureTest("abc1234", {
+              errorMessages: "Please enter valid input."
+            });
+
+            failureTest("blah abc123", {
+              errorMessages: "Please enter valid input."
+            });
+
+            successTest("abc1");
+            successTest("abc12");
+            successTest("abc123");
+            successTest("abc987");
+          }
 
           module("int with min 1 max 4", { setup: function() {
             resetGuards();

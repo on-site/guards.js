@@ -529,6 +529,30 @@
 
         /**
          * @page Named Guards
+         * @section regex
+         * @since 1.2.0
+         *
+         * <p>
+         *   These guarded fields must match the provided regex to pass.  An empty value is considered valid.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".regex1").using("regex", /^abc\d{1,3}$/);
+         *     </script>
+         *
+         *     <p>
+         *       <input class="regex1" type="text" /><br />
+         *       <small>abc with 1-3 digits is required, like 'abc123'</small>
+         *     </p>
+         *   </div>
+         * </div>
+         */
+        this.name("regex").using(this.aggregate(this.isAllValid, this.matchesRegex)).message("Please enter valid input.");
+
+        /**
+         * @page Named Guards
          * @section required
          * @since 1.0.0
          *
@@ -1253,6 +1277,17 @@
     $.Guards.prototype.isValidString = function(value, options) {
         value = $.trim(value);
         return this.isValidInt("" + value.length, options);
+    };
+
+    /**
+     * Validates the given value matches the given regex.
+     */
+    $.Guards.prototype.matchesRegex = function(value, regex) {
+        if ($.type(regex) != "regexp") {
+            throw new Error("The regex must be provided as an option!");
+        }
+
+        return value === "" || regex.test(value);
     };
 
     /**
