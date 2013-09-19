@@ -82,7 +82,7 @@ def update_downloads!
 
   system "rm downloads/guards-*.js" if File.directory?("downloads")
   system "mkdir downloads" unless File.directory?("downloads")
-  system "cp guards.js gems/guardsjs-rails/vendor/assets/javascripts/guards.js"
+  system "cp guards.js gems/guardsjs-rails/app/assets/javascripts/guards.js"
   system "mv guards.js downloads/guards-#{version}.js"
 
   File.open "downloads/guards-#{version}.min.js", "w" do |f|

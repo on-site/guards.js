@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.summary       = "Rails asset gem for guards.js."
   gem.homepage      = "http://guardsjs.com/"
   gem.license       = "MIT"
-  gem.files         = FileList["lib/**/*", "vendor/**/*"]
+  gem.files         = FileList["lib/**/*", "app/**/*"]
   gem.require_paths = ["lib"]
   gem.add_dependency "railties", ">= 3.0", "< 5.0"
 end
