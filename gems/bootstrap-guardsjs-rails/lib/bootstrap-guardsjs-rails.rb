@@ -1,3 +1,4 @@
+require "guardsjs-rails"
 require "bootstrap-guardsjs-rails/version"
 
 module BootstrapGuardsJS
