@@ -300,7 +300,7 @@
          *   </div>
          * </div>
          */
-        this.name("email").using(this.aggregate(this.isAllValid, this.isValidEmail)).message("Please enter a valid E-mail address.");
+        this.name("email").using(this.aggregate(this.isAllValid, this.isValidEmail)).message("Please enter a valid email address.");
 
         /**
          * @page Named Guards
