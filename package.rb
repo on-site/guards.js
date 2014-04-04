@@ -124,26 +124,29 @@ def update_gem!
   end
 end
 
-def get_bootstrap_gem_version
-  require File.expand_path("../gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version", __FILE__)
-  print "Is '#{BootstrapGuardsJS::Rails::VERSION}' the next version of bootstrap? "
+def get_gem_version(type)
+  capitalized_type = type.sub(/^./) { |x| x.upcase }
+  require File.expand_path("../gems/#{type}-guardsjs-rails/lib/#{type}-guardsjs-rails/version", __FILE__)
+  version_constant_name = "#{capitalized_type}GuardsJS::Rails::VERSION"
+  version_value = version_constant_name.split("::").inject(Object) { |constant, name| constant.const_get name }
+  print "Is '#{version_value}' the next version of #{type}? "
   answer = STDIN.gets.strip.downcase
 
   if ["y", "yes"].include? answer
-    return BootstrapGuardsJS::Rails::VERSION
+    return version_value
   end
 
-  print "What is the next version of bootstrap? "
+  print "What is the next version of #{type}? "
   version = STDIN.gets.strip
   check_version! version
-  contents = File.read "gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version.rb"
+  contents = File.read "gems/#{type}-guardsjs-rails/lib/#{type}-guardsjs-rails/version.rb"
   contents.gsub! /VERSION = "[^"]*"/, %{VERSION = "#{version}"}
 
-  File.open "gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version.rb", "w" do |f|
+  File.open "gems/#{type}-guardsjs-rails/lib/#{type}-guardsjs-rails/version.rb", "w" do |f|
     f << contents
   end
 
-  die "The version has been updated, please commit and run ./package bootstrap again to push."
+  die "The version has been updated, please commit and run ./package #{type} again to push."
 end
 
 def prepare(version)
@@ -155,32 +158,34 @@ def prepare(version)
   update_gem!
 end
 
-def bootstrap
-  version = get_bootstrap_gem_version
+def build_gem(type)
+  version = get_gem_version type
   check_source_control!
-  system "cd gems/bootstrap-guardsjs-rails && gem build bootstrap-guardsjs-rails.gemspec"
-  system "cd gems/bootstrap-guardsjs-rails && gem push bootstrap-guardsjs-rails-#{version}.gem"
+  system "cd gems/#{type}-guardsjs-rails && gem build #{type}-guardsjs-rails.gemspec"
+  system "cd gems/#{type}-guardsjs-rails && gem push #{type}-guardsjs-rails-#{version}.gem"
 end
 
-def bootstrap_tag
-  require File.expand_path("../gems/bootstrap-guardsjs-rails/lib/bootstrap-guardsjs-rails/version", __FILE__)
-  system "git tag bootstrap-#{BootstrapGuardsJS::Rails::VERSION} && git push --tags"
+def tag_gem(type)
+  require File.expand_path("../gems/#{type}-guardsjs-rails/lib/#{type}-guardsjs-rails/version", __FILE__)
+  system "git tag #{type}-#{get_gem_version type} && git push --tags"
 end
 
 die "usage: package.rb tag
        package.rb gem
        package.rb bootstrap
+       package.rb foundation
        package.rb bootstrap-tag
+       package.rb foundation-tag
        package.rb <version>" if ARGS.length != 1
 
 if ARGS.first == "tag"
   tag
 elsif ARGS.first == "gem"
   gem
-elsif ARGS.first == "bootstrap"
-  bootstrap
-elsif ARGS.first == "bootstrap-tag"
-  bootstrap_tag
+elsif ["bootstrap", "foundation"].include? ARGS.first
+  build_gem ARGS.first
+elsif ["bootstrap-tag", "foundation-tag"].include? ARGS.first
+  tag_gem ARGS.first.split("-").first
 else
   prepare ARGS.first
 end
