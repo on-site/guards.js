@@ -1303,6 +1303,25 @@
             okStyle("#myForm .my-error-message", "background-color", "#0000ff", $style.html());
           });
 
+          module("data attribute guards", { setup: resetGuards, teardown: function() {
+            $("form.data").remove();
+          } });
+
+          test("simple data based form can trigger errors", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" data-guard="required">' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 1,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: "This field is required."
+            });
+          });
+
           module("custom guard", { setup: resetGuards });
 
           function customGuard(value, element) {

@@ -706,7 +706,7 @@
      * </div>
      */
     $.Guards.prototype.name = function(name) {
-        var guard = new $.Guard(null, this, true);
+        var guard = new $.Guard({ guards: this, named: true, name: name });
         this.named[name] = guard;
         return guard;
     };
@@ -1332,7 +1332,7 @@
      *              .message("Don't use the keyword 'invalid'.");
      */
     $.Guards.prototype.add = function(selector) {
-        var guard = new $.Guard(selector, this);
+        var guard = new $.Guard({ selector: selector, guards: this });
         this._guards.push(guard);
         return guard;
     };
@@ -1368,6 +1368,14 @@
             }
         });
 
+        $.each(this.named, function(name, guard) {
+            var fields = callback(guard);
+
+            if (fields !== false && !self.test(guard, fields)) {
+                result = false;
+            }
+        });
+
         return result;
     };
 
@@ -1391,13 +1399,18 @@
         return result;
     };
 
-    $.Guard = function(selector, guards, named) {
-        this._named = named;
-        this._guards = guards || $.guards;
-        this._selector = selector;
+    $.Guard = function(options) {
+        this._name = options.name;
+        this._named = options.named;
+        this._guards = options.guards || $.guards;
+        this._selector = options.selector;
         this._guard = null;
 
-        if (!named) {
+        if (options.named && !options.selector && options.name && /^[a-zA-Z0-9_-]+$/.test(options.name)) {
+            this._selector = "[data-guard~='" + options.name + "']";
+        }
+
+        if (!options.named) {
             this.using(this._guards.defaults.guard);
         }
     };
@@ -1926,7 +1939,13 @@
             result = true;
         } else {
             try {
-                result = this._guard(values, elements);
+                var guardFn = this._guard;
+
+                if (guardFn.acceptsArguments) {
+                    guardFn = this._guard.apply(this._guards, []);
+                }
+
+                result = guardFn(values, elements);
             } catch(e) {
                 this._guards.log("A guard threw an error: " + e);
                 result = false;
@@ -2596,4 +2615,8 @@
             $(this).clearErrors();
         }
     });
+
+    // Data driven guards
+    $.liveGuard("[data-live-guarded]");
+    $.enableGuards("[data-guarded]");
 })(jQuery);
