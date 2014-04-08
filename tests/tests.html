@@ -814,14 +814,6 @@
             equal(event.errorMessage, $("#form1 .error-message")[0], "Event error message element");
           });
 
-
-
-
-
-
-
-
-
           test("clear guard error", function() {
             var events = [];
             $("form input").bind("clearGuardError", function(e) { events.push(e); });
@@ -1313,18 +1305,50 @@
             $("form.data").remove();
           } });
 
-          test("simple data based form can trigger errors", function() {
-            $("body").append(
-              '<form class="data" data-guarded>' +
-              '  <input type="text" data-guard="required">' +
-              '</form>');
-            assertGuards({
-              form: "form.data",
-              expectedToPass: false,
-              expectedErrorCount: 1,
-              expectedErrorMessageCount: 1,
-              errorMessageLocations: $("form.data input"),
-              errorMessages: "This field is required."
+          jQueryNot({ unsupportedVersions: ["1.4.0", "1.4.2"], name: "jQuery is too old to support data attribute guards." }, function() {
+            test("simple data based form can trigger errors", function() {
+              $("body").append(
+                '<form class="data" data-guarded>' +
+                '  <input type="text" data-guard="required" />' +
+                '</form>');
+              assertGuards({
+                form: "form.data",
+                expectedToPass: false,
+                expectedErrorCount: 1,
+                expectedErrorMessageCount: 1,
+                errorMessageLocations: $("form.data input"),
+                errorMessages: "This field is required."
+              });
+            });
+
+            test("live guarded form can trigger errors", function() {
+              $("body").append(
+                '<form class="data" data-live-guarded>' +
+                '  <input type="text" data-guard="required" />' +
+                '</form>');
+              assertGuards({
+                form: "form.data",
+                expectedToPass: false,
+                expectedErrorCount: 1,
+                expectedErrorMessageCount: 1,
+                errorMessageLocations: $("form.data input"),
+                errorMessages: "This field is required."
+              });
+            });
+
+            test("field guarded with options", function() {
+              $("body").append(
+                '<form class="data" data-guarded>' +
+                '  <input type="text" value="2.0" data-guard="float" data-guard-float-min="42" />' +
+                '</form>');
+              assertGuards({
+                form: "form.data",
+                expectedToPass: false,
+                expectedErrorCount: 1,
+                expectedErrorMessageCount: 1,
+                errorMessageLocations: $("form.data input"),
+                errorMessages: "Please enter a number no less than 42."
+              });
             });
           });
 

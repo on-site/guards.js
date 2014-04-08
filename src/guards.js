@@ -828,6 +828,14 @@
         this.off(selector, "change blur", this.defaults.liveCallback);
     };
 
+    $.Guards.prototype.camelize = function(word) {
+        // This code is from jQuery, but it is not a public function
+        // so let's juse reuse it.
+        return word.replace(/-([\da-z])/gi, function(all, letter) {
+            return letter.toUpperCase();
+        });
+    };
+
     /**
      * Format all arguments into the first argument.  This is a
      * convenience function similar to the C sprintf function, though
@@ -1400,7 +1408,7 @@
     };
 
     $.Guard = function(options) {
-        this._name = options.name;
+        this.name = options.name;
         this._named = options.named;
         this._guards = options.guards || $.guards;
         this._selector = options.selector;
@@ -1787,8 +1795,14 @@
 
     $.Guard.prototype.resetMessageFn = function() {
         var self = this;
-        return this.messageFn(function() {
-            return $('<' + self.getTag() + ' class="' + self.getMessageClass() + '"/>').html(self._message);
+        return this.messageFn(function(elements) {
+            var msg = self._message;
+
+            if ($.isFunction(msg)) {
+                msg = msg.apply(self, self.getGuardArguments(elements));
+            }
+
+            return $('<' + self.getTag() + ' class="' + self.getMessageClass() + '"/>').html(msg);
         });
     };
 
@@ -1797,8 +1811,8 @@
         return this;
     };
 
-    $.Guard.prototype.errorElement = function() {
-        var element = this._messageFn();
+    $.Guard.prototype.errorElement = function(elements) {
+        var element = this._messageFn(elements);
         element[0].isGuardError = true;
         return element;
     };
@@ -1903,6 +1917,56 @@
         return $(element).filter(this._selector).size() > 0;
     };
 
+    $.Guard.prototype.getGuardArguments = function(elements) {
+        if (this._guards.isNullOrUndefined(elements)) {
+            return [];
+        }
+
+        var $elements = $(elements);
+
+        if ($elements.size() === 0 || this._guards.isNullOrUndefined(this.name)) {
+            return [];
+        }
+
+        var result = {};
+        var hasArguments = false;
+        var dashedAttrPrefix = "guard-" + this.name + "-";
+        var attrPrefix = this._guards.camelize("guard-" + this.name);
+        var data = $elements.data() || {};
+
+        $.each(data, function(key, value) {
+            var isDashed = key.indexOf(dashedAttrPrefix) === 0;
+
+            if (key.indexOf(attrPrefix) !== 0 && !isDashed) {
+                return;
+            }
+
+            hasArguments = true;
+            var attrName;
+
+            if (isDashed) {
+                attrName = key.substring(dashedAttrPrefix.length, key.length);
+            } else {
+                attrName = key.substring(attrPrefix.length, key.length);
+            }
+
+            if (!isDashed) {
+                // Un-capitalize the first letter
+                attrName = attrName.replace(/^(.)/, function(all, letter) {
+                    return letter.toLowerCase();
+                });
+            }
+
+            result[attrName] = value;
+        });
+
+        if (!hasArguments) {
+            return [];
+        }
+
+        return [result];
+    };
+
     // Tests this guard against element(s).  Element(s) should be field elements.  Returns false
     // but doesn't apply guard if there are already errors detected.  Returns true if the selector
     // defined for this guard doesn't apply to this element(s).  Otherwise applies and adds an
@@ -1942,7 +2006,7 @@
                 var guardFn = this._guard;
 
                 if (guardFn.acceptsArguments) {
-                    guardFn = this._guard.apply(this._guards, []);
+                    guardFn = this._guard.apply(this._guards, this.getGuardArguments(elements));
                 }
 
                 result = guardFn(values, elements);
@@ -2199,7 +2263,7 @@
             return this;
         }
 
-        var element = guard.errorElement();
+        var element = guard.errorElement(this);
         guard.attachError(this, element);
         this.addClass(guard.getInvalidClass());
         var linked = [];
