@@ -1972,6 +1972,7 @@
     // defined for this guard doesn't apply to this element(s).  Otherwise applies and adds an
     // error if it fails.
     $.Guard.prototype.test = function(element) {
+        var self = this;
         var $elements = $(element).filter(this._selector);
 
         if ($elements.size() === 0) {
@@ -1991,7 +1992,7 @@
             elements = [];
 
             $elements.each(function() {
-                values.push($(this).inputValue(this._guards));
+                values.push($(this).inputValue(self._guards));
                 elements.push(this);
             });
         } else {
