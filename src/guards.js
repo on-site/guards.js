@@ -1446,17 +1446,9 @@
         copyAttribute("_target");
         copyAttribute("_precondition");
         this._guard = namedGuard._guard;
+        this._guardArguments = args;
         this.name = guard;
-
-        if (this._guard.acceptsArguments) {
-            this._guard = this._guard.apply(this._guards, args);
-        }
-
-        if ($.isFunction(namedGuard._message)) {
-            return this.message(namedGuard._message.apply(this._guards, args));
-        } else {
-            return this.message(namedGuard._message);
-        }
+        return this.message(namedGuard._message);
     };
 
     /**
@@ -1918,6 +1910,10 @@
     };
 
     $.Guard.prototype.getGuardArguments = function(elements) {
+        if (!this._guards.isNullOrUndefined(this._guardArguments)) {
+            return this._guardArguments;
+        }
+
         if (this._guards.isNullOrUndefined(elements)) {
             return [];
         }
