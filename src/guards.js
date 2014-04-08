@@ -785,10 +785,8 @@
             $(document).on(event, selector, callback);
         } else if ($.fn.delegate) {
             $(document).delegate(selector, event, callback);
-        } else if ($.fn.live) {
-            $(selector).live(event, callback);
         } else {
-            this.log("Could not bind live handlers, probably because jQuery is too old.");
+            this.log("Could not bind event handlers, probably because jQuery is too old.");
         }
     };
 
@@ -799,10 +797,8 @@
             $(document).off(event, selector, callback);
         } else if ($.fn.undelegate) {
             $(document).undelegate(selector, event, callback);
-        } else if ($.fn.die) {
-            $(selector).die(event, callback);
         } else {
-            this.log("Could not unbind live handlers, probably because jQuery is too old.");
+            this.log("Could not unbind event handlers, probably because jQuery is too old.");
         }
     };
 
@@ -1910,22 +1906,32 @@
     };
 
     $.Guard.prototype.getGuardArguments = function(elements) {
-        if (!this._guards.isNullOrUndefined(this._guardArguments)) {
-            return this._guardArguments;
+        var result = this._guardArguments;
+
+        if (this._guards.isNullOrUndefined(result)) {
+            result = [];
+        }
+
+        // Currently only support single argument hash types for data
+        // attribute arguments overriding javascript arguments
+        if (result.length > 1 || (result.length === 1 && $.type(result[0]) !== "object")) {
+            return result;
         }
 
         if (this._guards.isNullOrUndefined(elements)) {
-            return [];
+            return result;
         }
 
         var $elements = $(elements);
 
         if ($elements.size() === 0 || this._guards.isNullOrUndefined(this.name)) {
-            return [];
+            return result;
         }
 
-        var result = {};
-        var hasArguments = false;
+        if (result.length === 1) {
+            result[0] = $.extend({}, result[0]);
+        }
+
         var dashedAttrPrefix = "guard-" + this.name + "-";
         var attrPrefix = this._guards.camelize("guard-" + this.name);
         var data = $elements.data() || {};
@@ -1937,7 +1943,6 @@
                 return;
             }
 
-            hasArguments = true;
             var attrName;
 
             if (isDashed) {
@@ -1953,14 +1958,14 @@
                 });
             }
 
-            result[attrName] = value;
+            if (result.length === 0) {
+                result.push({});
+            }
+
+            result[0][attrName] = value;
         });
 
-        if (!hasArguments) {
-            return [];
-        }
-
-        return [result];
+        return result;
     };
 
     // Tests this guard against element(s).  Element(s) should be field elements.  Returns false

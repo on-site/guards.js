@@ -14,7 +14,7 @@
     }
   ],
   "dependencies": {
-    "jquery": "~1.4"
+    "jquery": "~1.4.4"
   },
   "description": "Guard your forms with class (or any other selector).",
   "keywords": ["validation"],

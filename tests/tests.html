@@ -7,7 +7,7 @@
     <script type="text/javascript" src="blanket.js"></script>
 
     <script>
-      var JQUERY_VERSIONS = ["1.4.0", "1.4.2", "1.4.4", "1.5.2", "1.6.4", "1.7.2", "1.8.3", "1.9.1", "1.10.1", "2.0.2"];
+      var JQUERY_VERSIONS = ["1.4.4", "1.5.2", "1.6.4", "1.7.2", "1.8.3", "1.9.1", "1.10.1", "2.0.2"];
       var DEFAULT_JQUERY_VERSION = "1.10.1";
       QUnit.config.jquery = QUnit.urlParams.jquery || DEFAULT_JQUERY_VERSION;
 
@@ -433,7 +433,7 @@
             equal($errors.eq(2).text(), "This is the third error.", "The third error message");
           });
 
-          testJQueryNot({ unsupportedVersions: ["1.4.0"], name: "enabled guards can be removed" }, function() {
+          test("enabled guards can be removed", function() {
             $("#form1").submit();
             equal($("#form1 :has-error").size(), 0, "Errors after submitting");
             $("#form1").enableGuards();
@@ -445,7 +445,7 @@
             equal($("#form1 :has-error").size(), 0, "Errors after submitting");
           });
 
-          testJQueryNot({ unsupportedVersions: ["1.4.0"], name: "enabled delegated guards can be removed"}, function() {
+          test("enabled delegated guards can be removed", function() {
             $("#form1").submit();
             equal($("#form1 :has-error").size(), 0, "Errors after submitting");
             $.enableGuards("#form1");
@@ -1305,50 +1305,48 @@
             $("form.data").remove();
           } });
 
-          jQueryNot({ unsupportedVersions: ["1.4.0", "1.4.2"], name: "jQuery is too old to support data attribute guards." }, function() {
-            test("simple data based form can trigger errors", function() {
-              $("body").append(
-                '<form class="data" data-guarded>' +
-                '  <input type="text" data-guard="required" />' +
-                '</form>');
-              assertGuards({
-                form: "form.data",
-                expectedToPass: false,
-                expectedErrorCount: 1,
-                expectedErrorMessageCount: 1,
-                errorMessageLocations: $("form.data input"),
-                errorMessages: "This field is required."
-              });
+          test("simple data based form can trigger errors", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" data-guard="required" />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 1,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: "This field is required."
             });
+          });
 
-            test("live guarded form can trigger errors", function() {
-              $("body").append(
-                '<form class="data" data-live-guarded>' +
-                '  <input type="text" data-guard="required" />' +
-                '</form>');
-              assertGuards({
-                form: "form.data",
-                expectedToPass: false,
-                expectedErrorCount: 1,
-                expectedErrorMessageCount: 1,
-                errorMessageLocations: $("form.data input"),
-                errorMessages: "This field is required."
-              });
+          test("live guarded form can trigger errors", function() {
+            $("body").append(
+              '<form class="data" data-live-guarded>' +
+              '  <input type="text" data-guard="required" />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 1,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: "This field is required."
             });
+          });
 
-            test("field guarded with options", function() {
-              $("body").append(
-                '<form class="data" data-guarded>' +
-                '  <input type="text" value="2.0" data-guard="float" data-guard-float-min="42" />' +
-                '</form>');
-              assertGuards({
-                form: "form.data",
-                expectedToPass: false,
-                expectedErrorCount: 1,
-                expectedErrorMessageCount: 1,
-                errorMessageLocations: $("form.data input"),
-                errorMessages: "Please enter a number no less than 42."
-              });
+          test("field guarded with options", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" value="2.0" data-guard="float" data-guard-float-min="42" />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 1,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: "Please enter a number no less than 42."
             });
           });
 
@@ -1611,30 +1609,28 @@
             $.guard("#form1-1").using("regex", /^abc\d{1,3}$/);
           } });
 
-          jQueryNot({ unsupportedVersions: ["1.4.0", "1.4.2"], name: "jQuery is too old to run the regex guard tests." }, function() {
-            successTest("");
+          successTest("");
 
-            failureTest("  ", {
-              errorMessages: "Please enter valid input."
-            });
-
-            failureTest("xyz123", {
-              errorMessages: "Please enter valid input."
-            });
-
-            failureTest("abc1234", {
-              errorMessages: "Please enter valid input."
-            });
-
-            failureTest("blah abc123", {
-              errorMessages: "Please enter valid input."
-            });
-
-            successTest("abc1");
-            successTest("abc12");
-            successTest("abc123");
-            successTest("abc987");
+          failureTest("  ", {
+            errorMessages: "Please enter valid input."
           });
+
+          failureTest("xyz123", {
+            errorMessages: "Please enter valid input."
+          });
+
+          failureTest("abc1234", {
+            errorMessages: "Please enter valid input."
+          });
+
+          failureTest("blah abc123", {
+            errorMessages: "Please enter valid input."
+          });
+
+          successTest("abc1");
+          successTest("abc12");
+          successTest("abc123");
+          successTest("abc987");
 
           module("int with min 1 max 4", { setup: function() {
             resetGuards();
