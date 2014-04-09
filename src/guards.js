@@ -242,7 +242,7 @@
          *   </div>
          * </div>
          */
-        this.name("dateUS").using(this.aggregate(this.isAllValid, this.isValidDateUS)).message("Please use: dd/mm/yyyy.")
+        this.name("dateUS").using(this.aggregate(this.isAllValid, this.isValidDateUS)).message("Please use: dd/mm/yyyy.");
 
         /**
          * @page Named Guards
@@ -267,7 +267,7 @@
          *   </div>
          * </div>
          */
-        this.name("timeUS").using(this.aggregate(this.isAllValid, this.isValidTimeUS)).message("Please use: hh:mm&nbsp;am/pm.")
+        this.name("timeUS").using(this.aggregate(this.isAllValid, this.isValidTimeUS)).message("Please use: hh:mm&nbsp;am/pm.");
 
         /**
          * @page Named Guards
@@ -1227,7 +1227,7 @@
     /**
      * Validates for a valid US date.
      */
-    $.Guards.prototype.isValidDateUS = function(value, options) {
+    $.Guards.prototype.isValidDateUS = function(value) {
         value = $.trim(value);
 
         if (value === "") {
@@ -1240,7 +1240,7 @@
     /**
      * Validates for a valid US time.
      */
-    $.Guards.prototype.isValidTimeUS = function(value, options) {
+    $.Guards.prototype.isValidTimeUS = function(value) {
         value = $.trim(value);
 
         if (value === "") {
