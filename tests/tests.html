@@ -1350,6 +1350,23 @@
             });
           });
 
+          test("field guarded with custom error message", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" value="2.0" data-guard="float" data-guard-float-min="42" data-guard-float-message="This is an error!" />' +
+              '  <input type="text" value="" data-guard="float required" data-guard-float-message="Error!" />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: ["This is an error!",
+                              "This field is required."]
+            });
+          });
+
           module("custom guard", { setup: resetGuards });
 
           function customGuard(value, element) {

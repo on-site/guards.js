@@ -771,6 +771,11 @@
         };
     };
 
+    // Check if the name is valid as a data attribute based guard name
+    $.Guards.prototype.isValidDataName = function(name) {
+        return name && /^[a-zA-Z0-9_-]+$/.test(name);
+    };
+
     // Alias for console.log, but check that such a thing exists.
     $.Guards.prototype.log = function(message) {
         if (console && console.log) {
@@ -1410,7 +1415,7 @@
         this._selector = options.selector;
         this._guard = null;
 
-        if (options.named && !options.selector && options.name && /^[a-zA-Z0-9_-]+$/.test(options.name)) {
+        if (options.named && !options.selector && this._guards.isValidDataName(options.name)) {
             this._selector = "[data-guard~='" + options.name + "']";
         }
 
@@ -1785,8 +1790,11 @@
         var self = this;
         return this.messageFn(function(elements) {
             var msg = self._message;
+            var dataMsg = self.getGuardDataArguments(elements, "message");
 
-            if ($.isFunction(msg)) {
+            if (dataMsg !== null) {
+                msg = dataMsg;
+            } else if ($.isFunction(msg)) {
                 msg = msg.apply(self, self.getGuardArguments(elements));
             }
 
@@ -1905,36 +1913,26 @@
         return $(element).filter(this._selector).size() > 0;
     };
 
-    $.Guard.prototype.getGuardArguments = function(elements) {
-        var result = this._guardArguments;
-
-        if (this._guards.isNullOrUndefined(result)) {
-            result = [];
-        }
-
-        // Currently only support single argument hash types for data
-        // attribute arguments overriding javascript arguments
-        if (result.length > 1 || (result.length === 1 && $.type(result[0]) !== "object")) {
-            return result;
-        }
-
+    $.Guard.prototype.getGuardDataArguments = function(elements, attributeName) {
         if (this._guards.isNullOrUndefined(elements)) {
-            return result;
+            return null;
         }
 
         var $elements = $(elements);
 
-        if ($elements.size() === 0 || this._guards.isNullOrUndefined(this.name)) {
-            return result;
-        }
-
-        if (result.length === 1) {
-            result[0] = $.extend({}, result[0]);
+        if ($elements.size() === 0 || this._guards.isNullOrUndefined(this.name) || !this._guards.isValidDataName(this.name)) {
+            return null;
         }
 
         var dashedAttrPrefix = "guard-" + this.name + "-";
-        var attrPrefix = this._guards.camelize("guard-" + this.name);
+
+        if (attributeName) {
+            dashedAttrPrefix = dashedAttrPrefix + attributeName;
+        }
+
+        var attrPrefix = this._guards.camelize(dashedAttrPrefix.replace(/-+$/, ""));
         var data = $elements.data() || {};
+        var result = null;
 
         $.each(data, function(key, value) {
             var isDashed = key.indexOf(dashedAttrPrefix) === 0;
@@ -1958,12 +1956,49 @@
                 });
             }
 
-            if (result.length === 0) {
-                result.push({});
+            if (attributeName) {
+                // Grabbing just this attribute, so must be an exact
+                // match, and only 1 result
+                if (attrName === "") {
+                    result = value;
+                    return false;
+                } else {
+                    return;
+                }
             }
 
-            result[0][attrName] = value;
+            if (result === null) {
+                result = {};
+            }
+
+            result[attrName] = value;
         });
+
+        return result;
+    };
+
+    $.Guard.prototype.getGuardArguments = function(elements) {
+        var result = this._guardArguments;
+
+        if (this._guards.isNullOrUndefined(result)) {
+            result = [];
+        }
+
+        // Currently only support single argument hash types for data
+        // attribute arguments overriding javascript arguments
+        if (result.length > 1 || (result.length === 1 && $.type(result[0]) !== "object")) {
+            return result;
+        }
+
+        var dataArgs = this.getGuardDataArguments(elements);
+
+        if (!this._guards.isNullOrUndefined(dataArgs)) {
+            if (result.length === 1) {
+                result[0] = $.extend({}, result[0], dataArgs);
+            } else {
+                result.push(dataArgs);
+            }
+        }
 
         return result;
     };
