@@ -1790,7 +1790,7 @@
         var self = this;
         return this.messageFn(function(elements) {
             var msg = self._message;
-            var dataMsg = self.getGuardDataArguments(elements, "message");
+            var dataMsg = self.getGuardDataArguments(elements, "message", true);
 
             if (dataMsg !== null) {
                 msg = dataMsg;
@@ -1913,7 +1913,7 @@
         return $(element).filter(this._selector).size() > 0;
     };
 
-    $.Guard.prototype.getGuardDataArguments = function(elements, attributeName) {
+    $.Guard.prototype.getGuardDataArguments = function(elements, attributeName, includeForm) {
         if (this._guards.isNullOrUndefined(elements)) {
             return null;
         }
@@ -1930,9 +1930,14 @@
             dashedAttrPrefix = dashedAttrPrefix + attributeName;
         }
 
+        var result = null;
         var attrPrefix = this._guards.camelize(dashedAttrPrefix.replace(/-+$/, ""));
         var data = $elements.data() || {};
-        var result = null;
+
+        if (includeForm) {
+            var formData = $elements.parents("form:first").data() || {};
+            data = $.extend({}, formData, data);
+        }
 
         $.each(data, function(key, value) {
             var isDashed = key.indexOf(dashedAttrPrefix) === 0;

@@ -1367,6 +1367,25 @@
             });
           });
 
+          test("customized error message at form", function() {
+            $("body").append(
+              '<form class="data" data-guarded data-guard-float-message="This is an error!">' +
+              '  <input type="text" value="2.0" data-guard="float" data-guard-float-min="42" />' +
+              '  <input type="text" value="2.0" data-guard="float" data-guard-float-min="42" data-guard-float-message="This supercedes form error message!" />' +
+              '  <input type="text" value="" data-guard="float required" />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 3,
+              expectedErrorMessageCount: 3,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: ["This is an error!",
+                              "This supercedes form error message!",
+                              "This field is required."]
+            });
+          });
+
           module("custom guard", { setup: resetGuards });
 
           function customGuard(value, element) {
