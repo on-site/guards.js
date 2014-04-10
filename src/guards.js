@@ -242,7 +242,7 @@
          *   </div>
          * </div>
          */
-        this.name("dateUS").using(this.aggregate(this.isAllValid, this.isValidDateUS)).message("Please use: dd/mm/yyyy.")
+        this.name("dateUS").using(this.aggregate(this.isAllValid, this.isValidDateUS)).message("Please use: dd/mm/yyyy.");
 
         /**
          * @page Named Guards
@@ -267,7 +267,7 @@
          *   </div>
          * </div>
          */
-        this.name("timeUS").using(this.aggregate(this.isAllValid, this.isValidTimeUS)).message("Please use: hh:mm&nbsp;am/pm.")
+        this.name("timeUS").using(this.aggregate(this.isAllValid, this.isValidTimeUS)).message("Please use: hh:mm&nbsp;am/pm.");
 
         /**
          * @page Named Guards
@@ -706,7 +706,7 @@
      * </div>
      */
     $.Guards.prototype.name = function(name) {
-        var guard = new $.Guard(null, this, true);
+        var guard = new $.Guard({ guards: this, named: true, name: name });
         this.named[name] = guard;
         return guard;
     };
@@ -771,6 +771,11 @@
         };
     };
 
+    // Check if the name is valid as a data attribute based guard name
+    $.Guards.prototype.isValidDataName = function(name) {
+        return name && /^[a-zA-Z0-9_-]+$/.test(name);
+    };
+
     // Alias for console.log, but check that such a thing exists.
     $.Guards.prototype.log = function(message) {
         if (console && console.log) {
@@ -785,10 +790,8 @@
             $(document).on(event, selector, callback);
         } else if ($.fn.delegate) {
             $(document).delegate(selector, event, callback);
-        } else if ($.fn.live) {
-            $(selector).live(event, callback);
         } else {
-            this.log("Could not bind live handlers, probably because jQuery is too old.");
+            this.log("Could not bind event handlers, probably because jQuery is too old.");
         }
     };
 
@@ -799,10 +802,8 @@
             $(document).off(event, selector, callback);
         } else if ($.fn.undelegate) {
             $(document).undelegate(selector, event, callback);
-        } else if ($.fn.die) {
-            $(selector).die(event, callback);
         } else {
-            this.log("Could not unbind live handlers, probably because jQuery is too old.");
+            this.log("Could not unbind event handlers, probably because jQuery is too old.");
         }
     };
 
@@ -826,6 +827,14 @@
     $.Guards.prototype.disableLiveGuard = function(selector) {
         this.disableGuards(selector);
         this.off(selector, "change blur", this.defaults.liveCallback);
+    };
+
+    $.Guards.prototype.camelize = function(word) {
+        // This code is from jQuery, but it is not a public function
+        // so let's juse reuse it.
+        return word.replace(/-([\da-z])/gi, function(all, letter) {
+            return letter.toUpperCase();
+        });
     };
 
     /**
@@ -1218,7 +1227,7 @@
     /**
      * Validates for a valid US date.
      */
-    $.Guards.prototype.isValidDateUS = function(value, options) {
+    $.Guards.prototype.isValidDateUS = function(value) {
         value = $.trim(value);
 
         if (value === "") {
@@ -1231,7 +1240,7 @@
     /**
      * Validates for a valid US time.
      */
-    $.Guards.prototype.isValidTimeUS = function(value, options) {
+    $.Guards.prototype.isValidTimeUS = function(value) {
         value = $.trim(value);
 
         if (value === "") {
@@ -1332,7 +1341,7 @@
      *              .message("Don't use the keyword 'invalid'.");
      */
     $.Guards.prototype.add = function(selector) {
-        var guard = new $.Guard(selector, this);
+        var guard = new $.Guard({ selector: selector, guards: this });
         this._guards.push(guard);
         return guard;
     };
@@ -1368,6 +1377,14 @@
             }
         });
 
+        $.each(this.named, function(name, guard) {
+            var fields = callback(guard);
+
+            if (fields !== false && !self.test(guard, fields)) {
+                result = false;
+            }
+        });
+
         return result;
     };
 
@@ -1391,13 +1408,18 @@
         return result;
     };
 
-    $.Guard = function(selector, guards, named) {
-        this._named = named;
-        this._guards = guards || $.guards;
-        this._selector = selector;
+    $.Guard = function(options) {
+        this.name = options.name;
+        this._named = options.named;
+        this._guards = options.guards || $.guards;
+        this._selector = options.selector;
         this._guard = null;
 
-        if (!named) {
+        if (options.named && !options.selector && this._guards.isValidDataName(options.name)) {
+            this._selector = "[data-guard~='" + options.name + "']";
+        }
+
+        if (!options.named) {
             this.using(this._guards.defaults.guard);
         }
     };
@@ -1425,17 +1447,9 @@
         copyAttribute("_target");
         copyAttribute("_precondition");
         this._guard = namedGuard._guard;
+        this._guardArguments = args;
         this.name = guard;
-
-        if (this._guard.acceptsArguments) {
-            this._guard = this._guard.apply(this._guards, args);
-        }
-
-        if ($.isFunction(namedGuard._message)) {
-            return this.message(namedGuard._message.apply(this._guards, args));
-        } else {
-            return this.message(namedGuard._message);
-        }
+        return this.message(namedGuard._message);
     };
 
     /**
@@ -1774,8 +1788,17 @@
 
     $.Guard.prototype.resetMessageFn = function() {
         var self = this;
-        return this.messageFn(function() {
-            return $('<' + self.getTag() + ' class="' + self.getMessageClass() + '"/>').html(self._message);
+        return this.messageFn(function(elements) {
+            var msg = self._message;
+            var dataMsg = self.getGuardDataArguments(elements, "message", true);
+
+            if (dataMsg !== null) {
+                msg = dataMsg;
+            } else if ($.isFunction(msg)) {
+                msg = msg.apply(self, self.getGuardArguments(elements));
+            }
+
+            return $('<' + self.getTag() + ' class="' + self.getMessageClass() + '"/>').html(msg);
         });
     };
 
@@ -1784,8 +1807,8 @@
         return this;
     };
 
-    $.Guard.prototype.errorElement = function() {
-        var element = this._messageFn();
+    $.Guard.prototype.errorElement = function(elements) {
+        var element = this._messageFn(elements);
         element[0].isGuardError = true;
         return element;
     };
@@ -1890,11 +1913,107 @@
         return $(element).filter(this._selector).size() > 0;
     };
 
+    $.Guard.prototype.getGuardDataArguments = function(elements, attributeName, includeForm) {
+        if (this._guards.isNullOrUndefined(elements)) {
+            return null;
+        }
+
+        var $elements = $(elements);
+
+        if ($elements.size() === 0 || this._guards.isNullOrUndefined(this.name) || !this._guards.isValidDataName(this.name)) {
+            return null;
+        }
+
+        var dashedAttrPrefix = "guard-" + this.name + "-";
+
+        if (attributeName) {
+            dashedAttrPrefix = dashedAttrPrefix + attributeName;
+        }
+
+        var result = null;
+        var attrPrefix = this._guards.camelize(dashedAttrPrefix.replace(/-+$/, ""));
+        var data = $elements.data() || {};
+
+        if (includeForm) {
+            var formData = $elements.parents("form:first").data() || {};
+            data = $.extend({}, formData, data);
+        }
+
+        $.each(data, function(key, value) {
+            var isDashed = key.indexOf(dashedAttrPrefix) === 0;
+
+            if (key.indexOf(attrPrefix) !== 0 && !isDashed) {
+                return;
+            }
+
+            var attrName;
+
+            if (isDashed) {
+                attrName = key.substring(dashedAttrPrefix.length, key.length);
+            } else {
+                attrName = key.substring(attrPrefix.length, key.length);
+            }
+
+            if (!isDashed) {
+                // Un-capitalize the first letter
+                attrName = attrName.replace(/^(.)/, function(all, letter) {
+                    return letter.toLowerCase();
+                });
+            }
+
+            if (attributeName) {
+                // Grabbing just this attribute, so must be an exact
+                // match, and only 1 result
+                if (attrName === "") {
+                    result = value;
+                    return false;
+                } else {
+                    return;
+                }
+            }
+
+            if (result === null) {
+                result = {};
+            }
+
+            result[attrName] = value;
+        });
+
+        return result;
+    };
+
+    $.Guard.prototype.getGuardArguments = function(elements) {
+        var result = this._guardArguments;
+
+        if (this._guards.isNullOrUndefined(result)) {
+            result = [];
+        }
+
+        // Currently only support single argument hash types for data
+        // attribute arguments overriding javascript arguments
+        if (result.length > 1 || (result.length === 1 && $.type(result[0]) !== "object")) {
+            return result;
+        }
+
+        var dataArgs = this.getGuardDataArguments(elements);
+
+        if (!this._guards.isNullOrUndefined(dataArgs)) {
+            if (result.length === 1) {
+                result[0] = $.extend({}, result[0], dataArgs);
+            } else {
+                result.push(dataArgs);
+            }
+        }
+
+        return result;
+    };
+
     // Tests this guard against element(s).  Element(s) should be field elements.  Returns false
     // but doesn't apply guard if there are already errors detected.  Returns true if the selector
     // defined for this guard doesn't apply to this element(s).  Otherwise applies and adds an
     // error if it fails.
     $.Guard.prototype.test = function(element) {
+        var self = this;
         var $elements = $(element).filter(this._selector);
 
         if ($elements.size() === 0) {
@@ -1914,7 +2033,7 @@
             elements = [];
 
             $elements.each(function() {
-                values.push($(this).inputValue(this._guards));
+                values.push($(this).inputValue(self._guards));
                 elements.push(this);
             });
         } else {
@@ -1926,7 +2045,13 @@
             result = true;
         } else {
             try {
-                result = this._guard(values, elements);
+                var guardFn = this._guard;
+
+                if (guardFn.acceptsArguments) {
+                    guardFn = this._guard.apply(this._guards, this.getGuardArguments(elements));
+                }
+
+                result = guardFn(values, elements);
             } catch(e) {
                 this._guards.log("A guard threw an error: " + e);
                 result = false;
@@ -2180,7 +2305,7 @@
             return this;
         }
 
-        var element = guard.errorElement();
+        var element = guard.errorElement(this);
         guard.attachError(this, element);
         this.addClass(guard.getInvalidClass());
         var linked = [];
@@ -2596,4 +2721,8 @@
             $(this).clearErrors();
         }
     });
+
+    // Data driven guards
+    $.liveGuard("[data-live-guarded]");
+    $.enableGuards("[data-guarded]");
 })(jQuery);
