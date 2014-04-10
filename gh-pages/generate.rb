@@ -32,6 +32,11 @@ def define_pages
     end
 
     page do
+      title "Data Attributes"
+      file "data.html"
+    end
+
+    page do
       title "Styling"
     end
 
@@ -53,6 +58,12 @@ def define_pages
       skip_next_and_prev!
     end
 
+    page do
+      title "Data Attributes"
+      file "data_attributes.html"
+      skip_next_and_prev!
+    end
+
     documentation!
   end
 
@@ -67,12 +78,58 @@ def define_pages
 end
 
 module Renderable
+  def capture
+    begin
+      @out, old_out = "", @out
+      yield
+      @out
+    ensure
+      @out = old_out
+    end
+  end
+
+  def concat_partial(name, locals = {}, &block)
+    @out.concat partial(name, locals, &block)
+  end
+
+  def partial(name, locals = {}, &block)
+    if block
+      locals[:content] = capture &block
+    end
+
+    Partial.new(name, locals).render
+  end
+
   def get_binding
     binding
   end
 
+  def h(content)
+    ERB::Util.html_escape content
+  end
+
   def render
-    ERB.new(template).result get_binding
+    ERB.new(template, nil, nil, "@out").result get_binding
+  end
+end
+
+class Partial
+  include Renderable
+  attr_reader :template
+
+  def initialize(name, locals)
+    name = "_#{name}.html.erb"
+    @template = File.read Page.input_file(name)
+    metaclass = class << self; self; end
+
+    locals.each do |key, value|
+      metaclass.send(:define_method, key) { value }
+    end
+  end
+
+  def method_missing(method, *args, &block)
+    return super if !args.empty? || block
+    nil
   end
 end
 
@@ -283,6 +340,15 @@ class PageGroup
   end
 end
 
+class PageContents
+  include Renderable
+  attr_reader :template
+
+  def initialize(template)
+    @template = File.read(template)
+  end
+end
+
 class Page
   include Renderable
   attr_reader :page_group
@@ -344,7 +410,7 @@ class Page
   end
 
   def content_html
-    @content_html ||= File.read(Page.input_file("#{get_file}.erb"))
+    @content_html ||= PageContents.new(Page.input_file("#{get_file}.erb")).render
   end
 
   def navigation_html

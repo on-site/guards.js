@@ -1,0 +1,126 @@
+<% concat_partial "jsdoc", :section => "data-guarded", :applicable => "form", :since => "1.3.0" do %>
+  <p>
+    Guard the form as
+    if <a href="global_functions.html#enableGuards"><code>$.enableGuards(form)</code></a>
+    were called.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-guarded>
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+<% end %>
+
+<% concat_partial "jsdoc", :section => "data-live-guarded", :applicable => "form", :since => "1.3.0" do %>
+  <p>
+    Guard the form as
+    if <a href="global_functions.html#liveGuard"><code>$.liveGuard(form)</code></a>
+    were called.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded>
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+<% end %>
+
+<% concat_partial "jsdoc", :section => "data-guard", :applicable => "field", :since => "1.3.0" do %>
+  <p>
+    Guard the field as
+    if <a href="global_functions.html#guard"><code>$.guard(input).using(&lt;name&gt;)</code></a>
+    were called.  Multiple guards can be specified by delimiting them
+    with spaces.  Any named guard can be specified, including custom
+    named guards.  Grouped guards are currently not supported.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded>
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p>
+          <input data-guard="required int" type="text" /><br />
+          <small>required and int</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+<% end %>
+
+<% concat_partial "jsdoc", :section => h("data-guard-<name>-<option>"), :applicable => "field", :since => "1.3.0" do %>
+  <p>
+    Provide options to a specific guard used on this field.  The
+    option must be an option object for it to work (for
+    example, <a href="named_guards.html#allow">allow</a>
+    and <a href="named_guards.html#regex">regex</a> wouldn't work).
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded>
+        <p>
+          <input data-guard="int" data-guard-int-max="3" type="text" value="42" /><br />
+          <small>int &lt;= 3</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+<% end %>
+
+<% concat_partial "jsdoc", :section => h("data-guard-<name>-message"), :applicable => "form, field", :since => "1.3.0" do %>
+  <p>
+    Customize the error message for a certain type of guard.  If
+    provided on the parent form, the error message will be used on all
+    fields in the form with the given guard.  If provided on a field,
+    the message will only apply to that field.  Field messages will
+    supercede form messages.  This is as
+    if <a href="guard_type.html#message"><code>$.guard(field).using(&lt;guard&gt;).message(&lt;error&nbsp;message&gt;)</code></a>
+    were called.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded data-guard-required-message="Form level message">
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p>
+          <input data-guard="required" data-guard-required-message="FIELD LEVEL MESSAGE" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+<% end %>

@@ -494,6 +494,12 @@ header ul a strong {
   color: #60688F;
 }
 
+.example .source code {
+  overflow-x: auto;
+  display: block;
+  white-space: pre;
+}
+
 /*p,
 ul,
 ol,

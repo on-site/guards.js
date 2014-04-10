@@ -1,0 +1,85 @@
+<h2>Guarding the form</h2>
+
+<p>
+  Since version 1.3.0, you can specify your guards via data attributes
+  alone.  This will use any named guards that exist (including custom
+  named guards).  Currently, grouped guards
+  (like <code>oneRequired</code>) are not supported.  On your form,
+  specify it to be guarded by adding the <code>data-guarded</code>
+  attribute to enable guards, or the <code>data-live-guarded</code>
+  attribute to enable live guards.
+</p>
+
+<div class="example">
+  <div class="display">
+    <form data-live-guarded>
+      <p>
+        <input data-guard="required" type="text" /><br />
+        <small>required</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<h2>Guard options</h2>
+
+<p>
+  You can specify multiple guards delimited by spaces, and you can
+  provide arguments to those guards.  Arguments that are not of a
+  single options object form are not supported (such
+  as <code>allow</code> or <code>regex</code>).
+</p>
+
+<div class="example">
+  <div class="display">
+    <form data-live-guarded>
+      <p>
+        <input data-guard="required int" data-guard-int-min="3" type="text" value="2" /><br />
+        <small>required and int &gt;= 3</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>
+
+<h2>Further customizing the guard</h2>
+
+<p>
+  The data attributes also supports changing the message of a specific
+  type of named guard.  Simply add
+  a <code>data-guard-&lt;type&gt;-message</code> to either the parent
+  form or the element itself.  The <code>&lt;type&gt;</code> is the
+  name of the guard (such as <code>required</code>
+  or <code>int</code>).  If specified on the form, it overrides the
+  message for that named guard on any applicable element of that form.
+  If specified on the element, it only applies to that element (and it
+  will override any message specified at the form level).
+</p>
+
+<div class="example">
+  <div class="display">
+    <form data-live-guarded data-guard-required-message="REQUIRED! (form level)">
+      <h3>int</h3>
+
+      <p>
+        <input data-guard="required int" data-guard-int-min="3" type="text" /><br />
+        <small>required and int &gt;= 3</small>
+      </p>
+
+      <p>
+        <input data-guard="required" data-guard-required-message="Required! (input level)" type="text" /><br />
+        <small>required</small>
+      </p>
+
+      <p>
+        <input data-guard="required" type="text" /><br />
+        <small>required</small>
+      </p>
+
+      <p><input type="submit" /></p>
+    </form>
+  </div>
+</div>

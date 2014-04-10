@@ -1,11 +1,67 @@
 <p>
   Anything documented in here is considered publicly available and
-  finalized as far as semantic versioning is found.  If you find a
-  method, funtion or feature that is not documented, please be
+  finalized as far as semantic versioning is considered.  If you find
+  a method, funtion or feature that is not documented, please be
   prepared for the possibility of it being removed or changed without
   notice and without a major version change.
 </p>
 
 <p>
-  More to come here.
+  Guards should work with jQuery as low as version 1.4.4 as of guards
+  version 1.3.0.
+</p>
+
+<p>
+  Below is a brief description of each section of the documentation.
+</p>
+
+<h2><a href="data_attributes.html">Data Attributes</a></h2>
+
+<p>
+  This section lists all the available data attributes for data
+  attribute based guards.  This form of guards does not need any
+  custom javascript to work.
+</p>
+
+<h2><a href="global_functions.html">Global Functions</a></h2>
+
+<p>
+  All global functions are described here.  Global functions are
+  attached to the jQuery object so they will not pollute the actual
+  global namespace.
+</p>
+
+<h2><a href="named_guards.html">Named Guards</a></h2>
+
+<p>
+  Predefined named guards can be found here.  These are all the guards
+  available without defining any custom guards.
+</p>
+
+<h2><a href="guards_type.html">Guards Type</a></h2>
+
+<p>
+  The Guards type can be found via the $.Guards function.  An instance
+  of it is automatically instantiated and assigned to $.guards for
+  ease of use.  It represents a collection of common functions and
+  defaults for all guards, as well as contains references to all
+  guards that have been named or created.
+</p>
+
+<h2><a href="guard_type.html">Guard Type</a></h2>
+
+<p>
+  The Guard type can be found via the $.Guard function.  It represents
+  an instance of a single guard (whether named or not).  A named guard
+  is a guard that has a name but is not tied to any selector, while
+  other guards are tied to a specific selector.  Named guards can be
+  triggered via data attribute based guards, otherwise they can only
+  be triggered via an instance of a guard that uses the given named
+  guard.
+</p>
+
+<h2><a href="jquery_methods.html">jQuery Methods</a></h2>
+
+<p>
+  This section describes all custom jQuery methods attached to $.fn.
 </p>

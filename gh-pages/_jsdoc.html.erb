@@ -1,8 +1,25 @@
+<%
+
+  section_id = self.section_id || section.downcase.gsub(/\W/, "-").gsub(/-+/, "-")
+
+  if respond_to? :applicable
+    applicable = self.applicable
+  else
+    applicable = nil
+  end
+
+%>
 <p>
   <h2 id="<%= section_id %>" class="jsdoc-header"><%= section %></h2>
+
   <% if signature && !signature.empty? %>
     <h3 class="jsdoc-method-signature">signature: <%= signature %></h3>
   <% end %>
+
+  <% if applicable && !applicable.empty? %>
+    <h3 class="jsdoc-applicable-to">applicable to: <%= applicable %></h3>
+  <% end %>
+
   <h4 class="jsdoc-since"><small>available since: <%= since %></small></h4>
 </p>
 
