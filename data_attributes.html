@@ -75,10 +75,10 @@
 <div class="wizard">
   <ol>
     <li><a href="documentation.html">Documentation</a></li>
-    <li><a href="data_attributes.html">Data Attributes</a></li>
+    <li class="current"><a href="data_attributes.html">Data Attributes</a></li>
     <li><a href="global_functions.html">Global Functions</a></li>
     <li><a href="named_guards.html">Named Guards</a></li>
-    <li class="current"><a href="guards_type.html">Guards Type</a></li>
+    <li><a href="guards_type.html">Guards Type</a></li>
     <li><a href="guard_type.html">Guard Type</a></li>
     <li><a href="jquery_methods.html">jQuery Methods</a></li>
   </ol>
@@ -86,124 +86,213 @@
 </div>
 
         <div class="wizard-content">
-          <h1>Guards Type</h1>
-          <script>$.liveGuard(".example:not(.not-auto-guarded)");</script>
+          <h1>Data Attributes</h1>
+          
 <p>
-  <h2 id="version" class="jsdoc-header">version</h2>
-
-  
-    <h3 class="jsdoc-method-signature">signature: jQuery.guards.version</h3>
-  
+  <h2 id="data-guarded" class="jsdoc-header">data-guarded</h2>
 
   
 
-  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+  
+    <h3 class="jsdoc-applicable-to">applicable to: form</h3>
+  
+
+  <h4 class="jsdoc-since"><small>available since: 1.3.0</small></h4>
 </p>
 
 <div class="jsdoc-content">
   
- <p>
-   This version of guards.js library as a string, like <code>"1.0.0"</code>.
- </p>
+  <p>
+    Guard the form as
+    if <a href="global_functions.html#enableGuards"><code>$.enableGuards(form)</code></a>
+    were called.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-guarded>
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
 
 </div>
 
 
+
 <p>
-  <h2 id="name" class="jsdoc-header">name</h2>
-
-  
-    <h3 class="jsdoc-method-signature">signature: jQuery.guards.name(guardName)</h3>
-  
+  <h2 id="data-live-guarded" class="jsdoc-header">data-live-guarded</h2>
 
   
 
-  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+  
+    <h3 class="jsdoc-applicable-to">applicable to: form</h3>
+  
+
+  <h4 class="jsdoc-since"><small>available since: 1.3.0</small></h4>
 </p>
 
 <div class="jsdoc-content">
   
- <p>
-   Name a guard.  This behaves the same way as
-   <a href="global_functions.html#guard"><code>$.guard(selector)</code></a>, except it uses
-   the parameter to define a named guard with the given name, instead of defining a new
-   guard affecting the given selector.  Any attributes applied to it will be passed on to
-   any guards that utilize this named guard.  A named guard may be utilized by passing the
-   name on to the <a href="guard_type.html#using"><code>using</code></a> method.
- </p>
+  <p>
+    Guard the form as
+    if <a href="global_functions.html#liveGuard"><code>$.liveGuard(form)</code></a>
+    were called.
+  </p>
 
- <div class="example">
-   <div class="display">
-     <script>
-       $.guards.name("notTest").using(function(value, element) {
-         return value !== "test";
-       }).message("Must not be test.");
-       $.guard(".named").using("notTest");
-     </script>
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded>
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
 
-     <p>
-       <input class="named" type="text" value="test" /><br />
-       <small>Anything except 'test'</small>
-     </p>
-   </div>
- </div>
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
 
 </div>
 
 
+
 <p>
-  <h2 id="style" class="jsdoc-header">style</h2>
-
-  
-    <h3 class="jsdoc-method-signature">signature: jQuery.guards.style([customStyling])</h3>
-  
+  <h2 id="data-guard" class="jsdoc-header">data-guard</h2>
 
   
 
-  <h4 class="jsdoc-since"><small>available since: 1.0.0</small></h4>
+  
+    <h3 class="jsdoc-applicable-to">applicable to: field</h3>
+  
+
+  <h4 class="jsdoc-since"><small>available since: 1.3.0</small></h4>
 </p>
 
 <div class="jsdoc-content">
   
- <p>
-   Insert a style element to the document head that will style guard errors and invalid fields.
-   This will default to styling <code>.invalid-field</code> with a background color of
-   <code>#ffff66</code> and <code>.error-message</code> with a color of <code>#ff0000</code>
-   and a left margin of <code>10px</code>.
- </p>
+  <p>
+    Guard the field as
+    if <a href="global_functions.html#guard"><code>$.guard(input).using(&lt;name&gt;)</code></a>
+    were called.  Multiple guards can be specified by delimiting them
+    with spaces.  Any named guard can be specified, including custom
+    named guards.  Grouped guards are currently not supported.
+  </p>
 
- <p>
-   There are 2 optional arguments for this method.  The first is an optional css scope to restrict
-   the styling affects with.  The second is an object expected to contain a <code>field</code>
-   and/or <code>message</code> property with css styles desired for that aspect of the styling.
-   The <code>field</code> property will add styling for invalid fields while the <code>message</code>
-   property will add styling for error messages.  The properties of these objects may contain any
-   key that is a valid css attribute, with an appropriate value.
- </p>
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded>
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
 
- <div class="example">
-   <div class="display">
-     <script>
-       $.guards.style("#styled-fields", {
-         message: {
-           "color": "#ee0000",
-           "font-weight": "bold"
-         },
-         field: {
-           "background-color": "#ffe099"
-         }
-       });
+        <p>
+          <input data-guard="required int" type="text" /><br />
+          <small>required and int</small>
+        </p>
 
-       $.guard(".styled-field").using("required");
-     </script>
-
-     <p id="styled-fields">
-       <input class="styled-field" type="text" />
-     </p>
-   </div>
- </div>
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
 
 </div>
+
+
+
+<p>
+  <h2 id="data-guard-lt-name-gt-lt-option-gt-" class="jsdoc-header">data-guard-&lt;name&gt;-&lt;option&gt;</h2>
+
+  
+
+  
+    <h3 class="jsdoc-applicable-to">applicable to: field</h3>
+  
+
+  <h4 class="jsdoc-since"><small>available since: 1.3.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+  <p>
+    Provide options to a specific guard used on this field.  The
+    option must be an option object for it to work (for
+    example, <a href="named_guards.html#allow">allow</a>
+    and <a href="named_guards.html#regex">regex</a> wouldn't work).
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded>
+        <p>
+          <input data-guard="int" data-guard-int-max="3" type="text" value="42" /><br />
+          <small>int &lt;= 3</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+
+
+<p>
+  <h2 id="data-guard-lt-name-gt-message" class="jsdoc-header">data-guard-&lt;name&gt;-message</h2>
+
+  
+
+  
+    <h3 class="jsdoc-applicable-to">applicable to: form, field</h3>
+  
+
+  <h4 class="jsdoc-since"><small>available since: 1.3.0</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+  <p>
+    Customize the error message for a certain type of guard.  If
+    provided on the parent form, the error message will be used on all
+    fields in the form with the given guard.  If provided on a field,
+    the message will only apply to that field.  Field messages will
+    supercede form messages.  This is as
+    if <a href="guard_type.html#message"><code>$.guard(field).using(&lt;guard&gt;).message(&lt;error&nbsp;message&gt;)</code></a>
+    were called.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded data-guard-required-message="Form level message">
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p>
+          <input data-guard="required" data-guard-required-message="FIELD LEVEL MESSAGE" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+
+</div>
+
 
 
           <p class="paging">
