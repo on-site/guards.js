@@ -118,6 +118,32 @@
    </div>
  </div>
 
+ <p>
+   As of version 1.3.1, the allowed words can be specified via an object with a string property
+   named <code>words</code> delimited by spaces by default, or delimited with the
+   <code>delimiter</code> property.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+   form of guards.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".primary-color-2").using("allow", { words: "red yellow blue" });
+       $.guard(".country").using("allow", { words: "United States,Canada", delimiter: "," });
+     </script>
+
+     <p>
+       <input class="primary-color" type="text" /><br />
+       <small>Allowed values: red, yellow, blue</small>
+     </p>
+
+     <p>
+       <input class="country" type="text" /><br />
+       <small>Allowed values: United States, Canada</small>
+     </p>
+   </div>
+ </div>
+
 </div>
 
 
@@ -213,6 +239,32 @@
      <p>
        <input class="not-primary-color" type="text" value="red" /><br />
        <small>Disallowed values: red, yellow, blue</small>
+     </p>
+   </div>
+ </div>
+
+ <p>
+   As of version 1.3.1, the disallowed words can be specified via an object with a string property
+   named <code>words</code> delimited by spaces by default, or delimited with the
+   <code>delimiter</code> property.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+   form of guards.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".not-primary-color-2").using("disallow", { words: "red yellow blue" });
+       $.guard(".not-country").using("disallow", { words: "United States,Canada", delimiter: "," });
+     </script>
+
+     <p>
+       <input class="not-primary-color-2" type="text" /><br />
+       <small>Disallowed values: red, yellow, blue</small>
+     </p>
+
+     <p>
+       <input class="not-country" type="text" /><br />
+       <small>Disallowed values: United States, Canada</small>
      </p>
    </div>
  </div>
@@ -612,6 +664,25 @@
 
      <p>
        <input class="regex1" type="text" /><br />
+       <small>abc with 1-3 digits is required, like 'abc123'</small>
+     </p>
+   </div>
+ </div>
+
+ <p>
+   As of version 1.3.1, the regex can be specified via an object with a string property named
+   <code>pattern</code>.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+   form of guards.
+ </p>
+
+ <div class="example">
+   <div class="display">
+     <script>
+       $.guard(".regex2").using("regex", { pattern: "^abc\\d{1,3}$" });
+     </script>
+
+     <p>
+       <input class="regex2" type="text" /><br />
        <small>abc with 1-3 digits is required, like 'abc123'</small>
      </p>
    </div>

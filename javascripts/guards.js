@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v1.3.0
+ * Guards JavaScript jQuery Plugin v1.3.1
  * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2014, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Wed Apr  9 15:06:00 2014 -0700
+ * Date: Sun Apr 13 13:33:25 2014 -0700
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "1.3.0";
+    $.guard.version = "1.3.1";
 
     $.Guards = function() {
         var self = this;
@@ -151,8 +151,34 @@
          *     </p>
          *   </div>
          * </div>
+         *
+         * <p>
+         *   As of version 1.3.1, the allowed words can be specified via an object with a string property
+         *   named <code>words</code> delimited by spaces by default, or delimited with the
+         *   <code>delimiter</code> property.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+         *   form of guards.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".primary-color-2").using("allow", { words: "red yellow blue" });
+         *       $.guard(".country").using("allow", { words: "United States,Canada", delimiter: "," });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="primary-color" type="text" /><br />
+         *       <small>Allowed values: red, yellow, blue</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="country" type="text" /><br />
+         *       <small>Allowed values: United States, Canada</small>
+         *     </p>
+         *   </div>
+         * </div>
          */
-        this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.arrayMessage("Please enter one of: #{0}."));
+        this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.wordsArrayMessage("Please enter one of: #{0}."));
 
         /**
          * @page Named Guards
@@ -226,8 +252,34 @@
          *     </p>
          *   </div>
          * </div>
+         *
+         * <p>
+         *   As of version 1.3.1, the disallowed words can be specified via an object with a string property
+         *   named <code>words</code> delimited by spaces by default, or delimited with the
+         *   <code>delimiter</code> property.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+         *   form of guards.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".not-primary-color-2").using("disallow", { words: "red yellow blue" });
+         *       $.guard(".not-country").using("disallow", { words: "United States,Canada", delimiter: "," });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="not-primary-color-2" type="text" /><br />
+         *       <small>Disallowed values: red, yellow, blue</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="not-country" type="text" /><br />
+         *       <small>Disallowed values: United States, Canada</small>
+         *     </p>
+         *   </div>
+         * </div>
          */
-        this.name("disallow").using(this.aggregate(this.isAllValid, this.isDisallowed)).message(this.arrayMessage("Please don't enter: #{0}."));
+        this.name("disallow").using(this.aggregate(this.isAllValid, this.isDisallowed)).message(this.wordsArrayMessage("Please don't enter: #{0}."));
 
         /**
          * @page Named Guards
@@ -561,6 +613,25 @@
          *     </p>
          *   </div>
          * </div>
+         *
+         * <p>
+         *   As of version 1.3.1, the regex can be specified via an object with a string property named
+         *   <code>pattern</code>.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+         *   form of guards.
+         * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".regex2").using("regex", { pattern: "^abc\\d{1,3}$" });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="regex2" type="text" /><br />
+         *       <small>abc with 1-3 digits is required, like 'abc123'</small>
+         *     </p>
+         *   </div>
+         * </div>
          */
         this.name("regex").using(this.aggregate(this.isAllValid, this.matchesRegex)).message("Please enter valid input.");
 
@@ -674,7 +745,7 @@
      *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
      * </p>
      */
-    $.Guards.prototype.version = "1.3.0";
+    $.Guards.prototype.version = "1.3.1";
 
     $.Guards.prototype.parentContext = function(element) {
         var $element = $(element);
@@ -739,6 +810,16 @@
 
         result.acceptsArguments = true;
         return result;
+    };
+
+    $.Guards.prototype.wordsArrayMessage = function(formatting) {
+        var self = this;
+        var formattingFn = this.arrayMessage(formatting);
+
+        return function(array) {
+            array = self.getWordsArray(array);
+            return formattingFn(array);
+        };
     };
 
     $.Guards.prototype.arrayMessage = function(formatting) {
@@ -1008,6 +1089,23 @@
     };
 
     /**
+     * The given object will either already be an array, or will be an
+     * object describing the array (a string words property with
+     * implicitly " " delimiter, or an explicit delimiter property).
+     */
+    $.Guards.prototype.getWordsArray = function(obj) {
+        if ($.type(obj) === "object" && !this.isNullOrUndefined(obj.words)) {
+            return obj.words.split(obj.delimiter || " ");
+        }
+
+        if ($.type(obj) === "array") {
+            return obj;
+        }
+
+        throw new Error("Invalid type, expecting array or object with words property and optional delimiter property, got " + $.type(obj));
+    };
+
+    /**
      * Return whether or not the value exists in the given allowed
      * list.  The allowed parameter must be an array of valid values.
      * Blank is considered invalid unless it exists in the list.
@@ -1015,6 +1113,7 @@
      */
     $.Guards.prototype.isAllowed = function(value, allowed) {
         value = $.trim(value);
+        allowed = this.getWordsArray(allowed);
         return $.inArray(value, $.map(allowed, function(x) { return $.trim("" + x); })) !== -1;
     };
 
@@ -1305,7 +1404,11 @@
      * Validates the given value matches the given regex.
      */
     $.Guards.prototype.matchesRegex = function(value, regex) {
-        if ($.type(regex) != "regexp") {
+        if ($.type(regex) === "object" && regex.pattern) {
+            regex = new RegExp(regex.pattern);
+        }
+
+        if ($.type(regex) !== "regexp") {
             throw new Error("The regex must be provided as an option!");
         }
 
@@ -1346,7 +1449,7 @@
      *
      * Example: $.guards.add(".validPhone").using("phoneUS");
      * Example: $.guards.add(".custom").using(function(value, element) {
-     *            return value != "invalid";
+     *            return value !== "invalid";
      *          }).message("Don't use the keyword 'invalid'.");
      * Example: $.guards.add(".custom").grouped().using(function(values, elements) {
      *            return $.inArray("invalid", values) == -1;

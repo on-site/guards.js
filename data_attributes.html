@@ -224,7 +224,10 @@
     Provide options to a specific guard used on this field.  The
     option must be an option object for it to work (for
     example, <a href="named_guards.html#allow">allow</a>
-    and <a href="named_guards.html#regex">regex</a> wouldn't work).
+    and <a href="named_guards.html#regex">regex</a> wouldn't work with
+    an array or regex object).  However, as of version 1.3.1, all
+    built in named guards that required something other than a single
+    options object now support an object form as well.
   </p>
 
   <div class="example">
