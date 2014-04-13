@@ -28,8 +28,11 @@
 <p>
   You can specify multiple guards delimited by spaces, and you can
   provide arguments to those guards.  Arguments that are not of a
-  single options object form are not supported (such
-  as <code>allow</code> or <code>regex</code>).
+  single options object form are not supported (such as passing an
+  array for <code>allow</code> or a regex for <code>regex</code>).
+  However, as of version 1.3.1, all built in named guards that
+  required something other than a single options object now support an
+  object form as well.
 </p>
 
 <div class="example">

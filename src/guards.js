@@ -145,6 +145,25 @@
          *   <code>delimiter</code> property.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
          *   form of guards.
          * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".primary-color-2").using("allow", { words: "red yellow blue" });
+         *       $.guard(".country").using("allow", { words: "United States,Canada", delimiter: "," });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="primary-color" type="text" /><br />
+         *       <small>Allowed values: red, yellow, blue</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="country" type="text" /><br />
+         *       <small>Allowed values: United States, Canada</small>
+         *     </p>
+         *   </div>
+         * </div>
          */
         this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.wordsArrayMessage("Please enter one of: #{0}."));
 
@@ -227,6 +246,25 @@
          *   <code>delimiter</code> property.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
          *   form of guards.
          * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".not-primary-color-2").using("disallow", { words: "red yellow blue" });
+         *       $.guard(".not-country").using("disallow", { words: "United States,Canada", delimiter: "," });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="not-primary-color-2" type="text" /><br />
+         *       <small>Disallowed values: red, yellow, blue</small>
+         *     </p>
+         *
+         *     <p>
+         *       <input class="not-country" type="text" /><br />
+         *       <small>Disallowed values: United States, Canada</small>
+         *     </p>
+         *   </div>
+         * </div>
          */
         this.name("disallow").using(this.aggregate(this.isAllValid, this.isDisallowed)).message(this.wordsArrayMessage("Please don't enter: #{0}."));
 
@@ -568,6 +606,19 @@
          *   <code>pattern</code>.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
          *   form of guards.
          * </p>
+         *
+         * <div class="example">
+         *   <div class="display">
+         *     <script>
+         *       $.guard(".regex2").using("regex", { pattern: "^abc\\d{1,3}$" });
+         *     </script>
+         *
+         *     <p>
+         *       <input class="regex2" type="text" /><br />
+         *       <small>abc with 1-3 digits is required, like 'abc123'</small>
+         *     </p>
+         *   </div>
+         * </div>
          */
         this.name("regex").using(this.aggregate(this.isAllValid, this.matchesRegex)).message("Please enter valid input.");
 
