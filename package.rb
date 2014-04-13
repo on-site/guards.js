@@ -159,11 +159,14 @@ def prepare(version)
   update_gem!
 end
 
-def build_gem(type)
+def build_gem(type, push)
   version = get_gem_version type
   check_source_control!
   system "cd gems/#{type}-guardsjs-rails && gem build #{type}-guardsjs-rails.gemspec"
-  system "cd gems/#{type}-guardsjs-rails && gem push #{type}-guardsjs-rails-#{version}.gem"
+
+  if push
+    system "cd gems/#{type}-guardsjs-rails && gem push #{type}-guardsjs-rails-#{version}.gem"
+  end
 end
 
 def tag_gem(type)
@@ -171,10 +174,12 @@ def tag_gem(type)
   system "git tag #{type}-#{get_gem_version type} && git push --tags"
 end
 
+push = !ARGS.delete("--no-push")
+
 die "usage: package.rb tag
        package.rb gem
-       package.rb bootstrap
-       package.rb foundation
+       package.rb bootstrap [--no-push]
+       package.rb foundation [--no-push]
        package.rb bootstrap-tag
        package.rb foundation-tag
        package.rb <version>" if ARGS.length != 1
@@ -184,7 +189,7 @@ if ARGS.first == "tag"
 elsif ARGS.first == "gem"
   gem
 elsif ["bootstrap", "foundation"].include? ARGS.first
-  build_gem ARGS.first
+  build_gem ARGS.first, push
 elsif ["bootstrap-tag", "foundation-tag"].include? ARGS.first
   tag_gem ARGS.first.split("-").first
 else

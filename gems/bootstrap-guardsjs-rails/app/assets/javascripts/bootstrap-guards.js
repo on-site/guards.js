@@ -3,10 +3,10 @@
 ;(function($) {
     var originalDefaultTarget = $.guards.defaults.target;
 
-    // Ensure input-appended inputs have errors placed in the proper
-    // location.
+    // Ensure input-appended and input-prepended inputs have errors
+    // placed in the proper location.
     $.guards.defaults.target = function(errorElement) {
-        if (!$(this).parent().is(".input-append")) {
+        if (!$(this).parent().is(".input-append") && !$(this).parent().is(".input-prepend")) {
             return originalDefaultTarget.call(this, errorElement);
         }
 
