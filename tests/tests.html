@@ -1386,6 +1386,73 @@
             });
           });
 
+          test("regex based data attribute guard", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" value="foo" data-guard="regex" data-guard-regex-pattern="bar" />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 1,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: "Please enter valid input."
+            });
+
+            $("form.data input").val("bar");
+            assertGuards({
+              form: "form.data",
+              expectedToPass: true
+            });
+          });
+
+          test("allowed based data attribute guard", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" value="foo" data-guard="allow" data-guard-allow-words="bar baz" />' +
+              '  <input type="text" value="foo" data-guard="allow" data-guard-allow-words="bar,baz" data-guard-allow-delimiter="," />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: ["Please enter one of: bar, baz.",
+                              "Please enter one of: bar, baz."]
+            });
+
+            $("form.data input").val("bar");
+            assertGuards({
+              form: "form.data",
+              expectedToPass: true
+            });
+          });
+
+          test("disallowed based data attribute guard", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" value="foo" data-guard="disallow" data-guard-disallow-words="foo bar" />' +
+              '  <input type="text" value="foo" data-guard="disallow" data-guard-disallow-words="foo,bar" data-guard-disallow-delimiter="," />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("form.data input"),
+              errorMessages: ["Please don't enter: foo, bar.",
+                              "Please don't enter: foo, bar."]
+            });
+
+            $("form.data input").val("baz");
+            assertGuards({
+              form: "form.data",
+              expectedToPass: true
+            });
+          });
+
           module("custom guard", { setup: resetGuards });
 
           function customGuard(value, element) {

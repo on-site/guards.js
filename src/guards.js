@@ -138,8 +138,15 @@
          *     </p>
          *   </div>
          * </div>
+         *
+         * <p>
+         *   As of version 1.3.1, the allowed words can be specified via an object with a string property
+         *   named <code>words</code> delimited by spaces by default, or delimited with the
+         *   <code>delimiter</code> property.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+         *   form of guards.
+         * </p>
          */
-        this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.arrayMessage("Please enter one of: #{0}."));
+        this.name("allow").using(this.aggregate(this.isAllValid, this.isAllowed)).message(this.wordsArrayMessage("Please enter one of: #{0}."));
 
         /**
          * @page Named Guards
@@ -213,8 +220,15 @@
          *     </p>
          *   </div>
          * </div>
+         *
+         * <p>
+         *   As of version 1.3.1, the disallowed words can be specified via an object with a string property
+         *   named <code>words</code> delimited by spaces by default, or delimited with the
+         *   <code>delimiter</code> property.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+         *   form of guards.
+         * </p>
          */
-        this.name("disallow").using(this.aggregate(this.isAllValid, this.isDisallowed)).message(this.arrayMessage("Please don't enter: #{0}."));
+        this.name("disallow").using(this.aggregate(this.isAllValid, this.isDisallowed)).message(this.wordsArrayMessage("Please don't enter: #{0}."));
 
         /**
          * @page Named Guards
@@ -548,6 +562,12 @@
          *     </p>
          *   </div>
          * </div>
+         *
+         * <p>
+         *   As of version 1.3.1, the regex can be specified via an object with a string property named
+         *   <code>pattern</code>.  This is primarily to support the <a href="data_attributes.html">data attributes</a>
+         *   form of guards.
+         * </p>
          */
         this.name("regex").using(this.aggregate(this.isAllValid, this.matchesRegex)).message("Please enter valid input.");
 
@@ -726,6 +746,16 @@
 
         result.acceptsArguments = true;
         return result;
+    };
+
+    $.Guards.prototype.wordsArrayMessage = function(formatting) {
+        var self = this;
+        var formattingFn = this.arrayMessage(formatting);
+
+        return function(array) {
+            array = self.getWordsArray(array);
+            return formattingFn(array);
+        };
     };
 
     $.Guards.prototype.arrayMessage = function(formatting) {
@@ -995,6 +1025,23 @@
     };
 
     /**
+     * The given object will either already be an array, or will be an
+     * object describing the array (a string words property with
+     * implicitly " " delimiter, or an explicit delimiter property).
+     */
+    $.Guards.prototype.getWordsArray = function(obj) {
+        if ($.type(obj) === "object" && !this.isNullOrUndefined(obj.words)) {
+            return obj.words.split(obj.delimiter || " ");
+        }
+
+        if ($.type(obj) === "array") {
+            return obj;
+        }
+
+        throw new Error("Invalid type, expecting array or object with words property and optional delimiter property, got " + $.type(obj));
+    };
+
+    /**
      * Return whether or not the value exists in the given allowed
      * list.  The allowed parameter must be an array of valid values.
      * Blank is considered invalid unless it exists in the list.
@@ -1002,6 +1049,7 @@
      */
     $.Guards.prototype.isAllowed = function(value, allowed) {
         value = $.trim(value);
+        allowed = this.getWordsArray(allowed);
         return $.inArray(value, $.map(allowed, function(x) { return $.trim("" + x); })) !== -1;
     };
 
@@ -1292,7 +1340,11 @@
      * Validates the given value matches the given regex.
      */
     $.Guards.prototype.matchesRegex = function(value, regex) {
-        if ($.type(regex) != "regexp") {
+        if ($.type(regex) === "object" && regex.pattern) {
+            regex = new RegExp(regex.pattern);
+        }
+
+        if ($.type(regex) !== "regexp") {
             throw new Error("The regex must be provided as an option!");
         }
 
@@ -1333,7 +1385,7 @@
      *
      * Example: $.guards.add(".validPhone").using("phoneUS");
      * Example: $.guards.add(".custom").using(function(value, element) {
-     *            return value != "invalid";
+     *            return value !== "invalid";
      *          }).message("Don't use the keyword 'invalid'.");
      * Example: $.guards.add(".custom").grouped().using(function(values, elements) {
      *            return $.inArray("invalid", values) == -1;
