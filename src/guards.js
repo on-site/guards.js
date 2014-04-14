@@ -1511,6 +1511,18 @@
         return result;
     };
 
+    $.Guards.prototype.triggerImmediateDataErrors = function() {
+        var self = this;
+
+        $("[data-immediate-guard-error]").each(function() {
+            var guard = new $.Guard({ selector: this, guards: self });
+            var $this = $(this);
+            guard.using("never").message($this.data("immediate-guard-error") || "");
+            guard.triggerError();
+            $this.removeAttr("data-immediate-guard-error");
+        });
+    };
+
     $.Guard = function(options) {
         this.name = options.name;
         this._named = options.named;
@@ -2828,4 +2840,5 @@
     // Data driven guards
     $.liveGuard("[data-live-guarded]");
     $.enableGuards("[data-guarded]");
+    $(function() { $.guards.triggerImmediateDataErrors(); });
 })(jQuery);

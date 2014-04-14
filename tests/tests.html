@@ -1453,6 +1453,47 @@
             });
           });
 
+          test("immediate data guard error", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" data-immediate-guard-error="This is an immediate error." />' +
+              '  <input type="text" />' +
+              '  <input type="text" data-immediate-guard-error="Another immediate error." />' +
+              '</form>');
+
+            assertGuards({
+              form: "form.data",
+              expectedToPass: true
+            });
+
+            $.guards.triggerImmediateDataErrors();
+
+            assertGuards({
+              form: "form.data",
+              skipInvokeGuard: true,
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("form.data input:eq(0), form.data input:eq(2)"),
+              errorMessages: ["This is an immediate error.",
+                              "Another immediate error."]
+            });
+
+            assertGuards({
+              form: "form.data",
+              expectedToPass: true
+            });
+
+            // The guard error will only trigger once, no matter what.
+            $.guards.triggerImmediateDataErrors();
+
+            assertGuards({
+              form: "form.data",
+              skipInvokeGuard: true,
+              expectedToPass: true
+            });
+          });
+
           module("custom guard", { setup: resetGuards });
 
           function customGuard(value, element) {

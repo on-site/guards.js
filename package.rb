@@ -37,11 +37,14 @@ def tag
   system "git tag #{version} && git push --tags"
 end
 
-def gem
+def gem(push)
   check_tag_and_gem_preconditions!
   version = get_version
   system "cd gems/guardsjs-rails && gem build guardsjs-rails.gemspec"
-  system "cd gems/guardsjs-rails && gem push guardsjs-rails-#{version}.gem"
+
+  if push
+    system "cd gems/guardsjs-rails && gem push guardsjs-rails-#{version}.gem"
+  end
 end
 
 def get_version
@@ -177,7 +180,7 @@ end
 push = !ARGS.delete("--no-push")
 
 die "usage: package.rb tag
-       package.rb gem
+       package.rb gem [--no-push]
        package.rb bootstrap [--no-push]
        package.rb foundation [--no-push]
        package.rb bootstrap-tag
@@ -187,7 +190,7 @@ die "usage: package.rb tag
 if ARGS.first == "tag"
   tag
 elsif ARGS.first == "gem"
-  gem
+  gem push
 elsif ["bootstrap", "foundation"].include? ARGS.first
   build_gem ARGS.first, push
 elsif ["bootstrap-tag", "foundation-tag"].include? ARGS.first
