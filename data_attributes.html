@@ -298,6 +298,48 @@
 
 
 
+<p>
+  <h2 id="data-immediate-guard-error" class="jsdoc-header">data-immediate-guard-error</h2>
+
+  
+
+  
+    <h3 class="jsdoc-applicable-to">applicable to: field</h3>
+  
+
+  <h4 class="jsdoc-since"><small>available since: 1.3.2</small></h4>
+</p>
+
+<div class="jsdoc-content">
+  
+  <p>
+    Mark a field as immediately having an error with the provided
+    error message.  This is used to indicate fields have errors as
+    soon as the page loads (such as an error detected server-side).
+    This will only work for fields embedded on the page at dom ready
+    time, otherwise you should script the error with
+    the <a href="named_guards.html#never">never</a> guard along with
+    the <a href="guard_type.html#triggerError">triggerError</a>
+    function.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded>
+        <p>
+          <input type="text" data-immediate-guard-error="This field already has an error!" /><br />
+          <small>error on load</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+
+
           <p class="paging">
             
             
