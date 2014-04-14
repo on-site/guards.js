@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v1.3.1
+ * Guards JavaScript jQuery Plugin v1.3.2
  * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2014, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Sun Apr 13 13:33:25 2014 -0700
+ * Date: Sun Apr 13 17:05:11 2014 -0700
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "1.3.1";
+    $.guard.version = "1.3.2";
 
     $.Guards = function() {
         var self = this;
@@ -745,7 +745,7 @@
      *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
      * </p>
      */
-    $.Guards.prototype.version = "1.3.1";
+    $.Guards.prototype.version = "1.3.2";
 
     $.Guards.prototype.parentContext = function(element) {
         var $element = $(element);
@@ -1522,6 +1522,18 @@
         });
 
         return result;
+    };
+
+    $.Guards.prototype.triggerImmediateDataErrors = function() {
+        var self = this;
+
+        $("[data-immediate-guard-error]").each(function() {
+            var guard = new $.Guard({ selector: this, guards: self });
+            var $this = $(this);
+            guard.using("never").message($this.data("immediate-guard-error") || "");
+            guard.triggerError();
+            $this.removeAttr("data-immediate-guard-error");
+        });
     };
 
     $.Guard = function(options) {
@@ -2841,4 +2853,5 @@
     // Data driven guards
     $.liveGuard("[data-live-guarded]");
     $.enableGuards("[data-guarded]");
+    $(function() { $.guards.triggerImmediateDataErrors(); });
 })(jQuery);
