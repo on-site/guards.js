@@ -918,6 +918,10 @@
         });
     };
 
+    $.Guards.prototype.capitalize = function(word) {
+        return word.substring(0, 1).toUpperCase() + word.substring(1, word.length);
+    };
+
     /**
      * Format all arguments into the first argument.  This is a
      * convenience function similar to the C sprintf function, though
@@ -1491,22 +1495,69 @@
         return result;
     };
 
+    $.Guards.prototype.groupByGroups = function(guard, fields) {
+        if (this.isBlank(guard.name)) {
+            return [fields];
+        }
+
+        var self = this;
+        var ungrouped = [];
+        var grouped = {};
+        var dataAttrName = "guard" + this.capitalize(this.camelize(guard.name)) + "Group";
+        var dashedDataAttrName = "guard-" + guard.name + "-group";
+
+        fields.each(function(_, element) {
+            var $element = $(element);
+            var groups = $element.data(dataAttrName) || $element.data(dashedDataAttrName);
+
+            if (self.isBlank(groups)) {
+                ungrouped.push(element);
+                return;
+            }
+
+            $.each(groups.split(" "), function(_, group) {
+                if (self.isBlank(group)) {
+                    return;
+                }
+
+                grouped[group] = grouped[group] || [];
+                grouped[group].push(element);
+            });
+        });
+
+        var results = [];
+
+        if (ungrouped.length !== 0) {
+            results.push($(ungrouped));
+        }
+
+        $.each(grouped, function(_, elements) {
+            results.push($(elements));
+        });
+
+        return results;
+    };
+
     /**
      * Use the given guard to test the given guarded fields.  Errors
      * will be applied if the field doesn't have an error yet.
      */
     $.Guards.prototype.test = function(guard, fields) {
-        if (guard.isGrouped()) {
-            return guard.test(fields);
-        }
-
         var result = true;
 
-        fields.each(function() {
-            if (!guard.test(this)) {
-                result = false;
-            }
-        });
+        if (guard.isGrouped()) {
+            $.each(this.groupByGroups(guard, fields), function(_, groupedFields) {
+                if (!guard.test(groupedFields)) {
+                    result = false;
+                }
+            });
+        } else {
+            fields.each(function() {
+                if (!guard.test(this)) {
+                    result = false;
+                }
+            });
+        }
 
         return result;
     };

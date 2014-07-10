@@ -46,7 +46,7 @@
     if <a href="global_functions.html#guard"><code>$.guard(input).using(&lt;name&gt;)</code></a>
     were called.  Multiple guards can be specified by delimiting them
     with spaces.  Any named guard can be specified, including custom
-    named guards.  Grouped guards are currently not supported.
+    named guards.  Grouped guards are supported as of 1.4.0.
   </p>
 
   <div class="example">
@@ -85,6 +85,45 @@
         <p>
           <input data-guard="int" data-guard-int-max="3" type="text" value="42" /><br />
           <small>int &lt;= 3</small>
+        </p>
+
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+  </div>
+<% end %>
+
+<% concat_partial "jsdoc", :section => h("data-guard-<name>-group"), :applicable => "field", :since => "1.4.0" do %>
+  <p>
+    Specify the space delimited list of groups that the named guard
+    will apply to for this field.  If this data attribute is missing
+    or empty, the field will be grouped with all other fields with no
+    group names.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded>
+        <p>
+          <input data-guard="same" data-guard-same-group="one" type="text" value="first two fields" /><br />
+          <small>same as the next field</small>
+        </p>
+
+        <p>
+          <input data-guard="same" data-guard-same-group="one" type="text" value="will fail" /><br />
+          <small>same as the previous field</small>
+        </p>
+
+        <hr />
+
+        <p>
+          <input data-guard="same" data-guard-same-group="two" type="text" value="second two fields succeed" /><br />
+          <small>same as the next field</small>
+        </p>
+
+        <p>
+          <input data-guard="same" data-guard-same-group="two" type="text" value="second two fields succeed" /><br />
+          <small>same as the previous field</small>
         </p>
 
         <p><input type="submit" /></p>

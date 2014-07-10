@@ -1522,6 +1522,73 @@
             });
           });
 
+          test("grouped data guard using same", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" value="foo" data-guard="same" data-guard-same-message="Customized same error!" />' +
+              '  <input type="text" value="bar" data-guard="same" />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("form.data input:eq(1)"),
+              errorMessages: "Customized same error!"
+            });
+          });
+
+          test("multiple grouped data guard using same", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" value="implicit" data-guard="same" />' +
+              '  <input type="text" value="group" data-guard="same" />' +
+              '  <input type="text" value="foo" data-guard="same" data-guard-same-group="second" data-guard-same-message="Customized same error!" />' +
+              '  <input type="text" value="bar" data-guard="same" data-guard-same-group="second" />' +
+              '  <input type="text" value="baz" data-guard="same" data-guard-same-group="third" />' +
+              '  <input type="text" value="zap" data-guard="same" data-guard-same-group="third" />' +
+              '</form>');
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 6,
+              expectedErrorMessageCount: 3,
+              errorMessageLocations: $("form.data input:eq(1), form.data input:eq(3), form.data input:eq(5)"),
+              errorMessages: ["These values must all match.",
+                              "Customized same error!",
+                              "These values must all match."]
+            });
+          });
+
+          test("interleaved grouped data guard using same", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" value="foo" data-guard="same" data-guard-same-group="second" />' +
+              '  <input type="text" value="foo" data-guard="same" data-guard-same-group="second third" />' +
+              '  <input type="text" value="bar" data-guard="same" data-guard-same-group="third" />' +
+              '</form>');
+
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("form.data input:eq(2)"),
+              errorMessages: "These values must all match."
+            });
+
+            $("form.data input:eq(1)").val("bar");
+
+            assertGuards({
+              form: "form.data",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 1,
+              errorMessageLocations: $("form.data input:eq(1)"),
+              errorMessages: "These values must all match."
+            });
+          });
+
           module("custom guard", { setup: resetGuards });
 
           function customGuard(value, element) {
