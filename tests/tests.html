@@ -332,6 +332,34 @@
             equal(values[0][2], "2", "Third value");
           });
 
+          test("#18: support message first in a guard", function() {
+            $.guard("#form1-1").message("Custom message 1.").using("required");
+            $.guard("#form1-2").message("Custom message 2.").using(function() { return false; });
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("#form1-1, #form1-2"),
+              errorMessages: ["Custom message 1.", "Custom message 2."]
+            });
+          });
+
+          test("#18: support message first in a named guard", function() {
+            $.guards.name("customizedMessage1").message("Custom message 1.").using("required");
+            $.guards.name("customizedMessage2").message("Custom message 2.").using(function() { return false; });
+            $.guard("#form1-1").using("customizedMessage1");
+            $.guard("#form1-2").using("customizedMessage2");
+            assertGuards({
+              form: "#form1",
+              expectedToPass: false,
+              expectedErrorCount: 2,
+              expectedErrorMessageCount: 2,
+              errorMessageLocations: $("#form1-1, #form1-2"),
+              errorMessages: ["Custom message 1.", "Custom message 2."]
+            });
+          });
+
           module("guardable fields", { setup: resetGuards });
 
           test("without options", function() {

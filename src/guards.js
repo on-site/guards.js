@@ -1564,7 +1564,7 @@
         this._guard = namedGuard._guard;
         this._guardArguments = args;
         this.name = guard;
-        return this.message(namedGuard._message);
+        return this.message(namedGuard._message, true);
     };
 
     /**
@@ -1631,7 +1631,7 @@
         }
 
         this._guard = guard;
-        return this.message(this._guards.defaults.messages["undefined"]);
+        return this.message(this._guards.defaults.messages["undefined"], true);
     };
 
     $.Guard.prototype.getPrecondition = function() {
@@ -1849,8 +1849,13 @@
      *   </div>
      * </div>
      */
-    $.Guard.prototype.message = function(message) {
+    $.Guard.prototype.message = function(message, implicit) {
+        if (implicit && this._explicitMessage === true) {
+            return this;
+        }
+
         this._message = message;
+        this._explicitMessage = !implicit;
         return this.resetMessageFn();
     };
 
