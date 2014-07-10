@@ -913,7 +913,7 @@
     $.Guards.prototype.camelize = function(word) {
         // This code is from jQuery, but it is not a public function
         // so let's juse reuse it.
-        return word.replace(/-([\da-z])/gi, function(all, letter) {
+        return word.replace(/-([\da-z])/gi, function(_, letter) {
             return letter.toUpperCase();
         });
     };
@@ -1117,7 +1117,7 @@
         if ($.isArray(values)) {
             var result = true;
 
-            $.each(values, function(i, x) {
+            $.each(values, function(_, x) {
                 if (!fn(x)) {
                     result = false;
                     return false;
@@ -1143,7 +1143,7 @@
         if ($.isArray(values)) {
             var result = false;
 
-            $.each(values, function(i, x) {
+            $.each(values, function(_, x) {
                 if (fn(x)) {
                     result = true;
                     return false;
@@ -1175,7 +1175,7 @@
         var found = {};
         var result = true;
 
-        $.each(values, function(i, x) {
+        $.each(values, function(_, x) {
             if (found[x] === true) {
                 result = false;
                 return false;
@@ -1222,7 +1222,7 @@
         var value = values[0];
         var result = true;
 
-        $.each(values, function(i, x) {
+        $.each(values, function(_, x) {
             if (x !== value) {
                 result = false;
                 return false;
@@ -1472,7 +1472,7 @@
         var result = true;
         var self = this;
 
-        $.each(this._guards, function(index, guard) {
+        $.each(this._guards, function(_, guard) {
             var fields = callback(guard);
 
             if (fields !== false && !self.test(guard, fields)) {
@@ -1480,7 +1480,7 @@
             }
         });
 
-        $.each(this.named, function(name, guard) {
+        $.each(this.named, function(_, guard) {
             var fields = callback(guard);
 
             if (fields !== false && !self.test(guard, fields)) {
@@ -2071,7 +2071,7 @@
 
             if (!isDashed) {
                 // Un-capitalize the first letter
-                attrName = attrName.replace(/^(.)/, function(all, letter) {
+                attrName = attrName.replace(/^(.)/, function(_, letter) {
                     return letter.toLowerCase();
                 });
             }
@@ -2519,7 +2519,7 @@
      * </div>
      */
     $.fn.clearErrors = function() {
-        $.each(this.errors(), function(index, error) {
+        $.each(this.errors(), function(_, error) {
             error.clear();
         });
 
@@ -2533,7 +2533,7 @@
     $.fn.hasError = function(guard) {
         var result = false;
 
-        $.each(this.errors(), function(i, error) {
+        $.each(this.errors(), function(_, error) {
             if (error._guard === guard) {
                 result = true;
                 return false;
@@ -2553,7 +2553,7 @@
     $.fn.hasErrorsWithInvalidClass = function(invalidClass) {
         var result = false;
 
-        $.each(this.errors(), function(i, error) {
+        $.each(this.errors(), function(_, error) {
             if (error._guard.getInvalidClass() === invalidClass) {
                 result = true;
                 return false;
