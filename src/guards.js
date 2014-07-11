@@ -2090,7 +2090,7 @@
 
             self._eventHandlers[eventName] = self._eventHandlers[eventName] || [];
             self._eventHandlers[eventName].push(callback);
-        })
+        });
 
         return this;
     };
