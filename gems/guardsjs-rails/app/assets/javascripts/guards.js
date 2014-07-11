@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v1.3.2
+ * Guards JavaScript jQuery Plugin v1.4.0
  * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2014, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Sun Apr 13 17:05:11 2014 -0700
+ * Date: Fri Jul 11 14:37:18 2014 -0700
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "1.3.2";
+    $.guard.version = "1.4.0";
 
     $.Guards = function() {
         var self = this;
@@ -745,7 +745,7 @@
      *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
      * </p>
      */
-    $.Guards.prototype.version = "1.3.2";
+    $.Guards.prototype.version = "1.4.0";
 
     $.Guards.prototype.parentContext = function(element) {
         var $element = $(element);
@@ -926,9 +926,13 @@
     $.Guards.prototype.camelize = function(word) {
         // This code is from jQuery, but it is not a public function
         // so let's juse reuse it.
-        return word.replace(/-([\da-z])/gi, function(all, letter) {
+        return word.replace(/-([\da-z])/gi, function(_, letter) {
             return letter.toUpperCase();
         });
+    };
+
+    $.Guards.prototype.capitalize = function(word) {
+        return word.substring(0, 1).toUpperCase() + word.substring(1, word.length);
     };
 
     /**
@@ -1130,7 +1134,7 @@
         if ($.isArray(values)) {
             var result = true;
 
-            $.each(values, function(i, x) {
+            $.each(values, function(_, x) {
                 if (!fn(x)) {
                     result = false;
                     return false;
@@ -1156,7 +1160,7 @@
         if ($.isArray(values)) {
             var result = false;
 
-            $.each(values, function(i, x) {
+            $.each(values, function(_, x) {
                 if (fn(x)) {
                     result = true;
                     return false;
@@ -1188,7 +1192,7 @@
         var found = {};
         var result = true;
 
-        $.each(values, function(i, x) {
+        $.each(values, function(_, x) {
             if (found[x] === true) {
                 result = false;
                 return false;
@@ -1235,7 +1239,7 @@
         var value = values[0];
         var result = true;
 
-        $.each(values, function(i, x) {
+        $.each(values, function(_, x) {
             if (x !== value) {
                 result = false;
                 return false;
@@ -1485,7 +1489,7 @@
         var result = true;
         var self = this;
 
-        $.each(this._guards, function(index, guard) {
+        $.each(this._guards, function(_, guard) {
             var fields = callback(guard);
 
             if (fields !== false && !self.test(guard, fields)) {
@@ -1493,7 +1497,7 @@
             }
         });
 
-        $.each(this.named, function(name, guard) {
+        $.each(this.named, function(_, guard) {
             var fields = callback(guard);
 
             if (fields !== false && !self.test(guard, fields)) {
@@ -1504,22 +1508,69 @@
         return result;
     };
 
+    $.Guards.prototype.groupByGroups = function(guard, fields) {
+        if (this.isBlank(guard.name)) {
+            return [fields];
+        }
+
+        var self = this;
+        var ungrouped = [];
+        var grouped = {};
+        var dataAttrName = "guard" + this.capitalize(this.camelize(guard.name)) + "Group";
+        var dashedDataAttrName = "guard-" + guard.name + "-group";
+
+        fields.each(function(_, element) {
+            var $element = $(element);
+            var groups = $element.data(dataAttrName) || $element.data(dashedDataAttrName);
+
+            if (self.isBlank(groups)) {
+                ungrouped.push(element);
+                return;
+            }
+
+            $.each(groups.split(" "), function(_, group) {
+                if (self.isBlank(group)) {
+                    return;
+                }
+
+                grouped[group] = grouped[group] || [];
+                grouped[group].push(element);
+            });
+        });
+
+        var results = [];
+
+        if (ungrouped.length !== 0) {
+            results.push($(ungrouped));
+        }
+
+        $.each(grouped, function(_, elements) {
+            results.push($(elements));
+        });
+
+        return results;
+    };
+
     /**
      * Use the given guard to test the given guarded fields.  Errors
      * will be applied if the field doesn't have an error yet.
      */
     $.Guards.prototype.test = function(guard, fields) {
-        if (guard.isGrouped()) {
-            return guard.test(fields);
-        }
-
         var result = true;
 
-        fields.each(function() {
-            if (!guard.test(this)) {
-                result = false;
-            }
-        });
+        if (guard.isGrouped()) {
+            $.each(this.groupByGroups(guard, fields), function(_, groupedFields) {
+                if (!guard.test(groupedFields)) {
+                    result = false;
+                }
+            });
+        } else {
+            fields.each(function() {
+                if (!guard.test(this)) {
+                    result = false;
+                }
+            });
+        }
 
         return result;
     };
@@ -1577,7 +1628,7 @@
         this._guard = namedGuard._guard;
         this._guardArguments = args;
         this.name = guard;
-        return this.message(namedGuard._message);
+        return this.message(namedGuard._message, true);
     };
 
     /**
@@ -1644,7 +1695,7 @@
         }
 
         this._guard = guard;
-        return this.message(this._guards.defaults.messages["undefined"]);
+        return this.message(this._guards.defaults.messages["undefined"], true);
     };
 
     $.Guard.prototype.getPrecondition = function() {
@@ -1862,8 +1913,13 @@
      *   </div>
      * </div>
      */
-    $.Guard.prototype.message = function(message) {
+    $.Guard.prototype.message = function(message, implicit) {
+        if (implicit && this._explicitMessage === true) {
+            return this;
+        }
+
         this._message = message;
+        this._explicitMessage = !implicit;
         return this.resetMessageFn();
     };
 
@@ -2036,6 +2092,378 @@
         return this;
     };
 
+    $.Guard.prototype.bind = function(event, callback) {
+        var self = this;
+        this._eventHandlers = this._eventHandlers || {};
+
+        $.each(event.split(" "), function(_, eventName) {
+            if (self._guards.isBlank(eventName)) {
+                return;
+            }
+
+            self._eventHandlers[eventName] = self._eventHandlers[eventName] || [];
+            self._eventHandlers[eventName].push(callback);
+        });
+
+        return this;
+    };
+
+    $.Guard.prototype.trigger = function(event, target) {
+        if (!this._eventHandlers || !this._eventHandlers[event.type]) {
+            return;
+        }
+
+        $.each(this._eventHandlers[event.type], function(_, handler) {
+            if (event.isPropagationStopped() || event.isImmediatePropagationStopped()) {
+                return false;
+            }
+
+            handler.call(target, event);
+        });
+
+        return this;
+    };
+
+    /**
+     * @page Guard Type
+     * @section onGuardError
+     * @signature guard.onGuardError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard triggers an error, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the individual
+     *   form fields with the "guardError" event.
+     * </p>
+     *
+     * <p>
+     *   If preventDefault() is called on the event, then the error will be prevented.  If
+     *   stopPropagation() or stopImmediatePropagation() is called on the event, then no other event
+     *   handlers will receive the event (including jQuery event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".guard-error1").using("required").onGuardError(function(e) {
+     *         alert("This guarded input is watching for errors.");
+     *       });
+     *       $.guard(".guard-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="guard-error1" type="text" /><br />
+     *       <small>Alerts on error.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="guard-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onGuardError = function(callback) {
+        return this.bind("guardError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onGuardFormError
+     * @signature guard.onGuardFormError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard triggers an error, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the top level
+     *   form element with the "guardFormError" event.
+     * </p>
+     *
+     * <p>
+     *   If preventDefault() is called on the event, then the error will be prevented.  If
+     *   stopPropagation() or stopImmediatePropagation() is called on the event, then no other event
+     *   handlers will receive the event (including jQuery event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".guard-form-error1").using("required").onGuardFormError(function(e) {
+     *         alert("This guarded input is watching for errors.");
+     *       });
+     *       $.guard(".guard-form-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="guard-form-error1" type="text" /><br />
+     *       <small>Alerts on error.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="guard-form-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onGuardFormError = function(callback) {
+        return this.bind("guardFormError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onAfterGuardError
+     * @signature guard.onAfterGuardError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard triggers an error, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the individual
+     *   form fields with the "afterGuardError" event.  This event is triggered after the error has
+     *   been applied, unlike the guardError and guardFormError events.
+     * </p>
+     *
+     * <p>
+     *   Calling preventDefault() has no effect.  If stopPropagation() or stopImmediatePropagation() is
+     *   called on the event, then no other event handlers will receive the event (including jQuery
+     *   event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".after-guard-error1").using("required").onAfterGuardError(function(e) {
+     *         alert("This guarded input is watching for errors.");
+     *       });
+     *       $.guard(".after-guard-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="after-guard-error1" type="text" /><br />
+     *       <small>Alerts on error.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="after-guard-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onAfterGuardError = function(callback) {
+        return this.bind("afterGuardError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onAfterGuardFormError
+     * @signature guard.onAfterGuardFormError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard triggers an error, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the top level
+     *   form element with the "afterGuardFormError" event.  This event is triggered after the error
+     *   has been applied, unlike the guardError and guardFormError events.
+     * </p>
+     *
+     * <p>
+     *   Calling preventDefault() has no effect.  If stopPropagation() or stopImmediatePropagation() is
+     *   called on the event, then no other event handlers will receive the event (including jQuery
+     *   event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".after-guard-form-error1").using("required").onAfterGuardFormError(function(e) {
+     *         alert("This guarded input is watching for errors.");
+     *       });
+     *       $.guard(".after-guard-form-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="after-guard-form-error1" type="text" /><br />
+     *       <small>Alerts on error.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="after-guard-form-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onAfterGuardFormError = function(callback) {
+        return this.bind("afterGuardFormError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onClearGuardError
+     * @signature guard.onClearGuardError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard error is cleared, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the individual
+     *   form fields with the "clearGuardError" event.
+     * </p>
+     *
+     * <p>
+     *   If preventDefault() is called on the event, then the error will not be cleared.  If
+     *   stopPropagation() or stopImmediatePropagation() is called on the event, then no other event
+     *   handlers will receive the event (including jQuery event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".clear-guard-error1").using("required").onClearGuardError(function(e) {
+     *         alert("This guarded input is watching for clearing of errors.");
+     *       });
+     *       $.guard(".clear-guard-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="clear-guard-error1" type="text" /><br />
+     *       <small>Alerts when errors are cleared.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="clear-guard-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onClearGuardError = function(callback) {
+        return this.bind("clearGuardError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onClearGuardFormError
+     * @signature guard.onClearGuardFormError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard error is cleared, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the top level
+     *   form element with the "clearGuardFormError" event.
+     * </p>
+     *
+     * <p>
+     *   If preventDefault() is called on the event, then the error will not be cleared.  If
+     *   stopPropagation() or stopImmediatePropagation() is called on the event, then no other event
+     *   handlers will receive the event (including jQuery event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".clear-guard-form-error1").using("required").onClearGuardFormError(function(e) {
+     *         alert("This guarded input is watching for clearing of errors.");
+     *       });
+     *       $.guard(".clear-guard-form-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="clear-guard-form-error1" type="text" /><br />
+     *       <small>Alerts when errors are cleared.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="clear-guard-form-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onClearGuardFormError = function(callback) {
+        return this.bind("clearGuardFormError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onAfterClearGuardError
+     * @signature guard.onAfterClearGuardError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard error is cleared, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the individual
+     *   form fields with the "afterClearGuardError" event.  This event is triggered after the error has
+     *   been cleared, unlike the clearGuardError and clearGuardFormError events.
+     * </p>
+     *
+     * <p>
+     *   Calling preventDefault() has no effect.  If stopPropagation() or stopImmediatePropagation() is
+     *   called on the event, then no other event handlers will receive the event (including jQuery
+     *   event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".after-clear-guard-error1").using("required").onAfterClearGuardError(function(e) {
+     *         alert("This guarded input is watching for clearing of errors.");
+     *       });
+     *       $.guard(".after-clear-guard-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="after-clear-guard-error1" type="text" /><br />
+     *       <small>Alerts when errors are cleared.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="after-clear-guard-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onAfterClearGuardError = function(callback) {
+        return this.bind("afterClearGuardError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onAfterClearGuardFormError
+     * @signature guard.onAfterClearGuardFormError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard error is cleared, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the top level
+     *   form element with the "afterClearGuardFormError" event.  This event is triggered after the error
+     *   has been cleared, unlike the clearGuardError and clearGuardFormError events.
+     * </p>
+     *
+     * <p>
+     *   Calling preventDefault() has no effect.  If stopPropagation() or stopImmediatePropagation() is
+     *   called on the event, then no other event handlers will receive the event (including jQuery
+     *   event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".after-clear-guard-form-error1").using("required").onAfterClearGuardFormError(function(e) {
+     *         alert("This guarded input is watching for clearing of errors.");
+     *       });
+     *       $.guard(".after-clear-guard-form-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="after-clear-guard-form-error1" type="text" /><br />
+     *       <small>Alerts when errors are cleared.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="after-clear-guard-form-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onAfterClearGuardFormError = function(callback) {
+        return this.bind("afterClearGuardFormError", callback);
+    };
+
     // Determine if the guard applies to given element(s)
     $.Guard.prototype.appliesTo = function(element) {
         return $(element).filter(this._selector).size() > 0;
@@ -2084,7 +2512,7 @@
 
             if (!isDashed) {
                 // Un-capitalize the first letter
-                attrName = attrName.replace(/^(.)/, function(all, letter) {
+                attrName = attrName.replace(/^(.)/, function(_, letter) {
                     return letter.toLowerCase();
                 });
             }
@@ -2288,7 +2716,12 @@
             event.errorMessage = $(errorMessageElement)[0];
         }
 
-        target.trigger(event);
+        this.trigger(event, target);
+
+        if (!event.isPropagationStopped() && !event.isImmediatePropagationStopped()) {
+            target.trigger(event);
+        }
+
         return event;
     };
 
@@ -2532,7 +2965,7 @@
      * </div>
      */
     $.fn.clearErrors = function() {
-        $.each(this.errors(), function(index, error) {
+        $.each(this.errors(), function(_, error) {
             error.clear();
         });
 
@@ -2546,7 +2979,7 @@
     $.fn.hasError = function(guard) {
         var result = false;
 
-        $.each(this.errors(), function(i, error) {
+        $.each(this.errors(), function(_, error) {
             if (error._guard === guard) {
                 result = true;
                 return false;
@@ -2566,7 +2999,7 @@
     $.fn.hasErrorsWithInvalidClass = function(invalidClass) {
         var result = false;
 
-        $.each(this.errors(), function(i, error) {
+        $.each(this.errors(), function(_, error) {
             if (error._guard.getInvalidClass() === invalidClass) {
                 result = true;
                 return false;
