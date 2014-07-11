@@ -2079,6 +2079,378 @@
         return this;
     };
 
+    $.Guard.prototype.bind = function(event, callback) {
+        var self = this;
+        this._eventHandlers = this._eventHandlers || {};
+
+        $.each(event.split(" "), function(_, eventName) {
+            if (self._guards.isBlank(eventName)) {
+                return;
+            }
+
+            self._eventHandlers[eventName] = self._eventHandlers[eventName] || [];
+            self._eventHandlers[eventName].push(callback);
+        })
+
+        return this;
+    };
+
+    $.Guard.prototype.trigger = function(event, target) {
+        if (!this._eventHandlers || !this._eventHandlers[event.type]) {
+            return;
+        }
+
+        $.each(this._eventHandlers[event.type], function(_, handler) {
+            if (event.isPropagationStopped() || event.isImmediatePropagationStopped()) {
+                return false;
+            }
+
+            handler.call(target, event);
+        });
+
+        return this;
+    };
+
+    /**
+     * @page Guard Type
+     * @section onGuardError
+     * @signature guard.onGuardError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard triggers an error, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the individual
+     *   form fields with the "guardError" event.
+     * </p>
+     *
+     * <p>
+     *   If preventDefault() is called on the event, then the error will be prevented.  If
+     *   stopPropagation() or stopImmediatePropagation() is called on the event, then no other event
+     *   handlers will receive the event (including jQuery event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".guard-error1").using("required").onGuardError(function(e) {
+     *         alert("This guarded input is watching for errors.");
+     *       });
+     *       $.guard(".guard-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="guard-error1" type="text" /><br />
+     *       <small>Alerts on error.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="guard-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onGuardError = function(callback) {
+        return this.bind("guardError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onGuardFormError
+     * @signature guard.onGuardFormError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard triggers an error, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the top level
+     *   form element with the "guardFormError" event.
+     * </p>
+     *
+     * <p>
+     *   If preventDefault() is called on the event, then the error will be prevented.  If
+     *   stopPropagation() or stopImmediatePropagation() is called on the event, then no other event
+     *   handlers will receive the event (including jQuery event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".guard-form-error1").using("required").onGuardFormError(function(e) {
+     *         alert("This guarded input is watching for errors.");
+     *       });
+     *       $.guard(".guard-form-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="guard-form-error1" type="text" /><br />
+     *       <small>Alerts on error.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="guard-form-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onGuardFormError = function(callback) {
+        return this.bind("guardFormError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onAfterGuardError
+     * @signature guard.onAfterGuardError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard triggers an error, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the individual
+     *   form fields with the "afterGuardError" event.  This event is triggered after the error has
+     *   been applied, unlike the guardError and guardFormError events.
+     * </p>
+     *
+     * <p>
+     *   Calling preventDefault() has no effect.  If stopPropagation() or stopImmediatePropagation() is
+     *   called on the event, then no other event handlers will receive the event (including jQuery
+     *   event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".after-guard-error1").using("required").onAfterGuardError(function(e) {
+     *         alert("This guarded input is watching for errors.");
+     *       });
+     *       $.guard(".after-guard-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="after-guard-error1" type="text" /><br />
+     *       <small>Alerts on error.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="after-guard-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onAfterGuardError = function(callback) {
+        return this.bind("afterGuardError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onAfterGuardFormError
+     * @signature guard.onAfterGuardFormError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard triggers an error, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the top level
+     *   form element with the "afterGuardFormError" event.  This event is triggered after the error
+     *   has been applied, unlike the guardError and guardFormError events.
+     * </p>
+     *
+     * <p>
+     *   Calling preventDefault() has no effect.  If stopPropagation() or stopImmediatePropagation() is
+     *   called on the event, then no other event handlers will receive the event (including jQuery
+     *   event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".after-guard-form-error1").using("required").onAfterGuardFormError(function(e) {
+     *         alert("This guarded input is watching for errors.");
+     *       });
+     *       $.guard(".after-guard-form-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="after-guard-form-error1" type="text" /><br />
+     *       <small>Alerts on error.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="after-guard-form-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onAfterGuardFormError = function(callback) {
+        return this.bind("afterGuardFormError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onClearGuardError
+     * @signature guard.onClearGuardError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard error is cleared, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the individual
+     *   form fields with the "clearGuardError" event.
+     * </p>
+     *
+     * <p>
+     *   If preventDefault() is called on the event, then the error will not be cleared.  If
+     *   stopPropagation() or stopImmediatePropagation() is called on the event, then no other event
+     *   handlers will receive the event (including jQuery event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".clear-guard-error1").using("required").onClearGuardError(function(e) {
+     *         alert("This guarded input is watching for clearing of errors.");
+     *       });
+     *       $.guard(".clear-guard-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="clear-guard-error1" type="text" /><br />
+     *       <small>Alerts when errors are cleared.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="clear-guard-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onClearGuardError = function(callback) {
+        return this.bind("clearGuardError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onClearGuardFormError
+     * @signature guard.onClearGuardFormError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard error is cleared, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the top level
+     *   form element with the "clearGuardFormError" event.
+     * </p>
+     *
+     * <p>
+     *   If preventDefault() is called on the event, then the error will not be cleared.  If
+     *   stopPropagation() or stopImmediatePropagation() is called on the event, then no other event
+     *   handlers will receive the event (including jQuery event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".clear-guard-form-error1").using("required").onClearGuardFormError(function(e) {
+     *         alert("This guarded input is watching for clearing of errors.");
+     *       });
+     *       $.guard(".clear-guard-form-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="clear-guard-form-error1" type="text" /><br />
+     *       <small>Alerts when errors are cleared.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="clear-guard-form-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onClearGuardFormError = function(callback) {
+        return this.bind("clearGuardFormError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onAfterClearGuardError
+     * @signature guard.onAfterClearGuardError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard error is cleared, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the individual
+     *   form fields with the "afterClearGuardError" event.  This event is triggered after the error has
+     *   been cleared, unlike the clearGuardError and clearGuardFormError events.
+     * </p>
+     *
+     * <p>
+     *   Calling preventDefault() has no effect.  If stopPropagation() or stopImmediatePropagation() is
+     *   called on the event, then no other event handlers will receive the event (including jQuery
+     *   event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".after-clear-guard-error1").using("required").onAfterClearGuardError(function(e) {
+     *         alert("This guarded input is watching for clearing of errors.");
+     *       });
+     *       $.guard(".after-clear-guard-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="after-clear-guard-error1" type="text" /><br />
+     *       <small>Alerts when errors are cleared.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="after-clear-guard-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onAfterClearGuardError = function(callback) {
+        return this.bind("afterClearGuardError", callback);
+    };
+
+    /**
+     * @page Guard Type
+     * @section onAfterClearGuardFormError
+     * @signature guard.onAfterClearGuardFormError(callback)
+     * @since 1.4.0
+     *
+     * <p>
+     *   When a guard error is cleared, the callback provided to this function will be called with an
+     *   event object.  This event can also be captured by binding for jQuery events on the top level
+     *   form element with the "afterClearGuardFormError" event.  This event is triggered after the error
+     *   has been cleared, unlike the clearGuardError and clearGuardFormError events.
+     * </p>
+     *
+     * <p>
+     *   Calling preventDefault() has no effect.  If stopPropagation() or stopImmediatePropagation() is
+     *   called on the event, then no other event handlers will receive the event (including jQuery
+     *   event handlers).
+     * </p>
+     *
+     * <div class="example">
+     *   <div class="display">
+     *     <script>
+     *       $.guard(".after-clear-guard-form-error1").using("required").onAfterClearGuardFormError(function(e) {
+     *         alert("This guarded input is watching for clearing of errors.");
+     *       });
+     *       $.guard(".after-clear-guard-form-error2").using("required");
+     *     </script>
+     *
+     *     <p>
+     *       <input class="after-clear-guard-form-error1" type="text" /><br />
+     *       <small>Alerts when errors are cleared.</small>
+     *     </p>
+     *
+     *     <p>
+     *       <input class="after-clear-guard-form-error2" type="text" />
+     *     </p>
+     *   </div>
+     * </div>
+     */
+    $.Guard.prototype.onAfterClearGuardFormError = function(callback) {
+        return this.bind("afterClearGuardFormError", callback);
+    };
+
     // Determine if the guard applies to given element(s)
     $.Guard.prototype.appliesTo = function(element) {
         return $(element).filter(this._selector).size() > 0;
@@ -2331,7 +2703,12 @@
             event.errorMessage = $(errorMessageElement)[0];
         }
 
-        target.trigger(event);
+        this.trigger(event, target);
+
+        if (!event.isPropagationStopped() && !event.isImmediatePropagationStopped()) {
+            target.trigger(event);
+        }
+
         return event;
     };
 
