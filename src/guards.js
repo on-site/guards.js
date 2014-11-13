@@ -1614,7 +1614,11 @@
         copyAttribute("_precondition");
         this._guard = namedGuard._guard;
         this._guardArguments = args;
-        this.name = guard;
+
+        if (!this._named) {
+            this.name = guard;
+        }
+
         return this.message(namedGuard._message, true);
     };
 

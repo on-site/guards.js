@@ -69,15 +69,16 @@
             return;
           }
 
-          var $jQueryVersion = $('<label for="jquery-version">jQuery Version: </label><select id="jquery-version" name="jquery"></select>');
+          var $jQueryVersion = $('<span><label for="jquery-version">jQuery Version: </label><select id="jquery-version" name="jquery"></select></span>');
+          var $jQueryVersionSelect = $jQueryVersion.find("select");
 
           $.each(JQUERY_VERSIONS, function(i, version) {
-            $jQueryVersion.append('<option value="' + version + '">' + version + '</option>');
+            $jQueryVersionSelect.append('<option value="' + version + '">' + version + '</option>');
           });
 
-          $jQueryVersion.val(QUnit.config.jquery);
+          $jQueryVersionSelect.val(QUnit.config.jquery);
 
-          $jQueryVersion.change(function() {
+          $jQueryVersionSelect.change(function() {
             var jqueryValue = $(this).val();
 
             if (jqueryValue == DEFAULT_JQUERY_VERSION) {
@@ -358,6 +359,13 @@
               errorMessageLocations: $("#form1-1, #form1-2"),
               errorMessages: ["Custom message 1.", "Custom message 2."]
             });
+          });
+
+          test("#22: named guards keep their name when using another named guard", function() {
+            var guard = $.guards.name("customizedMessage").message("Custom message 1.").using("required");
+            equal(guard.name, "customizedMessage", "Name of guard");
+            equal($.guards.named.customizedMessage.name, "customizedMessage", "Name of guard");
+            equal($.guards.named.required.name, "required", "Name of original guard");
           });
 
           module("guardable fields", { setup: resetGuards });
