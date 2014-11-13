@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v1.4.0
+ * Guards JavaScript jQuery Plugin v1.4.1
  * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2014, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Fri Jul 11 14:37:18 2014 -0700
+ * Date: Wed Nov 12 21:12:25 2014 -0800
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "1.4.0";
+    $.guard.version = "1.4.1";
 
     $.Guards = function() {
         var self = this;
@@ -745,7 +745,7 @@
      *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
      * </p>
      */
-    $.Guards.prototype.version = "1.4.0";
+    $.Guards.prototype.version = "1.4.1";
 
     $.Guards.prototype.parentContext = function(element) {
         var $element = $(element);
@@ -1627,7 +1627,11 @@
         copyAttribute("_precondition");
         this._guard = namedGuard._guard;
         this._guardArguments = args;
-        this.name = guard;
+
+        if (!this._named) {
+            this.name = guard;
+        }
+
         return this.message(namedGuard._message, true);
     };
 
