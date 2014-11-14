@@ -368,6 +368,21 @@
             equal($.guards.named.required.name, "required", "Name of original guard");
           });
 
+          test("#23: preventing default on all errors should not cause the form to error", function() {
+            $.guard("#form1-1").using("required");
+            var preventDefault = function(e) { e.preventDefault(); };
+
+            try {
+              $(document).bind("guardError", preventDefault);
+              assertGuards({
+                form: "#form1",
+                expectedToPass: true
+              });
+            } finally {
+              $(document).unbind("guardError", preventDefault);
+            }
+          });
+
           module("guardable fields", { setup: resetGuards });
 
           test("without options", function() {
