@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v1.4.1
+ * Guards JavaScript jQuery Plugin v1.4.2
  * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2014, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Wed Nov 12 21:12:25 2014 -0800
+ * Date: Fri Nov 14 01:44:15 2014 -0800
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "1.4.1";
+    $.guard.version = "1.4.2";
 
     $.Guards = function() {
         var self = this;
@@ -745,7 +745,7 @@
      *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
      * </p>
      */
-    $.Guards.prototype.version = "1.4.1";
+    $.Guards.prototype.version = "1.4.2";
 
     $.Guards.prototype.parentContext = function(element) {
         var $element = $(element);
@@ -2619,7 +2619,9 @@
         }
 
         if (!result) {
-            this.triggerError($elements);
+            var check = new NotUsedExternally();
+            this.triggerError($elements, check);
+            result = !!check.defaultPrevented;
         }
 
         return result;
@@ -2688,19 +2690,26 @@
      */
     $.Guard.prototype.triggerError = function() {
         var elements;
+        var check = null;
 
         if (arguments.length === 0) {
             elements = this._selector;
+        } else if (arguments.length === 1 && arguments[0].constructor === NotUsedExternally) {
+            elements = this._selector;
+            check = arguments[0];
         } else if (arguments.length === 1) {
             elements = arguments[0];
+        } else if (arguments.length === 2 && arguments[1].constructor === NotUsedExternally) {
+            elements = arguments[0];
+            check = arguments[1];
         } else {
             throw new Error("Expected 0 or 1 argument to triggerError, got " + arguments.length);
         }
 
         if (this.isGrouped()) {
-            $(elements).addSingleError(this);
+            $(elements).addSingleError(this, check || new NotUsedExternally());
         } else {
-            $(elements).addError(this);
+            $(elements).addError(this, check || new NotUsedExternally());
         }
 
         return this;
@@ -2788,6 +2797,14 @@
     };
 
     /**
+     * Simple object that can be type checked so it is guaranteed to
+     * not be used externally, and can pass information back to
+     * callers.
+     */
+    function NotUsedExternally() {
+    }
+
+    /**
      * Find any applicable fields for this selected item.  Applicable
      * fields are any inputs, textareas or selects.
      */
@@ -2867,6 +2884,10 @@
         var guardFormErrorPrevented = guard.sendEvent("guardFormError", this, true).isDefaultPrevented();
 
         if (guardErrorPrevented || guardFormErrorPrevented) {
+            if (arguments.length === 2 && arguments[1].constructor === NotUsedExternally) {
+                arguments[1].defaultPrevented = true;
+            }
+
             return this;
         }
 
@@ -2897,6 +2918,7 @@
      * target.
      */
     $.fn.addError = function(guard) {
+        var check = arguments[1] || new NotUsedExternally();
         var radiosAdded = {};
 
         return this.each(function() {
@@ -2912,9 +2934,9 @@
                 radiosAdded[name] = true;
                 var context = guard._guards.parentContext($this);
                 var radios = $("input[name='" + name + "']:radio", context);
-                radios.addSingleError(guard);
+                radios.addSingleError(guard, check);
             } else {
-                $this.addSingleError(guard);
+                $this.addSingleError(guard, check);
             }
         });
     };
