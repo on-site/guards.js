@@ -1,14 +1,14 @@
 /*!
- * Guards JavaScript jQuery Plugin v1.4.2
+ * Guards JavaScript jQuery Plugin v1.5.0
  * https://github.com/on-site/guards.js
  *
- * Copyright 2010-2014, On-Site.com, http://www.on-site.com/
+ * Copyright 2010-2015, On-Site.com, http://www.on-site.com/
  * Licensed under the MIT license.
  *
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Fri Nov 14 01:44:15 2014 -0800
+ * Date: Tue Jan 13 14:24:09 2015 -0800
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "1.4.2";
+    $.guard.version = "1.5.0";
 
     $.Guards = function() {
         var self = this;
@@ -745,7 +745,7 @@
      *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
      * </p>
      */
-    $.Guards.prototype.version = "1.4.2";
+    $.Guards.prototype.version = "1.5.0";
 
     $.Guards.prototype.parentContext = function(element) {
         var $element = $(element);
@@ -2002,7 +2002,7 @@
     };
 
     $.Guard.prototype.attachError = function(elements, errorElement) {
-        var target = this.getTarget();
+        var target = this.getTarget(elements);
 
         if (target && $.isFunction(target)) {
             var result = target.call(elements, errorElement);
@@ -2017,7 +2017,13 @@
         }
     };
 
-    $.Guard.prototype.getTarget = function() {
+    $.Guard.prototype.getTarget = function(elements) {
+        var dataTarget = this.getGuardDataArguments(elements, "target", true);
+
+        if (dataTarget !== null) {
+            return dataTarget;
+        }
+
         if (this._target === undefined) {
             return this._guards.defaults.target;
         }
