@@ -1644,6 +1644,45 @@
             });
           });
 
+          test("with an error target defined via data attribute", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" data-guard="required" data-guard-required-target="#data-guarded-target" />' +
+              '  <span id="data-guarded-target"></span>' +
+              '</form>');
+            equal($("form.data").guard(), false);
+            equal($("#data-guarded-target").html(), '<span class="error-message">This field is required.</span>');
+          });
+
+          test("with error target defined by different data attributes", function() {
+            $("body").append(
+              '<form class="data" data-guarded>' +
+              '  <input type="text" data-guard="required int" data-guard-required-target="#data-guarded-target" data-guard-int-target="#data-guarded-int-target" />' +
+              '  <span id="data-guarded-target"></span>' +
+              '  <span id="data-guarded-int-target"></span>' +
+              '</form>');
+            equal($("form.data").guard(), false);
+            equal($("#data-guarded-target").html(), '<span class="error-message">This field is required.</span>');
+            equal($("#data-guarded-int-target").html(), "");
+            $("form.data input").val("abc");
+            equal($("form.data").guard(), false);
+            equal($("#data-guarded-target").html(), "");
+            equal($("#data-guarded-int-target").html(), '<span class="error-message">Please enter a number.</span>');
+          });
+
+          test("with error target at form and input level", function() {
+            $("body").append(
+              '<form class="data" data-guarded data-guard-required-target="#data-guarded-target">' +
+              '  <input class="first-required" type="text" data-guard="required" data-guard-required-target="#data-guarded-target-2" />' +
+              '  <input class="second-required" type="text" data-guard="required" />' +
+              '  <span id="data-guarded-target"></span>' +
+              '  <span id="data-guarded-target-2"></span>' +
+              '</form>');
+            equal($("form.data").guard(), false);
+            equal($("#data-guarded-target").html(), '<span class="error-message">This field is required.</span>');
+            equal($("#data-guarded-target-2").html(), '<span class="error-message">This field is required.</span>');
+          });
+
           module("custom guard", { setup: resetGuards });
 
           function customGuard(value, element) {

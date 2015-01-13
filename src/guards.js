@@ -1989,7 +1989,7 @@
     };
 
     $.Guard.prototype.attachError = function(elements, errorElement) {
-        var target = this.getTarget();
+        var target = this.getTarget(elements);
 
         if (target && $.isFunction(target)) {
             var result = target.call(elements, errorElement);
@@ -2004,7 +2004,13 @@
         }
     };
 
-    $.Guard.prototype.getTarget = function() {
+    $.Guard.prototype.getTarget = function(elements) {
+        var dataTarget = this.getGuardDataArguments(elements, "target", true);
+
+        if (dataTarget !== null) {
+            return dataTarget;
+        }
+
         if (this._target === undefined) {
             return this._guards.defaults.target;
         }

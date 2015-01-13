@@ -167,6 +167,51 @@
   </div>
 <% end %>
 
+<% concat_partial "jsdoc", :section => h("data-guard-<name>-target"), :applicable => "form, field", :since => "1.5.0" do %>
+  <p>
+    Customize the error target for a certain type of guard.  If
+    provided on the parent form, the error target will be used on all
+    fields in the form with the given guard.  If provided on a field,
+    the target will only apply to that field.  Field targets will
+    supercede form messages.  This is as
+    if <a href="guard_type.html#target"><code>$.guard(field).using(&lt;guard&gt;).target(&lt;error&nbsp;target&gt;)</code></a>
+    were called.
+  </p>
+
+  <div class="example">
+    <div class="display">
+      <form data-live-guarded data-guard-required-target="#form-level-target">
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p>
+          <input data-guard="required" data-guard-required-target="#field-level-target" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p>
+          Previous field target:
+          <span id="field-level-target"></span>
+        </p>
+
+        <p>
+          <input data-guard="required" type="text" /><br />
+          <small>required</small>
+        </p>
+
+        <p><input type="submit" /></p>
+
+        <p>
+          Form level target:
+          <span id="form-level-target"></span>
+        </p>
+      </form>
+    </div>
+  </div>
+<% end %>
+
 <% concat_partial "jsdoc", :section => "data-immediate-guard-error", :applicable => "field", :since => "1.3.2" do %>
   <p>
     Mark a field as immediately having an error with the provided
