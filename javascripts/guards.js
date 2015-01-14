@@ -1,5 +1,5 @@
 /*!
- * Guards JavaScript jQuery Plugin v1.5.0
+ * Guards JavaScript jQuery Plugin v1.5.1
  * https://github.com/on-site/guards.js
  *
  * Copyright 2010-2015, On-Site.com, http://www.on-site.com/
@@ -8,7 +8,7 @@
  * Includes code for email and phone number validation from the jQuery
  * Validation plugin.  http://docs.jquery.com/Plugins/Validation
  *
- * Date: Tue Jan 13 14:24:09 2015 -0800
+ * Date: Tue Jan 13 17:54:45 2015 -0800
  */
 
 /**
@@ -48,7 +48,7 @@
         return $.guards.add(selector);
     };
 
-    $.guard.version = "1.5.0";
+    $.guard.version = "1.5.1";
 
     $.Guards = function() {
         var self = this;
@@ -745,7 +745,7 @@
      *   This version of guards.js library as a string, like <code>"1.0.0"</code>.
      * </p>
      */
-    $.Guards.prototype.version = "1.5.0";
+    $.Guards.prototype.version = "1.5.1";
 
     $.Guards.prototype.parentContext = function(element) {
         var $element = $(element);
@@ -2815,7 +2815,8 @@
      * fields are any inputs, textareas or selects.
      */
     $.fn.guardableFields = function() {
-        return this.find(":guardable");
+        var results = this.filter(":guardable");
+        return results.add(this.find(":guardable"));
     };
 
     /**
@@ -2831,13 +2832,18 @@
      *   focus the first such field.
      * </p>
      *
+     * <p>
+     *   As of version 1.5.1, directly selected form fields will be guarded as well.  The
+     *   order of evaluating selected fields is undefined, as it is dependent on jQuery.
+     * </p>
+     *
      * <div class="example">
      *   <div class="display">
      *     <script>
      *       $.guard(".guarded-field").using("required");
      *       $(function() {
      *         $("#invoke-guard").click(function() {
-     *           $("#guard-container").guard();
+     *           $("#guard-container, #uncontained-field").guard();
      *           return false;
      *         });
      *       });
@@ -2846,6 +2852,12 @@
      *     <div id="guard-container">
      *       <p>
      *         <input class="guarded-field" type="text" />
+     *       </p>
+     *     </div>
+     *
+     *     <div>
+     *       <p>
+     *         <input id="uncontained-field" class="guarded-field" type="text" />
      *       </p>
      *     </div>
      *
