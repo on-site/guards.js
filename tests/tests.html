@@ -7,7 +7,7 @@
     <script type="text/javascript" src="blanket.js"></script>
 
     <script>
-      var JQUERY_VERSIONS = ["1.4.4", "1.5.2", "1.6.4", "1.7.2", "1.8.3", "1.9.1", "1.10.1", "2.0.2"];
+      var JQUERY_VERSIONS = ["1.4.4", "1.5.2", "1.6.4", "1.7.2", "1.8.3", "1.9.1", "1.10.1", "1.11.2", "2.0.3", "2.1.3"];
       var DEFAULT_JQUERY_VERSION = "1.10.1";
       QUnit.config.jquery = QUnit.urlParams.jquery || DEFAULT_JQUERY_VERSION;
 
@@ -386,7 +386,7 @@
           module("guardable fields", { setup: resetGuards });
 
           test("without options", function() {
-            var results = $("#form1, #form2 input").guardableFields();
+            var results = $("#form1, #empty-form").guardableFields();
             equal(results.size(), 4, "Result size");
             equal(results[0], $("#form1-1")[0], "First element");
             equal(results[1], $("#form1-2")[0], "Second element");
@@ -419,10 +419,48 @@
             equal(results[1], $("#form9-2")[0], "Second element");
           });
 
+          test("includes fields directly selected", function() {
+            var results = $("#form1-1, #form1-3").guardableFields();
+            equal(results.size(), 2, "Result size");
+            equal(results[0], $("#form1-1")[0], "First element");
+            equal(results[1], $("#form1-3")[0], "Second element");
+          });
+
+          test("includes directly selected fields and fields contained in a parent", function() {
+            var results = $("#form1-1, #form1-3, #form2").guardableFields();
+            equal(results.size(), 7, "Result size");
+            equal(results[0], $("#form1-1")[0], "First element");
+            equal(results[1], $("#form1-3")[0], "Second element");
+            equal(results[2], $("#form2-1")[0], "Third element");
+            equal(results[3], $("#form2-2")[0], "Fourth element");
+            equal(results[4], $("#form2-3")[0], "Fifth element");
+            equal(results[5], $("#form2-4")[0], "Sixth element");
+            equal(results[6], $("#form2-5")[0], "Seventh element");
+          });
+
+          test("overlapping fields are not selected twice", function() {
+            var results = $("#form1-1, #form1-2, #form1").guardableFields();
+            equal(results.size(), 4, "Result size");
+            equal(results[0], $("#form1-1")[0], "First element");
+            equal(results[1], $("#form1-2")[0], "Second element");
+            equal(results[2], $("#form1-3")[0], "Third element");
+            equal(results[3], $("#form1-4")[0], "Fourth element");
+          });
+
           module("general guards", { setup: function() {
             resetGuards();
             $.guard("input").using("required");
           } });
+
+          test("guard function can target fields directly", function() {
+            equal($("#form1-1").guard(), false);
+            equal($("#form1-1, #form1-2, #form1-3, #form1-4").filter(":has-error").size(), 1);
+            equal($("#form1-1, #form1-2").guard(), false);
+            equal($("#form1-1, #form1-2, #form1-3, #form1-4").filter(":has-error").size(), 2);
+            equal($("#form1-4").guard(), false);
+            // Since the first 2 won't be cleared, the previous 2 will still have their error
+            equal($("#form1-1, #form1-2, #form1-3, #form1-4").filter(":has-error").size(), 3);
+          });
 
           test("using standard guard that doesn't exist", function() {
             throws(function() {
@@ -2512,6 +2550,9 @@
     <div id="qunit"></div>
 
     <div id="qunit-fixture">
+      <form id="empty-form">
+      </form>
+
       <form id="form1">
         <div id="form1-customTarget-before" class="custom-target"></div>
         <div id="form1-customTarget-before-2" class="custom-target"></div>
