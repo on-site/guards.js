@@ -12,6 +12,6 @@ Gem::Specification.new do |gem|
   gem.license       = "MIT"
   gem.files         = FileList["lib/**/*", "app/**/*"]
   gem.require_paths = ["lib"]
-  gem.add_dependency "railties", ">= 3.0", "< 6.0"
+  gem.add_dependency "railties", ">= 3.0", "< 7.0"
   gem.add_dependency "guardsjs-rails", ">= 1.2.0"
 end
